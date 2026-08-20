@@ -285,3 +285,116 @@ Trois ressources de la CNIL ont été consultées directement et sont utilisable
 > **[ZONE GRISE] — honnêteté sur ce qui n'a pas pu être établi.** Le brief demandait « les recommandations de la CNIL sur l'IA générative » et « les sanctions pertinentes ». Le hub [cnil.fr/fr/intelligence-artificielle](https://www.cnil.fr/fr/intelligence-artificielle) a bien été atteint, mais il ne présente que des actualités (note exploratoire sur l'IA agentique du 20/07/2026, publication CEPD sur l'anonymisation et le moissonnage du 09/07/2026, affiche PIPC-CNIL du 27/05/2026, enquête européenne du 05/05/2026, projet PANAME du 26/02/2026) ; **les pages de fiches pratiques IA et de sanctions n'ont pas répondu** (404 sur les URL essayées), et le budget de recherche web de la session était épuisé, empêchant de retrouver les URL exactes.
 >
 > **Aucune délibération de sanction n'est donc citée ici, et aucun numéro de délibération n'est inventé.** C'est un manque réel de ce document. Il ne change pas les conclusions, qui reposent toutes sur des textes — mais **la relecture par un avocat devra couvrir la doctrine CNIL récente sur l'IA générative**, l'endroit le plus susceptible de contenir une position spécifique sur la génération de visages de tiers.
+
+---
+
+## 6. Durées de conservation et droit à l'effacement
+
+### 6.1 Le point d'architecture qui désamorce la moitié du problème
+
+Avant de parler de durées, il faut rendre explicite une conséquence de **l'invariant économique** fixé au ticket [#1](https://github.com/fayssalbenouda936/ouvrance/issues/1), parce qu'elle change la qualification juridique de tout le flux :
+
+> « Une cinématique se génère **une fois** et se revend indéfiniment. Seedance 2.5 ne tourne qu'à l'écriture d'une expérience, **jamais à la vente d'une commande**. La personnalisation est une couche de texte, de photos et d'audio **posée par-dessus un rendu maître figé**. »
+
+**Donc : dans l'architecture cible, les médias de la Personne représentée ne sont jamais envoyés à un modèle génératif.** Ils sont stockés dans R2 et composités dans le navigateur du Destinataire, par-dessus une vidéo maître qui, elle, ne contient aucune personne réelle.
+
+C'est le contraire du *legacy*, où `outils/fal.mjs` convertit les fichiers locaux en data URI et les fait transiter par fal. **Le ticket #4 posait la question de la qualification de ce transit : dans l'architecture cible, il n'existe plus.**
+
+Quatre conséquences, toutes favorables :
+
+1. **Les interdictions de BytePlus 3.5, de la PUP Google 1.6 et de l'AUP fal.ai ne sont pas déclenchées** par les commandes. Elles restent pleinement applicables à l'**écriture** des expériences maîtres — mais celles-ci ne mettent en scène aucune personne réelle, donc elles ne posent pas de problème non plus. La conclusion de [`rgpd-conditions-modeles.md`](./rgpd-conditions-modeles.md) — « aucune des deux voies via fal.ai n'est tenable en l'état » — vaut pour un scénario où l'on aurait fait générer le visage d'un tiers par un modèle. **La bonne réponse n'est pas de changer de fournisseur : c'est de ne jamais lui envoyer ces médias.**
+2. **Aucun transfert hors UE des médias de la Personne représentée**, si le bucket R2 est en `jurisdiction=eu` et privé (cf. [`rgpd-sous-traitants.md`](./rgpd-sous-traitants.md)).
+3. **Le critère « moyens » de l'article 4(14) tombe pour de bon** (§1.4) : une incrustation navigateur n'extrait aucun gabarit. La réserve 1.5.1 disparaît.
+4. **Mais l'article 226-8 du Code pénal continue de s'appliquer**, parce que son premier membre de phrase ne parle pas d'IA du tout : « **le montage** réalisé avec les paroles ou l'image d'une personne sans son consentement ». Coller un visage réel dans une scène de braquage **est** un montage. La mention de §3.3 reste obligatoire.
+
+> **À porter comme règle d'architecture, pas comme note de conformité : aucun média téléversé par un Offrant ne doit jamais atteindre un point de terminaison de modèle génératif.** C'est vérifiable en test.
+
+### 6.2 [TEXTE + CNIL] Le principe, et le cycle en trois phases
+
+[RGPD art. 5 §1 e)](https://www.cnil.fr/fr/reglement-europeen-protection-donnees/chapitre2) : les données sont « **conservées sous une forme permettant l'identification des personnes concernées pendant une durée n'excédant pas celle nécessaire** au regard des finalités ». Et art. 5 §2 : « Le responsable du traitement est responsable du respect du paragraphe 1 et **est en mesure de démontrer que celui-ci est respecté** ».
+
+[CNIL, « Les durées de conservation des données »](https://www.cnil.fr/fr/les-durees-de-conservation-des-donnees) : trois phases — **base active** (« la durée nécessaire à la réalisation de l'objectif »), **archivage intermédiaire** (les données ne servent plus la finalité initiale mais présentent un intérêt administratif ou doivent être conservées légalement ; « consultées de manière ponctuelle et motivée par des personnes spécifiquement habilitées »), **archivage définitif**. Et le principe d'imputation : « La définition de la durée de conservation relève de **l'analyse de conformité que le responsable de traitement doit mener** pour son traitement. »
+
+**Traduction pour ouvrance** : personne ne fournira ces durées ; il faut les fixer et savoir les justifier. Ci-dessous une proposition chiffrée, avec le raisonnement de chaque ligne.
+
+### 6.3 Proposition de durées, ligne par ligne
+
+| Donnée | Base active | Archivage intermédiaire | Fondement du chiffre |
+| --- | --- | --- | --- |
+| **Médias de la Personne représentée** (photos, vocaux) dans R2 | **Durée de vie du Lien** — voir 6.4 | **Aucun.** Purge sèche | Art. 5 §1 e). Passé l'expiration du Lien, plus aucune finalité ne les justifie |
+| **Médias d'une Commande non payée** | **24 heures** | Aucun | Voir section 7 — le chiffre est adossé à la durée de vie maximale d'une session Stripe |
+| **Contenu de personnalisation non personnel** (messages, montant, choix de casting) | Durée de vie du Lien | Aucun | Même raisonnement ; le message peut d'ailleurs contenir des données personnelles, à traiter comme tel |
+| **Identité et email de l'Offrant, données de commande** | Durée de la relation commerciale | **5 ans** | [Art. L110-4 du Code de commerce](https://entreprendre.service-public.gouv.fr/vosdroits/F10029) — prescription des obligations commerciales, cité par service-public comme durée de conservation des contrats commerciaux |
+| **Pièces comptables et factures** | Exercice en cours | **10 ans** à compter de la clôture de l'exercice | [Art. L123-22 du Code de commerce](https://entreprendre.service-public.gouv.fr/vosdroits/F10029) |
+| **Preuve du consentement et déclaration de l'Offrant** (horodatage, version du libellé, IP) | Durée de vie du Lien | **5 ans** après | Art. 5 §2 et art. 7 §1 : il faut pouvoir **démontrer**. Aligné sur la prescription de l'art. L110-4 |
+| **Journal des demandes d'effacement** et des suites données | — | **5 ans** | Même raisonnement d'*accountability* |
+| **Logs techniques** (accès au Lien, erreurs) | — | **6 mois**, sans donnée d'identification du Destinataire | **[ZONE GRISE]** — 6 mois est la durée usuellement retenue pour les logs de connexion, mais **la délibération CNIL correspondante n'a pas pu être vérifiée dans cette session**. À confirmer |
+
+**Un point de droit de la consommation à ne pas confondre.** service-public indique une obligation de conservation de **10 ans** pour les « contrats conclus par voie électronique » — mais **seulement à partir de 120 €** ([même source](https://entreprendre.service-public.gouv.fr/vosdroits/F10029)). La carte à 14,99 € et le jeu à 69,99 €, même avec les suppléments à 3 € l'unité plafonnés à 7 unités (soit 90,99 € au maximum), **restent sous le seuil**. Cette obligation ne s'applique donc pas à ouvrance — mais elle s'appliquerait dès qu'une formule ou un panier dépasserait 120 €, ce qui est exactement le cas des formules Extra (149 €) et Ultimate (349 €) mises hors périmètre. **À rouvrir si elles reviennent.**
+
+### 6.4 La durée de vie du Lien — le chiffre que le ticket #1 a laissé ouvert
+
+Le ticket [#1](https://github.com/fayssalbenouda936/ouvrance/issues/1) classe « expiration des liens de cadeau, purge » dans *Not yet specified*, en précisant que cela « dépend du RGPD ». Voici la proposition et son raisonnement.
+
+**Proposition : le Lien est actif 12 mois à compter de la livraison. À l'expiration, les médias de la Personne représentée sont purgés et le Lien renvoie une page d'expiration.**
+
+Pourquoi 12 mois :
+
+- **Plancher.** Un cadeau se consomme en quelques jours. Une durée courte (30 jours) serait défendable au regard de l'article 5 §1 e) mais détruirait la valeur perçue : un cadeau qu'on ne peut plus revoir n'est pas un cadeau.
+- **Plafond.** Au-delà d'un an, la finalité « offrir et faire vivre une expérience » est épuisée. Conserver le visage et la voix d'un tiers *pour le cas où* est exactement ce que l'article 5 §1 e) interdit.
+- **Le chiffre est adossé à un fait, pas à une préférence** : la relecture d'un cadeau se fait à la date anniversaire de l'événement. **12 mois couvre exactement un anniversaire, pas deux.** C'est le plus petit nombre qui préserve l'usage réel.
+- **Effet de bord commercial favorable** : l'email d'avertissement 30 jours avant l'expiration est un point de contact naturel, et une prolongation payante est une offre honnête — à condition qu'elle exige **un nouveau consentement**, pas une reconduction tacite.
+
+### 6.5 Supprimer un Cadeau déjà livré — ce que ça veut dire techniquement
+
+C'est la question la plus concrète du ticket. Trois niveaux, à ne pas confondre :
+
+1. **Couper le Lien** — le Cadeau devient inaccessible. **Effet immédiat exigible** : l'article 9 du Code civil permet au juge d'ordonner l'arrêt **en référé** (§3.1), et l'article 12 §3 du RGPD impose au plus un mois. **Il faut donc un interrupteur, pas une procédure.** Concrètement : un champ d'état sur le Cadeau, vérifié à chaque requête, et **jamais** de bucket R2 public ni d'URL présignée de longue durée — sinon la coupure n'en est pas une, le CDN de Cloudflare continuant de servir des copies mises en cache hors UE (cf. [`rgpd-sous-traitants.md`](./rgpd-sous-traitants.md)).
+2. **Effacer les médias** — suppression des objets R2 du préfixe de la Commande, sans corbeille ni sauvegarde de longue durée. Toute sauvegarde doit avoir une rotation courte et documentée, faute de quoi l'effacement est fictif.
+3. **Ce qu'on conserve malgré tout** — [art. 17 §3](https://www.cnil.fr/fr/reglement-europeen-protection-donnees/chapitre3) autorise à conserver ce qui est nécessaire au respect d'une obligation légale et à « la constatation, l'exercice ou la défense de droits en justice ». Sont donc conservés : **la facture** (10 ans), **l'enregistrement de commande minimal** (5 ans), **la preuve du consentement** et **la trace de l'effacement lui-même**. Ne sont **pas** conservés : les photos, les vocaux, les messages.
+
+> **Le point qui fâche, et il faut le décider maintenant.** Si la Personne représentée demande l'effacement, le Cadeau payé par l'Offrant est coupé. Faut-il rembourser ? Le droit ne l'impose pas explicitement, mais un juge peut voir dans un service devenu inexécutable une raison de restitution. **Le plus simple et le plus honnête : l'annoncer dans les CGU et rembourser au prorata du temps restant.** Le coût marginal d'une commande étant de 1,39 € (ticket [#5](https://github.com/fayssalbenouda936/ouvrance/issues/5)), le remboursement est économiquement indolore et supprime tout le contentieux. **[ZONE GRISE]** sur l'obligation ; certitude sur l'intérêt.
+
+---
+
+## 7. La purge des commandes non payées — la conséquence directe de « formulaire puis paiement »
+
+### 7.1 Le problème, énoncé sans détour
+
+Le ticket [#1](https://github.com/fayssalbenouda936/ouvrance/issues/1) a tranché : « **Formulaire puis paiement** — le bouton payer est à la fin du formulaire. Décision prise contre la recommandation initiale ; la conséquence RGPD (données déposées avant tout contrat) est portée par le ticket RGPD sous forme de **purge courte des commandes non payées**. »
+
+En clair : à chaque abandon de tunnel, **les photos et la voix d'un tiers restent dans R2 sans qu'aucun contrat n'ait jamais existé**. Et pour la Personne représentée, la base « mesures précontractuelles » de l'article 6 §1 b) n'est même pas disponible : elle n'est partie à aucune mesure précontractuelle (§2.1). **La seule base reste le consentement, pour un traitement dont la finalité — livrer un cadeau — ne se réalisera jamais.**
+
+L'article 5 §1 e) est alors sans ambiguïté : la durée nécessaire est **le temps de payer**, et rien de plus.
+
+### 7.2 La durée : 24 heures
+
+**Proposition chiffrée : purge de tous les médias d'une Commande non payée 24 heures après sa création.**
+
+Le raisonnement, et c'est ce qui rend le chiffre défendable devant une autorité de contrôle : **il n'est pas arbitraire, il est adossé à une contrainte technique externe et vérifiable.**
+
+[Documentation Stripe, « Gérer un stock limité »](https://docs.stripe.com/payments/checkout/managing-limited-inventory), consultée le 20 août 2026 :
+
+> « La valeur doit être comprise entre **30 minutes et 24 heures** après l'heure actuelle. Si vous ne spécifiez pas `expires_at`, la valeur par défaut est **24 heures** après l'heure actuelle. »
+
+> **24 heures est donc la durée maximale pendant laquelle un paiement peut encore aboutir.** Passé ce délai, Stripe lui-même déclare la session `expired` : la finalité est éteinte, pas par choix mais par construction. Conserver les médias une heure de plus, c'est conserver le visage d'un tiers pour une finalité qui n'existe plus. **Aucune durée supérieure n'est justifiable, et la durée n'a pas à être négociée : elle est imposée par la plomberie du paiement.**
+
+Si le commerce réclamait une fenêtre de relance de panier abandonné, le plafond argumentable serait **72 heures**, et il faudrait alors : l'annoncer explicitement dans la case à cocher, et le justifier au registre. **Ce n'est pas recommandé** — la relance de panier abandonné vaut 1,39 € de coût marginal évité, contre la conservation des données biométriques d'une personne qui n'a rien demandé.
+
+### 7.3 Le mécanisme : trois déclencheurs, parce qu'un seul ne couvre pas tout
+
+Il y a **trois façons** de ne pas payer, et une seule d'entre elles émet un événement.
+
+| Cas | Ce qui se passe | Déclencheur de purge |
+| --- | --- | --- |
+| **A.** L'Offrant remplit le formulaire, arrive sur Stripe, n'achève pas | Stripe passe la session à `expired` et **émet `checkout.session.expired`** | **Webhook signé.** Purge immédiate du préfixe R2 de la Commande |
+| **B.** L'Offrant remplit le formulaire et ferme l'onglet **avant** de cliquer payer | Aucune session Stripe n'existe. **Aucun événement, jamais** | **Cron.** Balayage horaire supprimant toute Commande en état `brouillon` ou `impayée` de plus de 24 h |
+| **C.** Le webhook est perdu, rejoué en échec, ou l'endpoint est indisponible | La Commande reste impayée en base indéfiniment | **Le même cron**, qui sert de filet |
+
+Trois exigences d'implémentation qui découlent de ce tableau :
+
+1. **Le cron est la garantie, pas le webhook.** Le webhook est une optimisation qui purge plus tôt ; c'est le balayage périodique qui rend la purge *inévitable*. Un système qui ne repose que sur le webhook ne couvre pas le cas B, qui est probablement le plus fréquent.
+2. **La purge doit être vérifiable.** Elle doit écrire une ligne dans un journal (identifiant de commande, horodatage, nombre d'objets supprimés) — c'est la preuve exigée par l'article 5 §2.
+3. **Elle doit supprimer les objets R2, pas seulement la ligne en base.** Un enregistrement effacé qui laisse les fichiers orphelins dans le bucket est le mode d'échec par défaut de ce genre de mécanisme. **À tester explicitement** : créer une commande, ne pas payer, avancer l'horloge, vérifier que `list` sur le préfixe ne renvoie rien.
+
+> **Et une conséquence de conception qui ne coûte rien : ne téléverser les médias qu'au dernier moment.** Si le formulaire n'envoie les fichiers dans R2 qu'au clic sur « payer » plutôt qu'à chaque étape, le cas B — le plus fréquent et le seul non instrumenté — **cesse d'exister**. C'est la minimisation de l'article 5 §1 c) appliquée au tunnel : la meilleure purge est celle qui n'a rien à purger. Cela ne remet pas en cause la décision « formulaire puis paiement », qui porte sur l'**ordre des écrans**, pas sur le moment du téléversement.
