@@ -682,28 +682,97 @@ MediaDataLoadsAutomatically:
 
 > **Conclusion : la seule stratégie de préchargement défendable est séquentielle et juste-à-temps** — précharger la ressource *suivante*, une seule, pendant que la courante joue, et jamais les trois d'un coup.
 
-## Conséquences pour ouvrance
+---
 
-1. **La 3D passe.** WebGL est toujours actif en WebView, l'accélération matérielle aussi. Le pari Three.js / React Three Fiber n'est pas menacé par le chemin d'ouverture in-app.
-2. **Le plein écran ne passe pas de façon fiable.** C'est le risque numéro un : `requestFullscreen()` peut être un no-op muet. **Concevoir le lecteur pour être plein-écran sans l'API** — mise en page en `100dvh`, aucun élément d'UI qui suppose le mode fullscreen, aucun verrouillage d'orientation (lui aussi désactivé).
-3. **Ne jamais dépendre de `localStorage`.** Coupé par défaut. Utiliser IndexedDB, ou mieux, ne rien persister côté client.
-4. **Ne pas compter sur `<meta viewport>`.** Prévoir un rendu correct même si le viewport est ignoré, et mesurer les dimensions réelles au runtime plutôt que de les supposer.
-5. **Pas de MediaSession, pas de notification, pas d'orientation verrouillée.** Aucune de ces API ne doit porter une fonctionnalité, seulement une amélioration.
-6. **Le budget mémoire est plus serré qu'en Chrome** : un seul renderer par app, GPU in-process. À croiser avec le volet iOS quand il sera fait.
-7. **On ne peut pas déboguer sur le terrain.** Les tests doivent passer par une app de test locale reproduisant les défauts `WebSettings`, pas par `chrome://inspect` sur TikTok.
+# Conséquences pour ouvrance
 
-## Non vérifié
+Douze décisions, classées par ce qu'elles coûtent si on les découvre trop tard.
 
-- **Milestone exact de ship WebGPU dans WebView** — déduit des sous-features chromestatus (≥ M127) et de l'absence de désactivation dans `aw_field_trials.cc`. L'« Intent to Ship » sur blink-dev n'a pas été consulté.
-- **`display-mode: standalone` dans WebView** — l'affirmation « vaut `browser` » est une inférence, pas une source primaire.
-- **`S.browser_fallback_url` dans WebView** — probablement non parsé (code dans `//chrome`), non confirmé.
-- **Moteurs embarqués custom** — rien n'a pu être établi sur le fait que TikTok, Instagram ou Facebook utilisent la WebView système plutôt qu'un Chromium embarqué. **Tous les faits ci-dessus supposent la WebView système.** À valider empiriquement (chaîne UA, présence du token `wv`).
+### Les trois qui doivent entrer dans l'architecture maintenant
+
+**1. Le lecteur ne doit dépendre ni du plein écran, ni de son absence.**
+Sur Android, `requestFullscreen()` peut être un **no-op silencieux** (§ 4). Sur iOS, dans un `WKWebView` où l'app hôte n'a pas mis `allowsInlineMediaPlayback = true` — **le défaut sur iPhone** (§ 13.2) — c'est l'inverse : **toute vidéo est arrachée vers le lecteur natif plein écran**, ce qui détruit tout overlay et toute composition 3D. Le site ne contrôle ni l'un ni l'autre.
+→ Mise en page en `100dvh`, aucun élément d'UI qui suppose le mode fullscreen, aucun verrouillage d'orientation (désactivé en WebView), **et un plan de repli assumé pour le cas où la vidéo part en plein écran natif** : l'expérience doit rester cohérente quand la cinématique revient d'un lecteur système.
+
+**2. Un seul geste, et il débloque tout — parce qu'il n'y en aura peut-être pas d'autre.**
+Le déblocage média est **par élément `<video>`, définitif, sans expiration** (§ 8.4). Les fenêtres de grâce sont courtes et différentes selon l'API : **10 s** à travers `fetch`, **5 s** d'activation transitoire, **1 s** après la fin d'un média — et le Web Audio **ne connaît que les 5 s** (§ 9.1).
+→ Au premier tap : `play()` puis `pause()` sur **tous** les `<video>` du parcours, **et** `audioContext.resume()`, dans le même gestionnaire. Ne jamais détruire ces éléments — les réutiliser en changeant leur `src`. L'enchaînement cinématique → gameplay → cinématique tient dans la fenêtre de 1 s après `ended`, à condition de ne pas y intercaler un `await`.
+
+**3. Précharger les trois vidéos d'avance ne marche pas. C'est structurel.**
+Un `<video>` en pause **retient un décodeur matériel** et le `play()` de trop **échoue** — bug WebKit ouvert depuis 2019, non corrigé (§ 10.1). Un `<video>` caché voit ses ressources **marquées purgeables** (§ 10.2). Sous pression mémoire, WebKit **purge activement** tous les éléments en pause. Et sur iOS **rien n'est préchargé** avant le premier geste (§ 14.1).
+→ **Préchargement séquentiel, une ressource d'avance**, jamais trois. L'élément préchargé doit rester **visible** (1×1 px derrière un calque, jamais `display:none`) pour échapper à `MakeResourcesPurgeable`.
+
+### Les quatre qui changent le budget
+
+**4. Budget mémoire : viser 400 Mo, tout compris.**
+Le plafond n'est pas la RAM de l'appareil mais le `memlimit_active` jetsam du processus WebContent ; le repli codé en dur dans WebKit est **840 Mo** (§ 10.4). Les seuils de réaction sont **plus stricts sur iOS** : `Conservative` à 0,50 et `Strict` à 0,65 du plafond, contre 0,33 et 0,50 ailleurs. Textures WebGL, buffers vidéo, JS et DOM partagent cette enveloppe. `[COM]` 400 Mo est une inférence, à valider par mesure.
+
+**5. Deux encodages, pas trois : HEVC puis H.264.**
+**AV1 est hors-jeu sur mobile** — absent de Chrome Android pour `<video>` selon chromestatus, réservé au matériel récent sur iOS (§ 12.3). VP9 sur iOS n'a pas de décodage matériel garanti, et un décodage logiciel sur un long plan déclenche la mitigation thermique. HEVC en premier `<source>`, H.264 en repli : Safari 17.4+ choisit de lui-même la source décodée matériellement (§ 12.5).
+
+**6. Si l'on passe par MSE : 105 Mo par `SourceBuffer`, plafond dur.**
+Contre 304 Mo ailleurs (§ 10.3). C'est la contrainte qui décide de la durée et du débit des segments.
+
+**7. Le budget graphique est partagé avec le budget vidéo.**
+WebGPU est disponible sur iOS Safari depuis Safari 26 (15/09/2025, § 11.1) et en WebView Android depuis ≈ M127 (§ 3) : le pari 3D tient des deux côtés. Mais **une texture de plus, c'est un buffer vidéo de moins** — même enveloppe jetsam. Et la limite de 16 contextes WebGL évince le plus ancien **sans possibilité de le restaurer par `preventDefault()`** (§ 11.2) : gérer `webglcontextlost` / `webglcontextrestored` est une obligation, pas un raffinement.
+
+### Les trois angles morts qu'il faut traiter comme des risques
+
+**8. Le mode économie d'énergie casse l'autoplay muet, et on ne peut pas le détecter.**
+En Low Power Mode ou sous mitigation thermique, **même une vidéo muette et sans piste audio refuse de démarrer** sans geste (§ 8.3). Aucune API web ne l'expose : la demande formelle a été **fermée comme `invalid` le 07/07/2026** (§ 14.2).
+→ **Toujours traiter la promesse de `play()`**, et prévoir un écran « Toucher pour commencer » comme chemin normal, pas comme erreur.
+
+**9. Tout le son en Web Audio = expérience muette pour qui a le téléphone sur silencieux.**
+Web Audio seul ⇒ catégorie `Ambient` ⇒ **coupé par le bouton silence** ; un média audible ⇒ `Playback` ⇒ **non coupé** (§ 9.3). Un `<video muted>` ne sauve pas : muet, il ne promeut pas la catégorie.
+→ Router le son par un `<audio>`/`<video>` **réellement audible**, ou en maintenir un en permanence pour forcer `Playback`. `[COM]` Montage déduit du code, **à vérifier sur appareil**.
+→ Et tester `audioContext.state !== "running"`, jamais `=== "suspended"` : iOS ajoute l'état non standard **`"interrupted"`** au retour d'arrière-plan (§ 9.2).
+
+**10. Sur iOS, on ne sait rien du réseau ni de l'appareil.**
+Pas de `Save-Data`, pas de `navigator.connection`, pas de `deviceMemory` — refus délibérés de WebKit pour cause d'empreinte numérique (§ 14.2). `prefers-reduced-data` est au stade prototype avec « No signal » de Safari.
+→ **Mesurer soi-même** : chronométrer le premier segment et adapter ensuite. Ou décider conservateur d'avance.
+
+### Les deux qui restent du volet Android
+
+**11. Ne jamais dépendre de `localStorage` ni de `<meta viewport>`.**
+`localStorage` est **coupé par défaut** en WebView (§ 2) ; IndexedDB reste disponible. `<meta viewport>` peut être ignoré si l'app n'a pas activé `setUseWideViewPort` : mesurer les dimensions réelles au runtime.
+
+**12. On ne peut pas déboguer sur le terrain, donc il faut mesurer avant.**
+`chrome://inspect` est hors jeu sur les builds Play Store (§ 4). Sur iOS, l'introspection d'un navigateur in-app est tout aussi impossible.
+→ **Le protocole de sonde du § 13.3 est le premier livrable technique**, avant toute décision d'architecture figée : une page de test ouverte depuis chacune des quatre applications, sur les deux OS, qui journalise UA, plein écran, `localStorage`, `audioContext.state` et le comportement de `<video playsinline>`. Une demi-journée qui remplace huit hypothèses.
+
+---
+
+## Non vérifié — la liste honnête
+
+Rien ci-dessous n'a été comblé par une supposition présentée comme un fait.
+
+### Trous majeurs, à combler par la mesure
+
+- **Le nombre de décodeurs vidéo simultanés sur iOS n'a AUCUNE source primaire.** Aucune constante WebKit ne l'exprime ; la limite est appliquée par VideoToolbox. Le seul chiffre trouvé — « 32 sur iPhone 6 » — vient d'un **rapporteur de bug en 2019**, pas d'Apple, et ne doit pas servir de budget (§ 10.1).
+- **Quelle application utilise `SFSafariViewController` et laquelle utilise `WKWebView`** — non établi pour TikTok, Instagram, WhatsApp et Snapchat. Aucun éditeur ne le documente. Seul le critère de discrimination est sourcé (§ 13.1).
+- **L'hypothèse « WebView système » sur Android reste non validée.** Toute la partie A en dépend. Le protocole de vérification par User-Agent (jetons `wv` et `Version/4.0`) est sourcé sur le code Chromium, mais n'a pas été exécuté (§ 13.3).
+- **Les plafonds de mémoire texture et le comportement sur appareil bas de gamme** — aucune source primaire côté Apple ni WebKit. `WEBGL_debug_renderer_info` est restreint sur iOS et `deviceMemory` n'existe pas (§ 11.3).
+- **La valeur réelle du `memlimit_active`** par appareil et par version d'iOS n'est pas publiée ; 840 Mo n'est que le repli codé en dur dans WebKit (§ 10.4).
+
+### Affirmations déduites du code, à confirmer sur appareil
+
+- **Garder une vidéo « visible » à 1×1 px échappe-t-il vraiment à `MakeResourcesPurgeable` ?** Déduit de `preferredBufferingPolicy()`, non documenté par Apple (§ 10.2).
+- **Un `<audio>` audible permanent force-t-il la catégorie `Playback` pour tout le Web Audio ?** Déduit de `updateSessionState()`, non recommandé par Apple (§ 9.3).
+- **Safari lui-même surcharge-t-il `MediaDataLoadsAutomatically` ?** Le YAML donne le défaut de l'API embarquée ; le comportement de Safari n'en découle pas (§ 14.1).
+- **Le décodage matériel AV1 sur certains Android** pourrait fonctionner sans que chromestatus le reflète — non vérifié, à ne pas supposer (§ 12.3).
+- **Le décodage matériel VP9 sur iOS** n'est garanti nulle part (§ 12.4).
+
+### Sources anciennes, signalées comme telles
+
+- `[OFF]` Le billet WebKit sur les règles d'autoplay date du **25/07/2016** ; c'est la seule page normative d'Apple sur le sujet. Le code la complète.
+- `[OFF]` La page d'Apple « iOS-Specific Considerations » date du **13/12/2012** et est **périmée** sur deux points (une seule vidéo à la fois, préchargement désactivé sur cellulaire). Citée uniquement pour qu'on cesse d'y croire (§ 8.1).
+- `[OFF]` La page normative de Chrome sur l'autoplay affiche une **dernière mise à jour au 13/09/2017** (§ 14.3).
+- `[OFF]` WebKit bug 193449, sur le pool de vidéos, est **ouvert depuis 2019**, sévérité *Critical*, dernière modification **31/01/2022**. WebKit ne gère toujours pas d'éviction pour vous.
+
+### Reliquats du volet Android
+
+- **Milestone exact de ship WebGPU dans WebView** — déduit des sous-features chromestatus (≥ M127), l'« Intent to Ship » n'a pas été consulté.
+- **`display-mode: standalone` dans WebView** — inférence, pas de source primaire.
+- **`S.browser_fallback_url` dans WebView** — probablement non parsé, non confirmé.
 - **Décalage de version Chrome/WebView sur le parc** — non chiffré par Google.
-- `kDisableSharedWorkers` est toujours présent dans `aw_main_delegate.cc` alors que chromestatus liste « SharedWorker on Android » avec `webview: 148`. Contradiction non résolue.
-
-## Reste à faire sur ce ticket
-
-- **Tout le volet iOS Safari** : autoplay 2026, `playsinline`, persistance du déblocage par geste, AudioContext et mode silencieux, **nombre de décodeurs vidéo simultanés**, plafonds mémoire avant éviction d'onglet, WebGL/WebGPU sur iOS.
-- **Codecs et conteneurs** : HEVC vs H.264 vs AV1 sur mobile en 2026, impact sur le poids des maîtres.
-- **Cartographie par application** : quel moteur exact pour TikTok, Instagram, WhatsApp, Snapchat, et sur iOS (`SFSafariViewController` vs `WKWebView`).
-- **Réseau** : 4G médiocre, `Save-Data`, coût en données d'un préchargement agressif.
+- `kDisableSharedWorkers` est toujours présent dans `aw_main_delegate.cc` alors que chromestatus liste « SharedWorker on Android » avec `webview: 148`. **Contradiction non résolue.**
