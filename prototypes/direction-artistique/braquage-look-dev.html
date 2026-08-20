@@ -1,0 +1,606 @@
+<title>Trois Braquages</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--
+  PROTOTYPE — jetable. Ticket #6 « La direction artistique du braquage ».
+  Trois directions artistiques du jeu d'infiltration, commutables via ?variant=A|B|C,
+  sur une scène de couloir et sur le pic émotionnel (l'oeuvre personnelle).
+  Ne pas promouvoir ce code en production : aucune abstraction, aucun test.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --ground:#0B0A0C; --panel:#141219; --panel-2:#1B1823; --line:#2C2734;
+    --ink:#EDE9F2; --ink-2:#A79FB8; --ink-3:#6E6782;
+    --accent:#4FD6C0; --accent-dim:#2A6F65; --warm:#E8B76A;
+    --display:'Barlow Condensed','Oswald',system-ui,sans-serif;
+    --body:'IBM Plex Sans',system-ui,-apple-system,sans-serif;
+    --mono:'IBM Plex Mono',ui-monospace,monospace;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--ground); color:var(--ink);
+    font-family:var(--body); font-size:15px; line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  .bench{
+    min-height:100vh; display:grid; gap:28px;
+    grid-template-columns:minmax(0,1fr) 372px;
+    padding:26px 26px 156px;
+  }
+  @media (max-width:980px){ .bench{grid-template-columns:minmax(0,1fr); padding:18px 16px 190px} }
+
+  /* ---------- stage ---------- */
+  .stage{display:flex; flex-direction:column; align-items:center; gap:16px; min-width:0}
+  .eyebrow{
+    font-family:var(--display); text-transform:uppercase; letter-spacing:.14em;
+    font-size:13px; font-weight:600; color:var(--ink-3);
+  }
+  .frame{
+    position:relative; border-radius:22px; overflow:hidden; max-width:100%;
+    border:1px solid var(--line);
+    box-shadow:0 40px 90px -30px #000, 0 0 0 8px #0F0E12;
+    background:#000;
+  }
+  .frame.portrait{ height:min(72vh,880px); aspect-ratio:9/16 }
+  .frame.paysage{ width:min(100%,1080px); aspect-ratio:16/9; height:auto }
+  .frame svg{display:block; width:100%; height:100%}
+  .caption{
+    font-family:var(--mono); font-size:11.5px; color:var(--ink-3);
+    letter-spacing:.02em; text-align:center; max-width:60ch;
+  }
+
+  /* ---------- notes ---------- */
+  .notes{display:flex; flex-direction:column; gap:14px; min-width:0}
+  .card{
+    background:var(--panel); border:1px solid var(--line);
+    border-radius:16px; padding:20px 22px;
+  }
+  .card h2{
+    font-family:var(--display); font-weight:700; font-size:27px; line-height:1.1;
+    margin:0 0 2px; text-wrap:balance; letter-spacing:.005em;
+  }
+  .vkey{
+    font-family:var(--mono); font-size:11px; color:var(--accent);
+    letter-spacing:.16em; text-transform:uppercase; display:block; margin-bottom:8px;
+  }
+  .thesis{margin:8px 0 0; color:var(--ink-2); font-size:14.5px}
+  .card h3{
+    font-family:var(--display); text-transform:uppercase; letter-spacing:.13em;
+    font-size:12.5px; font-weight:600; color:var(--ink-3); margin:0 0 10px;
+  }
+  .tradeoffs{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:11px}
+  .tradeoffs li{display:grid; grid-template-columns:22px minmax(0,1fr); gap:10px; font-size:14px; color:var(--ink-2)}
+  .sign{font-family:var(--mono); font-weight:600; font-size:13px; line-height:1.5}
+  .sign.plus{color:var(--accent)} .sign.minus{color:var(--warm)}
+  .swatches{display:flex; gap:0; border-radius:9px; overflow:hidden; border:1px solid var(--line)}
+  .swatches span{flex:1; height:34px}
+  .decides{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
+  .decides li{font-size:13.5px;color:var(--ink-2);padding-left:14px;position:relative}
+  .decides li::before{content:'';position:absolute;left:0;top:.62em;width:5px;height:5px;border-radius:50%;background:var(--accent-dim)}
+
+  /* ---------- switcher (deliberately not part of the design under review) ---------- */
+  .bar{
+    position:fixed; left:50%; bottom:18px; transform:translateX(-50%);
+    display:flex; flex-direction:column; gap:8px; align-items:center;
+    z-index:50; max-width:calc(100% - 24px);
+  }
+  .row{
+    display:flex; align-items:center; gap:6px; flex-wrap:wrap; justify-content:center;
+    background:#F3F0F7; color:#141219; border-radius:999px; padding:6px;
+    box-shadow:0 18px 40px -12px rgba(0,0,0,.75);
+  }
+  .row.sub{background:#1F1B29; color:var(--ink); border:1px solid var(--line)}
+  button{
+    font:inherit; font-family:var(--display); text-transform:uppercase; letter-spacing:.1em;
+    font-size:13px; font-weight:600; border:0; cursor:pointer; color:inherit;
+    background:transparent; border-radius:999px; padding:9px 14px; min-height:40px;
+    transition:background .15s, color .15s;
+  }
+  button:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+  .arrow{min-width:44px; padding:9px 12px; font-size:16px; line-height:1}
+  .arrow:hover{background:rgba(20,18,25,.1)}
+  .row.sub button:hover{background:#2C2739}
+  .label{
+    font-family:var(--display); font-weight:700; font-size:15px; letter-spacing:.06em;
+    text-transform:uppercase; padding:0 12px; min-width:210px; text-align:center;
+  }
+  button[aria-pressed="true"]{background:var(--accent); color:#0B0A0C}
+  .hint{font-family:var(--mono); font-size:10.5px; color:var(--ink-3); letter-spacing:.04em}
+  @media (prefers-reduced-motion:reduce){ *{animation:none !important; transition:none !important} }
+</style>
+
+<div class="bench">
+  <section class="stage">
+    <p class="eyebrow" id="stageLabel">Couloir de la galerie</p>
+    <div class="frame portrait" id="frame"></div>
+    <p class="caption" id="caption"></p>
+  </section>
+  <aside class="notes" id="notes"></aside>
+</div>
+
+<nav class="bar" aria-label="Sélecteur de prototype">
+  <div class="row">
+    <button class="arrow" id="prev" aria-label="Variante précédente">&#8592;</button>
+    <span class="label" id="vlabel">A — Le musée éclairé</span>
+    <button class="arrow" id="next" aria-label="Variante suivante">&#8594;</button>
+  </div>
+  <div class="row sub" id="toggles">
+    <button data-scene="couloir">Couloir</button>
+    <button data-scene="oeuvre">L'oeuvre</button>
+    <span class="hint">|</span>
+    <button data-orient="portrait">9:16</button>
+    <button data-orient="paysage">16:9</button>
+    <span class="hint">|</span>
+    <button data-flag="perso">Personnalisé</button>
+    <button data-flag="pouce">Zones du pouce</button>
+  </div>
+</nav>
+
+<script>
+/* ============================ état ============================ */
+const params = new URLSearchParams(location.search);
+const state = {
+  variant: (params.get('variant') || 'A').toUpperCase(),
+  scene: params.get('scene') || 'couloir',
+  orient: params.get('orient') || 'portrait',
+  perso: params.get('perso') !== '0',
+  pouce: params.get('pouce') === '1'
+};
+if (!['A','B','C'].includes(state.variant)) state.variant = 'A';
+
+/* ============================ variantes ============================ */
+const VARIANTS = {
+  A: {
+    key:'A', name:'Le musée éclairé',
+    thesis:"La référence, assumée et dégraissée. Musée nocturne chaud, cônes de caméras turquoise, arme tenue. Le HUD reste, mais tombe de sept éléments à trois : objectif, alerte, action.",
+    decides:[
+      "Palette : pierre chaude sur plafond noir, la lumière vient des vitrines.",
+      "L'affordance est le viseur — on vise, on tire, on avance.",
+      "Vie et munitions supprimées : on ne meurt pas dans un cadeau.",
+      "Minimap supprimée : le couloir se lit tout seul."
+    ],
+    tradeoffs:[
+      ['plus',"Lisible sans tutoriel pour qui a déjà joué à un FPS."],
+      ['plus',"Le musée est vu — la géométrie payée est la géométrie montrée."],
+      ['minus',"L'arme est dans chaque plan. Le pic filmable contient un pistolet."],
+      ['minus',"Trois éléments de HUD restent trois choses à comprendre avant de ressentir."]
+    ],
+    pal:{
+      sky:'#0E0B0A', ceil:'#17120E', wallL:'#7A6857', wallR:'#5B4C40', wallFar:'#4A3E35',
+      floor:'#3B322B', floorLo:'#2A231E', trim:'#8E7A64', pill:'#665545',
+      glow:'#E8B76A', cone:'#4FD6C0', gold:'#C9A227', door:'#F0C98A',
+      fog:'#1A120C', vitrine:'#7FE3D2'
+    },
+    weapon:true, reticle:true, hud:'chrome', torch:false, coneOpacity:.30, fogOpacity:.62
+  },
+  B: {
+    key:'B', name:'La galerie sans arme',
+    thesis:"On retire l'arme et le viseur. Il ne reste que s'approcher. Les murs sont clairs, la salle est une vraie galerie ; la tension ne vient plus du canon mais des cônes de surveillance. Le HUD tombe à zéro élément permanent.",
+    decides:[
+      "Palette : chaux claire et lumière froide — une galerie, pas une planque.",
+      "L'affordance est la proximité : ce qui s'approche respire de lumière.",
+      "Aucun élément de HUD permanent. L'objectif s'écrit puis s'efface.",
+      "Un seul bouton, contextuel, apparaît quand une oeuvre est à portée."
+    ],
+    tradeoffs:[
+      ['plus',"Le pic filmable ne contient aucune arme — le canal TikTok reste ouvert."],
+      ['plus',"Zéro chose à comprendre. Un non-joueur avance et découvre."],
+      ['minus',"Sans arme ni échec, il faut que la surveillance produise seule la tension."],
+      ['minus',"Contredit l'imagerie « agent secret » de la cinématique d'ouverture."]
+    ],
+    pal:{
+      sky:'#12151A', ceil:'#1C2027', wallL:'#CFC7B8', wallR:'#ADA495', wallFar:'#9A9182',
+      floor:'#6E6659', floorLo:'#565044', trim:'#E6DFD1', pill:'#B9B0A0',
+      glow:'#FFF1D6', cone:'#4FD6C0', gold:'#8A7A5E', door:'#DCEEF2',
+      fog:'#20242B', vitrine:'#7FE3D2'
+    },
+    weapon:false, reticle:false, hud:'minimal', torch:false, coneOpacity:.34, fogOpacity:.42
+  },
+  C: {
+    key:'C', name:'Le clair-obscur',
+    thesis:"Le musée est noir. Le joueur porte la lumière : le monde n'existe que là où le faisceau tombe. Le premium ne vient plus de la géométrie mais du contraste — et ce qui n'est pas éclairé n'est pas payé. Le HUD est diégétique, écrit sur le poignet.",
+    decides:[
+      "Palette : noir bleuté, un seul faisceau chaud, cônes turquoise.",
+      "L'affordance est le faisceau — on éclaire pour comprendre.",
+      "Le budget de détail s'effondre : l'obscurité est gratuite à afficher.",
+      "L'alerte n'est pas une jauge : le faisceau vire au rouge."
+    ],
+    tradeoffs:[
+      ['plus',"Le plan le plus filmable des trois : la photo sort du noir."],
+      ['plus',"Le moins cher à faire tourner — presque rien n'est éclairé."],
+      ['minus',"Le musée qu'on a payé ne se voit jamais entièrement."],
+      ['minus',"Une galerie noire sur un écran de téléphone en plein soleil est illisible."]
+    ],
+    pal:{
+      sky:'#050509', ceil:'#0A0910', wallL:'#312B40', wallR:'#231E30', floorFarX:'',wallFar:'#181425',
+      floor:'#1B1724', floorLo:'#110E18', trim:'#4A4162', pill:'#241F32',
+      glow:'#FFD9A0', cone:'#35C9B4', gold:'#4A3F2C', door:'#2A4A52',
+      fog:'#040406', vitrine:'#5BD8C6'
+    },
+    weapon:false, reticle:false, hud:'diegetic', torch:true, coneOpacity:.32, fogOpacity:.55
+  }
+};
+const ORDER = ['A','B','C'];
+
+/* ============================ perspective ============================ */
+/* espace salle : x -1 (mur gauche) .. 1 (mur droit), y 0 (sol) .. 1 (plafond), z 0 (près) .. 1 (loin) */
+function makeProj(W,H){
+  const VPx = W*0.5, VPy = H*0.455, halfW = W*0.62, roomH = H*0.94;
+  return (x,y,z) => {
+    const s = 1/(1+z*4.2);
+    return [VPx + x*halfW*s, VPy + (0.5-y)*roomH*s];
+  };
+}
+const f1 = n => Math.round(n*10)/10;
+
+/* ============================ scène : couloir ============================ */
+function sceneCorridor(V, W, H){
+  const p = makeProj(W,H), P = pts => pts.map(q => { const a=p(q[0],q[1],q[2]); return f1(a[0])+','+f1(a[1]); }).join(' ');
+  const c = V.pal, o = [];
+  const poly = (pts, fill, extra='') => o.push('<polygon points="'+P(pts)+'" fill="'+fill+'" '+extra+'/>');
+
+  o.push('<rect width="'+W+'" height="'+H+'" fill="'+c.sky+'"/>');
+
+  /* coquille de la salle */
+  poly([[-1,0,0.999],[1,0,0.999],[1,1,0.999],[-1,1,0.999]], c.wallFar);
+  poly([[-1,1,0],[1,1,0],[1,1,1],[-1,1,1]], c.ceil);
+  poly([[-1,0,0],[1,0,0],[1,0,1],[-1,0,1]], c.floor);
+  /* facettes low-poly du sol */
+  poly([[-1,0,0],[0.1,0,0.55],[-1,0,0.62]], c.floorLo, 'opacity="0.55"');
+  poly([[1,0,0.1],[1,0,0.7],[-0.05,0,0.5]], c.floorLo, 'opacity="0.35"');
+  poly([[-1,0,0],[-1,1,0],[-1,1,1],[-1,0,1]], c.wallL);
+  poly([[1,0,0],[1,1,0],[1,1,1],[1,0,1]], c.wallR);
+
+  /* corniche + plinthe */
+  poly([[-0.99,0.86,0],[-0.99,0.90,0],[-0.99,0.90,1],[-0.99,0.86,1]], c.trim, 'opacity="0.35"');
+  poly([[0.99,0.86,0],[0.99,0.90,0],[0.99,0.90,1],[0.99,0.86,1]], c.trim, 'opacity="0.22"');
+  poly([[-0.99,0,0],[-0.99,0.07,0],[-0.99,0.07,1],[-0.99,0,1]], c.floorLo, 'opacity="0.7"');
+  poly([[0.99,0,0],[0.99,0.07,0],[0.99,0.07,1],[0.99,0,1]], c.floorLo, 'opacity="0.7"');
+
+  /* pilastres */
+  [0.28,0.52,0.72].forEach(z=>{
+    poly([[-0.985,0,z],[-0.985,0.92,z],[-0.985,0.92,z+0.045],[-0.985,0,z+0.045]], c.pill, 'opacity="0.85"');
+    poly([[0.985,0,z],[0.985,0.92,z],[0.985,0.92,z+0.045],[0.985,0,z+0.045]], c.pill, 'opacity="0.7"');
+  });
+
+  /* arche + porte du fond */
+  poly([[-0.30,0,0.99],[0.30,0,0.99],[0.30,0.60,0.99],[-0.30,0.60,0.99]], '#000', 'opacity="0.85"');
+  poly([[-0.22,0,0.985],[0.22,0,0.985],[0.22,0.52,0.985],[-0.22,0.52,0.985]], c.door, 'opacity="'+(V.torch?0.26:0.5)+'"');
+
+  /* vitrines au sol — décor, non substituables */
+  const vitrine = (side, z1, z2, near, far, h) => {
+    const xa = side*near, xb = side*far;
+    poly([[xa,0,z1],[xb,0,z1],[xb,h,z1],[xa,h,z1]], c.floorLo);
+    poly([[xa,h,z1],[xb,h,z1],[xb,h,z2],[xa,h,z2]], c.pill, 'opacity="0.9"');
+    poly([[xa,0,z1],[xa,h,z1],[xa,h,z2],[xa,0,z2]], c.floorLo, 'opacity="0.75"');
+    /* cloche de verre + objet */
+    poly([[xa+side*0.06,h,z1+0.02],[xb-side*0.06,h,z1+0.02],[xb-side*0.06,h+0.16,z1+0.02],[xa+side*0.06,h+0.16,z1+0.02]], c.vitrine, 'opacity="0.13"');
+    poly([[xa+side*0.10,h,z1+0.05],[xb-side*0.10,h,z1+0.05],[(xa+xb)/2,h+0.13,z1+0.05]], c.vitrine, 'opacity="'+(V.torch?0.55:0.42)+'"');
+  };
+  vitrine(-1, 0.06, 0.24, 0.98, 0.62, 0.30);
+  vitrine( 1, 0.14, 0.34, 0.98, 0.66, 0.28);
+  vitrine( 1, 0.52, 0.66, 0.97, 0.74, 0.26);
+
+  /* cadres muraux — la famille substituable */
+  const art = (side, z1, z2, y1, y2, kind) => {
+    const x = side*0.975, media = kind !== 'defaut';
+    const q = (a,b,cc,d)=>[[x,a,b],[x,a,cc],[x,d,cc],[x,d,b]];
+    /* halo de proximité : c'est lui qui dit « approche-toi » */
+    if (media){
+      poly([[x,y1-0.14,z1-0.06],[x,y1-0.14,z2+0.06],[x,y2+0.12,z2+0.06],[x,y2+0.12,z1-0.06]],
+        c.glow, 'opacity="'+(V.torch?0.30:(V.key==='B'?0.28:0.22))+'"');
+    }
+    poly(q(y1,z1,z2,y2), c.gold, 'opacity="'+(V.torch?0.6:0.95)+'"');           /* cadre */
+    const iz1=z1+0.016, iz2=z2-0.016, iy1=y1+0.035, iy2=y2-0.035;
+    poly(q(iy1,iz1,iz2,iy2), '#0B0A0C', 'opacity="0.9"');                        /* toile */
+    const mid=(iy1+iy2)/2, mz=(iz1+iz2)/2;
+    if (kind==='defaut'){
+      poly([[x,iy1,iz1],[x,iy1,iz2],[x,mid+0.04,mz]], '#6E5A7A', 'opacity="'+(V.torch?0.35:0.8)+'"');
+      poly([[x,iy2,iz1],[x,iy2,iz2],[x,mid-0.02,mz]], '#3E5A6E', 'opacity="'+(V.torch?0.3:0.7)+'"');
+    }
+    if (kind==='photo' && state.perso){
+      poly(q(iy1,iz1,iz2,iy2), c.glow, 'opacity="'+(V.torch?0.75:0.62)+'"');
+      poly([[x,iy1,iz1+0.01],[x,iy1,mz],[x,mid+0.02,mz],[x,mid+0.02,iz1+0.01]], '#2B2027', 'opacity="0.8"');
+      poly([[x,iy1,mz],[x,iy1,iz2-0.01],[x,mid-0.01,iz2-0.01],[x,mid-0.01,mz]], '#2B2027', 'opacity="0.8"');
+    }
+    if (kind==='photo' && !state.perso){
+      poly([[x,iy1,iz1],[x,iy1,iz2],[x,mid+0.06,mz]], '#7A6248', 'opacity="'+(V.torch?0.35:0.85)+'"');
+      poly([[x,mid-0.05,iz1],[x,mid+0.02,iz2],[x,iy2,mz]], '#4A5C48', 'opacity="'+(V.torch?0.3:0.7)+'"');
+    }
+    if (kind==='texte'){
+      const on = state.perso;
+      [0.72,0.52,0.32].forEach((t,i)=>{
+        const yy = iy1 + (iy2-iy1)*t;
+        poly([[x,yy,iz1+0.012],[x,yy,iz2-0.012-(i*0.012)],[x,yy+0.022,iz2-0.012-(i*0.012)],[x,yy+0.022,iz1+0.012]],
+          on ? c.glow : '#8E8296', 'opacity="'+(on?0.85:0.45)+'"');
+      });
+    }
+    if (kind==='audio'){
+      const on = state.perso, n=7;
+      for(let i=0;i<n;i++){
+        const zz = iz1+0.012 + (iz2-iz1-0.024)*(i/n);
+        const hgt = 0.05 + 0.10*Math.abs(Math.sin(i*1.7));
+        poly([[x,mid-hgt,zz],[x,mid-hgt,zz+0.010],[x,mid+hgt,zz+0.010],[x,mid+hgt,zz]],
+          on ? c.cone : '#8E8296', 'opacity="'+(on?0.9:0.4)+'"');
+      }
+    }
+    /* cartel */
+    poly([[x,y1-0.10,z1+0.02],[x,y1-0.10,z1+0.07],[x,y1-0.055,z1+0.07],[x,y1-0.055,z1+0.02]], c.trim, 'opacity="0.5"');
+    /* rail lumineux */
+    if (media || !V.torch){
+      poly([[x,0.88,z1],[x,0.88,z2],[x,y2+0.02,z2],[x,y2+0.02,z1]], c.glow, 'opacity="'+(V.torch?0.10:0.16)+'"');
+    }
+  };
+  art(-1, 0.10, 0.30, 0.34, 0.72, 'photo');
+  art(-1, 0.40, 0.54, 0.38, 0.70, 'texte');
+  art(-1, 0.62, 0.72, 0.40, 0.68, 'defaut');
+  art( 1, 0.08, 0.26, 0.36, 0.72, 'defaut');
+  art( 1, 0.38, 0.52, 0.38, 0.70, 'audio');
+  art( 1, 0.68, 0.78, 0.42, 0.66, 'defaut');
+
+  /* caméras + cônes de vision : la furtivité lisible sans tutoriel */
+  const cam = (side, z, spread) => {
+    const x = side*0.94;
+    poly([[x,0.84,z],[x,0.84,z+0.05],[x,0.76,z+0.05],[x,0.76,z]], '#0E0D11');
+    poly([[x,0.80,z+0.02],[-side*0.55,0,z+spread],[-side*0.10,0,z+spread*0.7]],
+      c.cone, 'opacity="'+V.coneOpacity+'"');
+    poly([[x,0.80,z+0.02],[-side*0.30,0,z+spread*0.8],[-side*0.05,0,z+spread*0.62]],
+      c.cone, 'opacity="'+(V.coneOpacity*0.6)+'"');
+  };
+  cam(-1, 0.34, 0.30);
+  cam( 1, 0.60, 0.26);
+
+  /* brume de profondeur + vignette */
+  o.push('<rect width="'+W+'" height="'+H+'" fill="url(#fog)"/>');
+  o.push('<rect width="'+W+'" height="'+H+'" fill="url(#vig)"/>');
+
+  /* faisceau du joueur (variante C) */
+  if (V.torch){
+    o.push('<rect width="'+W+'" height="'+H+'" fill="url(#torch)" style="mix-blend-mode:screen"/>');
+    o.push('<rect width="'+W+'" height="'+H+'" fill="url(#dark)"/>');
+  }
+  return o.join('');
+}
+
+/* ============================ scène : l'oeuvre personnelle ============================ */
+function sceneArtwork(V, W, H){
+  const c = V.pal, o = [];
+  const R = (x,y,w,h,fill,extra='') => o.push('<rect x="'+f1(x)+'" y="'+f1(y)+'" width="'+f1(w)+'" height="'+f1(h)+'" fill="'+fill+'" '+extra+'/>');
+  const PG = (pts,fill,extra='') => o.push('<polygon points="'+pts.map(q=>f1(q[0])+','+f1(q[1])).join(' ')+'" fill="'+fill+'" '+extra+'/>');
+
+  o.push('<rect width="'+W+'" height="'+H+'" fill="'+c.wallR+'"/>');
+  R(0,0,W,H*0.16,c.ceil);                                   /* plafond */
+  PG([[0,H*0.78],[W,H*0.78],[W,H],[0,H]], c.floor);          /* sol */
+  PG([[0,H*0.78],[W,H*0.78],[W*0.82,H*0.86],[W*0.18,H*0.86]], c.floorLo, 'opacity="0.6"');
+  R(0,H*0.16,W,H*0.62,c.wallL);                              /* mur porteur, plus clair */
+
+  /* voisines en perspective : la galerie tient debout autour */
+  PG([[W*-0.02,H*0.30],[W*0.13,H*0.34],[W*0.13,H*0.63],[W*-0.02,H*0.69]], c.gold, 'opacity="0.8"');
+  PG([[W*0.005,H*0.325],[W*0.115,H*0.357],[W*0.115,H*0.612],[W*0.005,H*0.667]], '#5C4E6B', 'opacity="0.75"');
+  PG([[W*1.02,H*0.30],[W*0.87,H*0.34],[W*0.87,H*0.63],[W*1.02,H*0.69]], c.gold, 'opacity="0.8"');
+  PG([[W*0.995,H*0.325],[W*0.885,H*0.357],[W*0.885,H*0.612],[W*0.995,H*0.667]], '#3E5A6E', 'opacity="0.7"');
+
+  /* faisceau du plafond sur l'oeuvre */
+  PG([[W*0.44,H*0.16],[W*0.56,H*0.16],[W*0.80,H*0.80],[W*0.20,H*0.80]], c.glow,
+     'opacity="'+(V.torch?0.13:(V.key==='B'?0.16:0.11))+'"');
+
+  /* le cadre central */
+  const fx=W*0.20, fy=H*0.29, fw=W*0.60, fh=H*0.40;
+  R(fx-W*0.012, fy-H*0.008, fw+W*0.024, fh+H*0.016, c.gold, 'opacity="'+(V.torch?0.75:1)+'"');
+  R(fx, fy, fw, fh, '#0B0A0C');
+
+  if (state.perso){
+    /* la photo de l'offrant, traitée comme une pièce du musée */
+    R(fx, fy, fw, fh, c.glow, 'opacity="'+(V.torch?0.55:0.45)+'"');
+    PG([[fx,fy+fh],[fx+fw*0.5,fy+fh],[fx+fw*0.5,fy+fh*0.34],[fx+fw*0.36,fy+fh*0.18],[fx+fw*0.16,fy+fh*0.34]], '#2A1F26', 'opacity="0.85"');
+    PG([[fx+fw*0.5,fy+fh],[fx+fw,fy+fh],[fx+fw*0.9,fy+fh*0.40],[fx+fw*0.68,fy+fh*0.22],[fx+fw*0.5,fy+fh*0.40]], '#241B22', 'opacity="0.85"');
+    o.push('<circle cx="'+f1(fx+fw*0.33)+'" cy="'+f1(fy+fh*0.30)+'" r="'+f1(fw*0.075)+'" fill="#2A1F26" opacity="0.85"/>');
+    o.push('<circle cx="'+f1(fx+fw*0.65)+'" cy="'+f1(fy+fh*0.33)+'" r="'+f1(fw*0.072)+'" fill="#241B22" opacity="0.85"/>');
+  } else {
+    /* contenu par défaut — ADR-0003 : la galerie doit être crédible sans une seule photo */
+    PG([[fx,fy+fh],[fx+fw,fy+fh],[fx+fw,fy+fh*0.55],[fx+fw*0.55,fy+fh*0.18],[fx,fy+fh*0.62]], '#7A6248', 'opacity="'+(V.torch?0.5:0.9)+'"');
+    PG([[fx,fy+fh],[fx+fw*0.62,fy+fh],[fx+fw*0.28,fy+fh*0.42],[fx,fy+fh*0.78]], '#4A5C48', 'opacity="'+(V.torch?0.45:0.85)+'"');
+    o.push('<circle cx="'+f1(fx+fw*0.76)+'" cy="'+f1(fy+fh*0.28)+'" r="'+f1(fw*0.06)+'" fill="#D9C089" opacity="'+(V.torch?0.5:0.9)+'"/>');
+  }
+
+  /* cartel */
+  R(fx, fy+fh+H*0.028, W*0.155, H*0.030, c.trim, 'opacity="0.55"');
+  R(fx+W*0.012, fy+fh+H*0.036, W*0.085, H*0.006, '#0B0A0C', 'opacity="0.45"');
+  R(fx+W*0.012, fy+fh+H*0.047, W*0.055, H*0.005, '#0B0A0C', 'opacity="0.30"');
+
+  /* socle de vitrine au premier plan — les deux familles d'emplacements cohabitent */
+  PG([[0,H*0.92],[W*0.24,H*0.88],[W*0.24,H],[0,H]], c.floorLo);
+  PG([[W*0.03,H*0.885],[W*0.21,H*0.855],[W*0.21,H*0.885],[W*0.03,H*0.915]], c.pill, 'opacity="0.9"');
+
+  o.push('<rect width="'+W+'" height="'+H+'" fill="url(#vig)"/>');
+  if (V.torch){
+    o.push('<rect width="'+W+'" height="'+H+'" fill="url(#torch)" style="mix-blend-mode:screen"/>');
+    o.push('<rect width="'+W+'" height="'+H+'" fill="url(#dark)"/>');
+  }
+  return o.join('');
+}
+
+/* ============================ HUD ============================ */
+function hud(V, W, H){
+  const o = [], c = V.pal;
+  const S = Math.min(W,H);                       /* échelle indépendante de l'orientation */
+  const safeT = H*0.045, safeB = H*0.045, pad = S*0.055;
+  const T = (x,y,txt,size,fill,anchor='start',weight=600,ls='0.14em',fam="Barlow Condensed") =>
+    o.push('<text x="'+f1(x)+'" y="'+f1(y)+'" font-family="'+fam+', sans-serif" font-size="'+f1(size)+'" font-weight="'+weight+'" letter-spacing="'+ls+'" fill="'+fill+'" text-anchor="'+anchor+'">'+txt+'</text>');
+
+  /* --- réticule --- */
+  if (V.reticle){
+    const cx=W/2, cy=H*0.455, r=S*0.075;
+    o.push('<circle cx="'+f1(cx)+'" cy="'+f1(cy)+'" r="'+f1(r)+'" fill="none" stroke="'+c.cone+'" stroke-width="'+f1(S*0.006)+'" opacity="0.9"/>');
+    [[0,-1],[0,1],[-1,0],[1,0]].forEach(d=>{
+      o.push('<line x1="'+f1(cx+d[0]*r*0.45)+'" y1="'+f1(cy+d[1]*r*0.45)+'" x2="'+f1(cx+d[0]*r*0.85)+'" y2="'+f1(cy+d[1]*r*0.85)+'" stroke="'+c.cone+'" stroke-width="'+f1(S*0.006)+'" opacity="0.9"/>');
+    });
+  }
+
+  /* --- arme --- */
+  if (V.weapon){
+    const bx=W*0.55, by=H*0.70, u=S*0.34;
+    const Q=(pts,fill,op='1')=>o.push('<polygon points="'+pts.map(q=>f1(q[0])+','+f1(q[1])).join(' ')+'" fill="'+fill+'" opacity="'+op+'"/>');
+    Q([[bx+u*0.02,by+u*0.02],[bx+u*0.82,by-u*0.16],[bx+u*0.86,by-u*0.01],[bx+u*0.06,by+u*0.18]], '#2A2D36');      /* glissière */
+    Q([[bx+u*0.06,by+u*0.18],[bx+u*0.86,by-u*0.01],[bx+u*0.88,by+u*0.07],[bx+u*0.08,by+u*0.26]], '#171A21');      /* dessous */
+    Q([[bx+u*0.60,by-u*0.13],[bx+u*0.70,by-u*0.15],[bx+u*0.71,by-u*0.04],[bx+u*0.61,by-u*0.02]], c.cone, '0.85'); /* guidon */
+    Q([[bx+u*0.04,by+u*0.20],[bx+u*0.26,by+u*0.15],[bx+u*0.44,by+u*0.86],[bx+u*0.16,by+u*0.94]], '#20232B');      /* crosse */
+    Q([[bx-u*0.16,by+u*0.34],[bx+u*0.30,by+u*0.22],[bx+u*0.52,by+u*1.10],[bx-u*0.06,by+u*1.18]], '#C79571');      /* main */
+    Q([[bx-u*0.16,by+u*0.34],[bx+u*0.08,by+u*0.28],[bx+u*0.14,by+u*0.62],[bx-u*0.12,by+u*0.66]], '#B3805F');      /* pouce */
+    [0.42,0.60,0.78].forEach(t=>{
+      Q([[bx+u*0.10,by+u*t],[bx+u*0.40,by+u*(t-0.06)],[bx+u*0.42,by+u*(t+0.07)],[bx+u*0.12,by+u*(t+0.13)]], '#D9A87F', '0.9');
+    });
+  }
+
+  /* --- chrome (A) : objectif, alerte, action --- */
+  if (V.hud === 'chrome'){
+    T(pad, safeT+S*0.052, 'OBJECTIF', S*0.030, 'rgba(255,255,255,.55)');
+    T(pad, safeT+S*0.100, 'Trouver la toile', S*0.048, '#fff', 'start', 700, '0.02em');
+    T(W-pad, safeT+S*0.052, 'ALERTE', S*0.030, 'rgba(255,255,255,.55)', 'end');
+    for(let i=0;i<3;i++){
+      o.push('<rect x="'+f1(W-pad-S*0.032-(i*S*0.042))+'" y="'+f1(safeT+S*0.072)+'" width="'+f1(S*0.032)+'" height="'+f1(S*0.032)+'" rx="'+f1(S*0.006)+'" fill="'+(i===0?c.cone:'rgba(255,255,255,.18)')+'"/>');
+    }
+    actionButton(o, W-pad-S*0.115, H-safeB-S*0.115, S*0.115, c.cone, 'TIRER', S);
+    stick(o, pad+S*0.115, H-safeB-S*0.115, S*0.115);
+  }
+
+  /* --- minimal (B) : rien de permanent --- */
+  if (V.hud === 'minimal'){
+    T(W/2, safeT+S*0.085, "Approche-toi des oeuvres", S*0.044, 'rgba(255,255,255,.72)', 'middle', 500, '0.03em');
+    o.push('<line x1="'+f1(W/2-S*0.14)+'" y1="'+f1(safeT+S*0.115)+'" x2="'+f1(W/2+S*0.14)+'" y2="'+f1(safeT+S*0.115)+'" stroke="rgba(255,255,255,.22)" stroke-width="1"/>');
+    actionButton(o, W-pad-S*0.115, H-safeB-S*0.115, S*0.115, c.glow, 'VOIR', S, true);
+    stick(o, pad+S*0.115, H-safeB-S*0.115, S*0.115);
+  }
+
+  /* --- diégétique (C) : l'objectif est sur le poignet --- */
+  if (V.hud === 'diegetic'){
+    const wx=W*0.085, wy=H-safeB-S*0.50;
+    o.push('<polygon points="'+[[wx,wy],[wx+S*0.30,wy-S*0.05],[wx+S*0.32,wy+S*0.10],[wx+S*0.02,wy+S*0.16]].map(q=>f1(q[0])+','+f1(q[1])).join(' ')+'" fill="#141118" opacity="0.92"/>');
+    o.push('<polygon points="'+[[wx+S*0.03,wy+S*0.012],[wx+S*0.27,wy-S*0.032],[wx+S*0.285,wy+S*0.070],[wx+S*0.045,wy+S*0.118]].map(q=>f1(q[0])+','+f1(q[1])).join(' ')+'" fill="'+c.cone+'" opacity="0.16"/>');
+    T(wx+S*0.045, wy+S*0.052, 'TROUVER LA TOILE', S*0.026, c.cone, 'start', 600, '0.10em');
+    T(wx+S*0.045, wy+S*0.092, '3 / 6', S*0.030, 'rgba(255,255,255,.55)', 'start', 600, '0.08em', 'IBM Plex Mono');
+    actionButton(o, W-pad-S*0.115, H-safeB-S*0.115, S*0.115, c.glow, 'ÉCLAIRER', S, true);
+    stick(o, pad+S*0.115, H-safeB-S*0.115, S*0.115);
+  }
+
+  /* --- superposition « zones du pouce » --- */
+  if (state.pouce){
+    const ox=W*0.86, oy=H-safeB;
+    o.push('<path d="M '+f1(ox)+' '+f1(oy)+' m -'+f1(S*0.62)+' 0 a '+f1(S*0.62)+' '+f1(S*0.62)+' 0 0 1 '+f1(S*1.24)+' 0 Z" fill="#4FD6C0" opacity="0.10"/>');
+    o.push('<path d="M '+f1(ox)+' '+f1(oy)+' m -'+f1(S*0.62)+' 0 a '+f1(S*0.62)+' '+f1(S*0.62)+' 0 0 1 '+f1(S*1.24)+' 0" fill="none" stroke="#4FD6C0" stroke-width="2" stroke-dasharray="6 6" opacity="0.75"/>');
+    o.push('<rect x="0" y="0" width="'+W+'" height="'+f1(safeT)+'" fill="#E8B76A" opacity="0.16"/>');
+    o.push('<rect x="0" y="'+f1(H-safeB)+'" width="'+W+'" height="'+f1(safeB)+'" fill="#E8B76A" opacity="0.16"/>');
+    T(W*0.04, H-safeB-S*0.62-S*0.022, 'PORTÉE DU POUCE, MAIN DROITE', S*0.024, '#4FD6C0', 'start', 600, '0.12em');
+    T(W*0.04, safeT-S*0.012, 'SAFE AREA iOS', S*0.020, '#E8B76A', 'start', 600, '0.12em');
+  }
+  return o.join('');
+}
+function actionButton(o, cx, cy, r, col, label, S, outline){
+  o.push('<circle cx="'+f1(cx)+'" cy="'+f1(cy)+'" r="'+f1(r)+'" fill="'+(outline?'rgba(0,0,0,.35)':col)+'" stroke="'+col+'" stroke-width="'+f1(S*0.006)+'" opacity="0.92"/>');
+  o.push('<text x="'+f1(cx)+'" y="'+f1(cy+S*0.011)+'" font-family="Barlow Condensed, sans-serif" font-size="'+f1(S*0.030)+'" font-weight="700" letter-spacing="0.10em" text-anchor="middle" fill="'+(outline?col:'#0B0A0C')+'">'+label+'</text>');
+}
+function stick(o, cx, cy, r){
+  o.push('<circle cx="'+f1(cx)+'" cy="'+f1(cy)+'" r="'+f1(r)+'" fill="none" stroke="rgba(255,255,255,.30)" stroke-width="2"/>');
+  o.push('<circle cx="'+f1(cx)+'" cy="'+f1(cy)+'" r="'+f1(r*0.42)+'" fill="rgba(255,255,255,.22)"/>');
+}
+
+/* ============================ rendu ============================ */
+function render(){
+  const V = VARIANTS[state.variant];
+  const portrait = state.orient === 'portrait';
+  const W = portrait ? 900 : 1600, H = portrait ? 1600 : 900;
+  const c = V.pal;
+
+  const defs = ''
+    + '<defs>'
+    + '<radialGradient id="fog" cx="50%" cy="45.5%" r="62%">'
+    +   '<stop offset="0%" stop-color="'+c.fog+'" stop-opacity="'+V.fogOpacity+'"/>'
+    +   '<stop offset="55%" stop-color="'+c.fog+'" stop-opacity="'+(V.fogOpacity*0.30)+'"/>'
+    +   '<stop offset="100%" stop-color="'+c.fog+'" stop-opacity="0"/>'
+    + '</radialGradient>'
+    + '<radialGradient id="vig" cx="50%" cy="48%" r="72%">'
+    +   '<stop offset="55%" stop-color="#000" stop-opacity="0"/>'
+    +   '<stop offset="100%" stop-color="#000" stop-opacity="0.72"/>'
+    + '</radialGradient>'
+    + '<radialGradient id="torch" cx="50%" cy="53%" r="56%">'
+    +   '<stop offset="0%" stop-color="'+c.glow+'" stop-opacity="0.62"/>'
+    +   '<stop offset="45%" stop-color="'+c.glow+'" stop-opacity="0.30"/>'
+    +   '<stop offset="75%" stop-color="'+c.glow+'" stop-opacity="0.09"/>'
+    +   '<stop offset="100%" stop-color="'+c.glow+'" stop-opacity="0"/>'
+    + '</radialGradient>'
+    + '<radialGradient id="dark" cx="50%" cy="53%" r="54%">'
+    +   '<stop offset="0%" stop-color="#000" stop-opacity="0"/>'
+    +   '<stop offset="62%" stop-color="#000" stop-opacity="0.45"/>'
+    +   '<stop offset="100%" stop-color="#000" stop-opacity="0.88"/>'
+    + '</radialGradient>'
+    + '</defs>';
+
+  const body = state.scene === 'couloir' ? sceneCorridor(V,W,H) : sceneArtwork(V,W,H);
+  const frame = document.getElementById('frame');
+  frame.className = 'frame ' + state.orient;
+  frame.innerHTML = '<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Maquette : '+V.name+'">'
+    + defs + body + hud(V,W,H) + '</svg>';
+
+  document.getElementById('vlabel').textContent = V.key + ' — ' + V.name;
+  document.getElementById('stageLabel').textContent =
+    state.scene === 'couloir' ? 'Couloir de la galerie' : "L'oeuvre personnelle — le pic émotionnel";
+  document.getElementById('caption').textContent = state.scene === 'couloir'
+    ? "Cadres muraux = emplacements substituables. Vitrines au sol = décor, jamais remplacé."
+    : (state.perso
+        ? "Un média de l'offrant occupe l'emplacement : cadre, faisceau, cartel. C'est le plan qui part sur TikTok."
+        : "Aucun média fourni. ADR-0003 : le contenu par défaut est l'état normal, pas un repli.");
+
+  document.getElementById('notes').innerHTML = ''
+    + '<div class="card">'
+    +   '<span class="vkey">Variante ' + V.key + '</span>'
+    +   '<h2>' + V.name + '</h2>'
+    +   '<p class="thesis">' + V.thesis + '</p>'
+    + '</div>'
+    + '<div class="card"><h3>Ce qu\'elle tranche</h3><ul class="decides">'
+    +   V.decides.map(d => '<li>' + d + '</li>').join('')
+    + '</ul></div>'
+    + '<div class="card"><h3>Ce qu\'elle coûte</h3><ul class="tradeoffs">'
+    +   V.tradeoffs.map(t => '<li><span class="sign ' + t[0] + '">' + (t[0]==='plus'?'+':'−') + '</span><span>' + t[1] + '</span></li>').join('')
+    + '</ul></div>'
+    + '<div class="card"><h3>Palette</h3><div class="swatches">'
+    +   [c.ceil,c.wallL,c.wallR,c.floor,c.glow,c.cone].map(x => '<span style="background:'+x+'"></span>').join('')
+    + '</div></div>';
+
+  document.querySelectorAll('#toggles button').forEach(b => {
+    const on = (b.dataset.scene && b.dataset.scene === state.scene)
+      || (b.dataset.orient && b.dataset.orient === state.orient)
+      || (b.dataset.flag && state[b.dataset.flag]);
+    b.setAttribute('aria-pressed', on ? 'true' : 'false');
+  });
+
+  const q = new URLSearchParams({
+    variant: state.variant, scene: state.scene, orient: state.orient,
+    perso: state.perso ? '1' : '0', pouce: state.pouce ? '1' : '0'
+  });
+  history.replaceState(null, '', location.pathname + '?' + q);
+}
+
+function cycle(step){
+  const i = ORDER.indexOf(state.variant);
+  state.variant = ORDER[(i + step + ORDER.length) % ORDER.length];
+  render();
+}
+document.getElementById('prev').onclick = () => cycle(-1);
+document.getElementById('next').onclick = () => cycle(1);
+document.getElementById('toggles').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.scene) state.scene = b.dataset.scene;
+  if (b.dataset.orient) state.orient = b.dataset.orient;
+  if (b.dataset.flag) state[b.dataset.flag] = !state[b.dataset.flag];
+  render();
+});
+addEventListener('keydown', e => {
+  const t = e.target;
+  if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+  if (e.key === 'ArrowLeft') cycle(-1);
+  if (e.key === 'ArrowRight') cycle(1);
+});
+render();
+</script>
