@@ -528,3 +528,112 @@ Une AIPD générique ne servira à rien. Celle d'ouvrance doit répondre à quat
 [RGPD art. 30 §5](https://www.cnil.fr/fr/reglement-europeen-protection-donnees/chapitre4) : l'exemption pour les organismes de moins de 250 salariés ne joue pas « **si le traitement** […] **est susceptible de comporter un risque** pour les droits et libertés des personnes concernées, **s'il n'est pas occasionnel** ou s'il porte […] sur les catégories particulières de données ».
 
 Le traitement d'ouvrance est à la fois risqué et **permanent** — deux motifs indépendants de non-exemption. **Le registre est obligatoire malgré la taille de la structure.** Il n'est pas lourd : il tient en un tableau, et le tableau du §6.3 en est déjà la moitié.
+
+---
+
+## 10. Obligations concrètes à porter dans le produit
+
+Liste actionnable. Chaque ligne renvoie à la section qui la justifie.
+
+### 10.1 À afficher dans l'expérience
+
+| # | Obligation | Où | Fondement |
+| --- | --- | --- | --- |
+| 1 | **Mention IA** : « Cette expérience est une fiction. Les images et les sons ont été générés par une intelligence artificielle ; les photos et les voix qui y apparaissent ont été fournies par la personne qui vous offre ce cadeau. » | **Écran d'ouverture du Lien**, avant la première image, lisible sans action | AI Act art. 50 §4 et §5 ; C. pén. art. 226-8 — §3.3, §4.3, §8.4 |
+| 2 | **Information de la Personne représentée** : qui traite, pourquoi, combien de temps, comment faire supprimer, et **que ses données viennent de l'Offrant** | Même écran ou un lien immédiatement accessible depuis lui | RGPD art. 14 — §5.1 |
+| 3 | **Un moyen de demander la suppression sans compte** — une adresse email suffit, à condition qu'elle soit relevée | Depuis l'expérience et depuis le site | RGPD art. 12 §3, art. 17 — §5.3 |
+
+### 10.2 Les cases à cocher du formulaire
+
+Distinctes, jamais pré-cochées, chaque version horodatée et conservée. Libellés complets au **§8.4**.
+
+1. **CGV + politique de confidentialité** — obligatoire.
+2. **Déclaration relative aux tiers** — obligatoire. Nomme la voix autant que l'image, traite le cas du mineur, et **annonce que le cadeau sera désactivé** si une personne représentée demande la suppression.
+3. **Renonciation au droit de rétractation** — obligatoire si la livraison intervient avant 14 jours. Doit contenir **les deux** éléments : demande expresse d'exécution immédiate **et** reconnaissance de la perte du droit.
+4. **Prospection commerciale** — facultative, séparée, et sans effet sur la vente.
+
+**Ce qui doit être journalisé à la validation du formulaire** : identifiant de commande, horodatage, **version exacte du libellé accepté**, et adresse IP. Sans cela, la déclaration ne prouve rien (§2.4).
+
+### 10.3 Durées de conservation, chiffrées
+
+| Donnée | Durée |
+| --- | --- |
+| Médias d'une **commande non payée** | **24 heures** |
+| Médias d'un **Cadeau livré** | **12 mois** après la livraison, puis purge sèche |
+| Lien de Cadeau | **12 mois**, email d'avertissement **30 jours** avant |
+| Données de commande, identité et email de l'Offrant | **5 ans** |
+| Pièces comptables, factures | **10 ans** |
+| Preuve du consentement et de la déclaration | **5 ans** après la fin de vie du Lien |
+| Journal des demandes d'effacement | **5 ans** |
+| Logs techniques | **6 mois** — durée à confirmer |
+
+Détail et raisonnement au **§6.3** et **§6.4**.
+
+### 10.4 Mécanisme de purge des commandes non payées
+
+1. **Ne téléverser les médias dans R2 qu'au clic sur « payer »**, pas à chaque étape du formulaire. Supprime le cas le plus fréquent avant qu'il n'existe (§7.3).
+2. **Webhook Stripe signé** sur `checkout.session.expired` → suppression immédiate du préfixe R2 de la Commande.
+3. **Cron horaire** supprimant toute Commande en état `brouillon` ou `impayée` de plus de **24 heures**. **C'est le cron qui est la garantie**, pas le webhook : l'abandon avant clic n'émet aucun événement.
+4. **Écrire une ligne de journal** par purge : identifiant, horodatage, nombre d'objets supprimés.
+5. **Test d'acceptation obligatoire** : créer une commande, ne pas payer, avancer l'horloge, vérifier qu'un `list` sur le préfixe R2 ne renvoie **rien**. La suppression de la ligne en base sans suppression des objets est le mode d'échec par défaut.
+
+### 10.5 Procédure d'effacement d'un Cadeau déjà livré
+
+Écrite, testée, et tenable en moins d'un mois — mais conçue pour s'exécuter en minutes, parce que l'article 9 du Code civil permet un référé (§3.1).
+
+1. **Réception** de la demande, par email, sans exiger de compte ni de justificatif d'identité disproportionné.
+2. **Coupure immédiate du Lien** — un champ d'état sur le Cadeau, vérifié à chaque requête. **Pas de bucket R2 public, pas d'URL présignée longue** : sinon le cache CDN continue de servir des copies et la coupure est fictive.
+3. **Suppression des objets R2** du préfixe, sans corbeille ; sauvegardes à rotation courte et documentée.
+4. **Conservation de ce qui doit l'être** : facture (10 ans), enregistrement minimal de commande (5 ans), preuve du consentement, **et la trace de l'effacement lui-même**. Jamais les photos, les vocaux ni les messages.
+5. **Réponse à la personne** dans le délai d'un mois (art. 12 §3), en indiquant ce qui a été supprimé et ce qui a été conservé, avec le motif.
+6. **Information de l'Offrant** et **remboursement au prorata** du temps restant — non imposé par le droit, mais recommandé (§6.5), et sans effet économique à 1,39 € de coût marginal.
+
+### 10.6 Documents à produire
+
+| Document | Contenu minimal | Référence |
+| --- | --- | --- |
+| **Mentions légales** | Identité, mention « EI » le cas échéant, RCS, TVA intracom, email, téléphone, **hébergeur Cloudflare avec adresse et téléphone** | §8.1 |
+| **CGV** | Socle consommateur + **les quatre clauses propres à ouvrance** : désactivation sur demande d'un tiers, durée de vie du Lien, garantie de l'Offrant, usages interdits | §8.2 |
+| **Politique de confidentialité** | Articles 13 **et 14**, base légale par traitement, **Stripe déclaré aussi responsable de traitement autonome**, transferts, durées du §6.3, droits, CNIL, **source des données** | §8.3 |
+| **Registre des traitements** | Obligatoire malgré l'effectif — art. 30 §5 | §9.4 |
+| **AIPD** | Art. 35 §7 a) à d), traitant nommément les **quatre risques** du §9.3 | §9 |
+| **Règle écrite de validation humaine** | La liste des refus que l'opérateur applique avant livraison | §8.2 clause 4, §9.3 risque 1 |
+
+### 10.7 Contrats de sous-traitance
+
+- **Cloudflare** — DPA v6.4 incorporé par référence, rien à signer. **Créer le bucket en `jurisdiction=eu` dès l'origine** : la juridiction n'est pas modifiable après création. **Garder le bucket privé.**
+- **Stripe** — DPA en place, rien à signer. **Mais le déclarer comme responsable autonome** dans la politique de confidentialité.
+- **Brevo** — DPA en place, hébergement UE. **C'est le choix à retenir pour l'email** de confirmation de commande, décidé obligatoire au ticket #1.
+- **Resend** — DPA en place mais **aucune résidence UE** et contenu des emails lisible en clair dans un tableau de bord américain. À éviter pour tout email contenant des données personnelles.
+- **Formspree** — **à retirer de la chaîne.** Aucun DPA publié : l'article 28 §3 exige un contrat écrit avec chaque sous-traitant, et il n'y en a pas. Certificat DPF retiré depuis le 26 avril 2022. **Ce n'est pas un arbitrage, c'est un manquement caractérisé.**
+- **fal.ai** — n'intervient qu'à l'**écriture** des expériences maîtres, sur des scènes sans personne réelle. **Aucun média d'Offrant ne doit jamais y transiter** (§6.1). Si cette règle tient, aucun DPA fal n'est nécessaire pour des données personnelles — mais elle doit être **vérifiée en test**, pas seulement écrite.
+
+### 10.8 Règles d'architecture, vérifiables en test
+
+1. **Aucun média téléversé par un Offrant n'atteint jamais un point de terminaison de modèle génératif.** C'est la règle qui désamorce à elle seule les interdictions BytePlus 3.5, Google PUP 1.6 et fal.ai AUP (§6.1).
+2. **Bucket R2 privé, `jurisdiction=eu`, jamais public.** Sans quoi la coupure d'un Lien ne coupe rien et des copies résident hors UE.
+3. **Le champ d'état du Cadeau est vérifié à chaque requête**, pas seulement à l'émission du Lien.
+4. **Le formulaire distingue, pour chaque média, si la personne qui y figure est le Destinataire ou un tiers** — les obligations d'information diffèrent (§5.2). Ce champ n'existe pas aujourd'hui.
+5. **La mention IA figure dans les captures d'écran de validation humaine**, pour pouvoir démontrer qu'elle était là.
+
+### 10.9 Ce qui reste à faire trancher par un professionnel
+
+Rien de ce qui précède ne dispense d'une relecture. Cinq points sont explicitement ouverts :
+
+1. **La qualification du plongement de visage** produit par un modèle à préservation d'identité, s'il devait un jour être utilisé (§1.5).
+2. **La valeur juridique de la déclaration sur l'honneur** comme substitut au consentement du tiers — aucune source primaire ne la valide (§2.4).
+3. **L'information de la Personne représentée quand elle n'est pas le Destinataire** — le risque résiduel le plus élevé (§5.2).
+4. **Contenu numérique ou prestation de service** au sens du droit de la consommation, pour le régime de rétractation (§8.4).
+5. **La doctrine CNIL récente sur l'IA générative**, qui n'a pas pu être atteinte dans cette session (§5.4), et **la jurisprudence de la Cour de cassation** sur l'exploitation commerciale de l'image, à chercher pour chiffrer le risque indemnitaire (§3.5).
+
+Un sixième point, hérité de [`rgpd-conditions-modeles.md`](./rgpd-conditions-modeles.md) et non traité ici : la **restriction d'âge de Google** (SST 20.d), qui interdit l'usage dans un service « likely to be accessed » par des mineurs. Elle concerne l'écriture des expériences maîtres, pas les commandes, mais elle reste à arbitrer.
+
+---
+
+## Récapitulatif : les cinq choses qui changent une décision produit
+
+1. **Le consentement de l'Offrant ne vaut rien** pour la Personne représentée — c'est la définition même du mot à l'article 4(11). La déclaration sur l'honneur reste utile, mais comme preuve de diligence, pas comme base légale.
+2. **Une mention « contenu généré par IA » à l'ouverture du Lien est obligatoire**, et elle est offerte comme cause d'exonération par l'article 226-8 du Code pénal lui-même. Elle coûte un écran et neutralise le risque pénal le plus lourd.
+3. **La purge des commandes non payées est fixée à 24 heures**, adossée au plafond d'expiration d'une session Stripe. Le cron est la garantie, pas le webhook.
+4. **Une photo de visage incrustée n'est pas une donnée biométrique** de l'article 9 — mais l'article 226-8 du Code pénal s'applique de toute façon, parce qu'il parle de « montage », pas d'IA.
+5. **L'invariant économique du produit est aussi sa meilleure protection** : puisque les médias personnels ne sont jamais envoyés à un modèle, les interdictions des trois fournisseurs ne sont pas déclenchées. **Cette propriété doit devenir une règle testée, pas une heureuse coïncidence.**
