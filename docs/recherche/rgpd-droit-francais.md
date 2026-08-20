@@ -195,3 +195,93 @@ Aucun texte français ne consacre un « droit à la voix » sous ce nom. Il se r
 Le brief demandait la jurisprudence de la Cour de cassation sur l'exploitation commerciale de l'image. **Elle n'a pas pu être établie sur source primaire dans cette session** : Judilibre et le moteur de Légifrance sont rendus côté client et ne renvoient rien à une récupération directe, et le budget de recherche web de la session était épuisé. **Aucun numéro de pourvoi n'est cité ici, précisément pour ne pas en inventer un.**
 
 Ce que l'on peut affirmer sans elle, parce que cela vient de sources primaires vérifiées : le fondement textuel (art. 9 C. civ.), l'exigence d'accord écrit et l'exclusion des exceptions en cas de but commercial ([service-public.gouv.fr](https://www.service-public.gouv.fr/particuliers/vosdroits/F32103)), et l'incrimination pénale du montage et du contenu généré algorithmiquement (art. 226-8 C. pén.). **Cela suffit à fonder toutes les obligations produit de la section 10.** La recherche de jurisprudence reste à faire pour chiffrer le risque indemnitaire — c'est une question de montant, pas de principe.
+
+---
+
+## 4. Règlement IA (AI Act) — applicable depuis dix-huit jours, et il vise le produit
+
+Ce volet n'était pas au brief. Il s'impose quand même : **l'article 50 du règlement (UE) 2024/1689 est applicable depuis le 2 août 2026**, soit dix-huit jours avant la rédaction de ce document.
+
+### 4.1 [TEXTE] ouvrance est un « déployeur »
+
+[Règlement (UE) 2024/1689, art. 3, point 4](https://eur-lex.europa.eu/eli/reg/2024/1689/oj) :
+
+> « **«déployeur»**, une personne physique ou morale […] **utilisant sous sa propre autorité un système d'IA** sauf lorsque ce système est utilisé dans le cadre d'une **activité personnelle à caractère non professionnel** »
+
+ouvrance appelle Seedance et Nano Banana Pro sous sa propre autorité, à titre professionnel : c'est un déployeur. Les fournisseurs sont ByteDance/BytePlus et Google ; fal.ai est un intermédiaire.
+
+### 4.2 [TEXTE] Une cinématique ouvrance est un « hypertrucage » au sens du texte
+
+Art. 3, point 60 :
+
+> « **«hypertrucage»**, une image ou un contenu audio ou vidéo **généré ou manipulé par l'IA, présentant une ressemblance avec des personnes** […] existants et **pouvant être perçu à tort par une personne comme authentiques ou véridiques** »
+
+La définition est remplie dès qu'une Personne représentée est reconnaissable dans la sortie.
+
+### 4.3 [TEXTE] L'obligation de l'article 50 §4 — et l'assouplissement « œuvre créative »
+
+Art. 50 §4, premier alinéa, verbatim :
+
+> « Les **déployeurs** d'un système d'IA qui génère ou manipule des images ou des contenus audio ou vidéo **constituant un hypertrucage indiquent que les contenus ont été générés ou manipulés par une IA**. […] **Lorsque le contenu fait partie d'une œuvre ou d'un programme manifestement artistique, créatif, satirique, fictif ou analogue, les obligations de transparence énoncées au présent paragraphe se limitent à la divulgation de l'existence de tels contenus générés ou manipulés d'une manière appropriée qui n'entrave pas l'affichage ou la jouissance de l'œuvre.** »
+
+Art. 50 §5 :
+
+> « Les informations visées aux paragraphes 1 à 4 sont fournies aux personnes physiques concernées **de manière claire et reconnaissable au plus tard au moment de la première interaction ou de la première exposition**. »
+
+> **Lecture pour ouvrance.** Un jeu d'infiltration « braquage du musée » est manifestement une œuvre de fiction : l'assouplissement s'applique, et il n'est **pas** exigé de placarder un bandeau qui gâche l'expérience. Mais l'obligation ne disparaît pas — elle se réduit à une **divulgation de l'existence** du contenu généré, faite **au plus tard à la première exposition**, donc **sur l'écran d'ouverture du Lien**, pas dans un pied de page.
+>
+> C'est exactement la même mention que celle qu'exige l'article 226-8 du Code pénal (§3.3). **Une seule mention, bien placée, satisfait les deux textes.**
+
+### 4.4 [TEXTE] La sanction
+
+Art. 99 §4 g) : la non-conformité aux « obligations de transparence pour les fournisseurs et les déployeurs **conformément à l'article 50** » est passible d'une amende administrative « pouvant aller **jusqu'à 15 000 000 EUR** ou, si l'auteur de l'infraction est une entreprise, **jusqu'à 3 % de son chiffre d'affaires annuel mondial total** […] le montant le plus élevé étant retenu ».
+
+Art. 99 §6 tempère pour les petites structures : « Dans le cas des **PME**, y compris les jeunes pousses, chaque amende […] s'élève au maximum aux pourcentages ou montants visés […] **le chiffre le plus faible étant retenu**. » Pour ouvrance, le plafond pratique est donc 3 % du chiffre d'affaires, pas 15 M€ — mais l'obligation est la même.
+
+### 4.5 [TEXTE] Date d'application
+
+Art. 113 : « Il est applicable à partir du **2 août 2026**. » Le chapitre IV (dont l'article 50) n'est dans aucune des exceptions a), b) ou c). **L'obligation est en vigueur maintenant, avant même la première vente du nouveau jalon.**
+
+---
+
+## 5. Informer la Personne représentée — l'article 14, l'obligation la plus oubliée
+
+### 5.1 [TEXTE] Pourquoi c'est l'article 14 et pas l'article 13
+
+Les données de la Personne représentée ne sont **pas collectées auprès d'elle** : elles viennent de l'Offrant. C'est le champ exact de [l'article 14 du RGPD](https://www.cnil.fr/fr/reglement-europeen-protection-donnees/chapitre3), qui impose de fournir identité du responsable, finalités, catégories de données, destinataires, transferts hors UE, durée de conservation, droits, droit de réclamation auprès de la CNIL, et **la source des données**.
+
+Art. 14 §3 a) : les informations sont fournies « **dans un délai raisonnable après avoir obtenu les données à caractère personnel, mais ne dépassant pas un mois** ».
+
+### 5.2 [ZONE GRISE] L'exception « effort disproportionné » ne sauve pas ouvrance
+
+Art. 14 §5 b) : l'obligation tombe « **si la fourniture de telles informations se révèle impossible ou exigerait des efforts disproportionnés** ».
+
+Tentant. Mais l'argument est faible ici, pour une raison factuelle : dans le scénario le plus fréquent du produit, la Personne représentée **est le Destinataire lui-même** — celui à qui le Lien est transmis. Et l'Offrant, lui, la connaît toujours. Là où l'on peut demander, l'effort n'est pas disproportionné.
+
+> **[ZONE GRISE]** Il faut distinguer deux configurations que le produit confond aujourd'hui :
+> - **Personne représentée = Destinataire.** Elle recevra le Lien. L'information peut lui être donnée **à l'ouverture**, et le retrait de consentement exercé immédiatement. Configuration gérable.
+> - **Personne représentée ≠ Destinataire** (le cadeau met en scène un tiers qui ne verra rien — le couple d'amis, un parent absent). Là, personne n'informe personne. **C'est la configuration réellement problématique** et aucune source primaire ne dit comment s'en sortir autrement qu'en passant par l'Offrant. **À faire trancher.**
+>
+> **Conséquence produit** : le formulaire doit **demander, pour chaque média, si la personne qui y figure est le Destinataire ou un tiers**, parce que les obligations diffèrent. Ce champ n'existe pas aujourd'hui.
+
+### 5.3 [TEXTE] Les droits qu'il faut pouvoir servir, et en combien de temps
+
+| Droit | Article | Ce que ça impose techniquement |
+| --- | --- | --- |
+| **Effacement** | Art. 17 §1 b) « la personne concernée **retire le consentement** […] et il n'existe pas d'autre fondement juridique » ; c) opposition ; d) « les données ont fait l'objet d'un **traitement illicite** » | Supprimer les médias d'une Commande **et** couper le Lien d'un Cadeau livré |
+| **Opposition** | Art. 21 §1 — mais il ne vise que les traitements fondés sur l'art. 6 §1 e) ou f). Sur base consentement, c'est le **retrait du consentement** (art. 7 §3) qui joue, et il est plus fort : il s'exerce **sans motif** | Un moyen de retrait accessible sans compte |
+| **Délai** | Art. 12 §3 — « dans les meilleurs délais et en tout état de cause dans un **délai d'un mois** » | Une adresse de contact réellement relevée, et une procédure écrite |
+
+> **Point de conception majeur.** Parce que la base légale est le consentement (§2.3) et non l'intérêt légitime, la Personne représentée peut retirer son consentement **à tout moment et sans avoir à se justifier**. Un Cadeau livré doit donc pouvoir être **coupé unilatéralement**, sans négociation avec l'Offrant qui l'a payé. C'est un conflit commercial inévitable : **il doit être annoncé dans les CGU, pas découvert le jour où il arrive.**
+
+### 5.4 [CNIL] Ce que la doctrine CNIL apporte — et ce qu'elle n'apporte pas
+
+Trois ressources de la CNIL ont été consultées directement et sont utilisables :
+
+- [« Les durées de conservation des données »](https://www.cnil.fr/fr/les-durees-de-conservation-des-donnees) — le cycle en **trois phases** (base active / archivage intermédiaire / archivage définitif), et le principe : « La définition de la durée de conservation relève de l'analyse de conformité que le responsable de traitement doit mener pour son traitement. » Utilisée en §6.
+- [« Intérêt légitime »](https://www.cnil.fr/fr/les-bases-legales/interet-legitime) — les trois conditions cumulatives et les attentes raisonnables. Utilisée en §2.3.
+- [« Ce qu'il faut savoir sur l'AIPD »](https://www.cnil.fr/fr/ce-quil-faut-savoir-sur-lanalyse-dimpact-relative-la-protection-des-donnees-aipd) et la [liste des traitements pour lesquels une AIPD est requise](https://www.cnil.fr/sites/cnil/files/atoms/files/liste-traitements-aipd-requise.pdf). Utilisées en §9.
+
+> **[ZONE GRISE] — honnêteté sur ce qui n'a pas pu être établi.** Le brief demandait « les recommandations de la CNIL sur l'IA générative » et « les sanctions pertinentes ». Le hub [cnil.fr/fr/intelligence-artificielle](https://www.cnil.fr/fr/intelligence-artificielle) a bien été atteint, mais il ne présente que des actualités (note exploratoire sur l'IA agentique du 20/07/2026, publication CEPD sur l'anonymisation et le moissonnage du 09/07/2026, affiche PIPC-CNIL du 27/05/2026, enquête européenne du 05/05/2026, projet PANAME du 26/02/2026) ; **les pages de fiches pratiques IA et de sanctions n'ont pas répondu** (404 sur les URL essayées), et le budget de recherche web de la session était épuisé, empêchant de retrouver les URL exactes.
+>
+> **Aucune délibération de sanction n'est donc citée ici, et aucun numéro de délibération n'est inventé.** C'est un manque réel de ce document. Il ne change pas les conclusions, qui reposent toutes sur des textes — mais **la relecture par un avocat devra couvrir la doctrine CNIL récente sur l'IA générative**, l'endroit le plus susceptible de contenir une position spécifique sur la génération de visages de tiers.
