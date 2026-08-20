@@ -25,8 +25,12 @@ La déclinaison d'une cinématique maître selon la relation représentée. Le s
 _Avoid_ : version, déclinaison, variante (employé seul)
 
 **Emplacement** :
-Une place, prévue par la mise en scène d'une expérience, où un média de l'offrant apparaît — un mur du musée, un cadre sur une table. C'est une capacité de mise en scène, à ne pas confondre avec le quota.
+Une place, prévue par la mise en scène d'une expérience, où un média de l'offrant peut apparaître — un mur du musée, un cadre sur une table. Un emplacement est toujours occupé : il porte un contenu par défaut, qu'un média de la personnalisation vient remplacer. C'est une capacité de mise en scène, à ne pas confondre avec le quota.
 _Avoid_ : slot, champ, zone
+
+**Contenu par défaut** :
+Ce qu'un emplacement montre quand aucun média ne le remplace — une œuvre du musée, une réplique neutre. Il n'est pas un repli de secours : c'est l'état normal de l'expérience, et la personnalisation est ce qui s'y substitue.
+_Avoid_ : fallback, placeholder, remplissage
 
 **Quota** :
 Le nombre de médias qu'une formule inclut, et le plafond qu'elle autorise contre supplément. C'est une promesse commerciale, portée par la formule et par elle seule.
