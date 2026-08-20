@@ -398,3 +398,133 @@ Trois exigences d'implémentation qui découlent de ce tableau :
 3. **Elle doit supprimer les objets R2, pas seulement la ligne en base.** Un enregistrement effacé qui laisse les fichiers orphelins dans le bucket est le mode d'échec par défaut de ce genre de mécanisme. **À tester explicitement** : créer une commande, ne pas payer, avancer l'horloge, vérifier que `list` sur le préfixe ne renvoie rien.
 
 > **Et une conséquence de conception qui ne coûte rien : ne téléverser les médias qu'au dernier moment.** Si le formulaire n'envoie les fichiers dans R2 qu'au clic sur « payer » plutôt qu'à chaque étape, le cas B — le plus fréquent et le seul non instrumenté — **cesse d'exister**. C'est la minimisation de l'article 5 §1 c) appliquée au tunnel : la meilleure purge est celle qui n'a rien à purger. Cela ne remet pas en cause la décision « formulaire puis paiement », qui porte sur l'**ordre des écrans**, pas sur le moment du téléversement.
+
+---
+
+## 8. Mentions légales, CGV/CGU, politique de confidentialité — et le libellé exact des cases
+
+### 8.1 [ÉTAT] Mentions légales : ce que la loi impose d'afficher
+
+Source : [entreprendre.service-public.gouv.fr, « Mentions obligatoires sur un site internet professionnel »](https://entreprendre.service-public.gouv.fr/vosdroits/F31228), qui vise la **LCEN (loi n° 2004-575), articles 6 et 19**, et le **Code de la consommation**.
+
+À afficher, accessible depuis toutes les pages :
+
+- **Identité** : nom, prénom et adresse de l'exploitant — et la mention « **entrepreneur individuel** » ou « **EI** » si c'est le statut retenu.
+- **Immatriculation** : numéro **RCS**, et **numéro de TVA intracommunautaire** si assujetti.
+- **Contact** : une **adresse email** et un **numéro de téléphone**.
+- **Hébergeur** : **nom, adresse et téléphone** — ici **Cloudflare, Inc.**, avec son adresse.
+- **Autorisation** si l'activité est réglementée (sans objet pour ouvrance).
+- Depuis le 1er juin 2023, si un abonnement est vendu : une **fonctionnalité de résiliation électronique** clairement identifiée. Sans objet tant que les formules sont vendues à l'unité — **à rouvrir si une prolongation de Lien par abonnement est introduite** (§6.4).
+
+Sanctions relevées par la même source : amendes de **1 000 à 75 000 €**, jusqu'à **un an d'emprisonnement**, et **300 000 €** pour les manquements en matière de données.
+
+### 8.2 CGV : le socle légal, plus quatre clauses propres à ouvrance
+
+**Socle imposé pour la vente à un consommateur** (même source) : caractéristiques essentielles du produit, **prix en euros TTC**, modalités de livraison, moyens de paiement, **droit de rétractation**, **garanties légales**, modalités de règlement des litiges et **lien vers le médiateur de la consommation**.
+
+**Quatre clauses qu'aucun modèle de CGV ne contiendra, et qui sont les seules qui comptent ici** :
+
+1. **La désactivation sur demande d'un tiers.** « Le cadeau peut être désactivé à tout moment, sans préavis, à la demande d'une personne dont le visage ou la voix y figure. » C'est la conséquence directe du §5.3 — et si ce n'est pas écrit, c'est un litige garanti le jour où ça arrive.
+2. **La durée de vie du Lien** — 12 mois, avec l'email d'avertissement 30 jours avant (§6.4).
+3. **La garantie de l'Offrant.** Il déclare détenir les accords nécessaires et garantit ouvrance contre les réclamations de tiers. Cette clause **ne déplace pas la responsabilité RGPD** (§2.4) mais elle est utile entre les parties.
+4. **Les usages interdits** : contenus à caractère sexuel, personnes mineures sans accord des deux représentants légaux, personnes décédées, personnalités publiques, contenus dégradants. À énumérer, parce que la porte de validation humaine doit avoir une règle écrite à appliquer.
+
+### 8.3 Politique de confidentialité : le contenu minimal
+
+Elle doit couvrir les articles 13 **et 14** — deux publics, deux parcours d'information (§5.1) :
+
+| À couvrir | Précision propre à ouvrance |
+| --- | --- |
+| Identité et coordonnées du responsable | ouvrance. Pas de DPO obligatoire ici, mais un contact dédié |
+| Finalités et **base légale, traitement par traitement** | Exécution du contrat pour l'Offrant ; **consentement** pour la Personne représentée (§2.3) |
+| Catégories de données | Nommer explicitement **photographies de visage et enregistrements de voix** |
+| Destinataires et **sous-traitants** | Cloudflare, Stripe, l'émetteur d'emails. **Et dire que Stripe est aussi responsable de traitement autonome** pour la lutte contre la fraude et la LCB-FT (cf. [`rgpd-sous-traitants.md`](./rgpd-sous-traitants.md)) — c'est un point que presque personne n'écrit et qui est faux de taire |
+| Transferts hors UE | Le stockage des médias est en `jurisdiction=eu` ; les emails et le paiement, non. Nommer le mécanisme de transfert |
+| **Durées de conservation** | Reprendre le tableau du §6.3, chiffres compris |
+| Droits et modalités d'exercice | Accès, rectification, effacement, opposition, portabilité, retrait du consentement, **et le délai d'un mois** |
+| Réclamation | Mentionner explicitement le droit de saisir la **CNIL** |
+| **Source des données** (art. 14) | Pour la Personne représentée : « vos données nous ont été transmises par la personne qui a commandé ce cadeau » |
+
+### 8.4 Les cases à cocher — libellé exact
+
+Règles de forme, toutes issues des textes déjà cités : **cases distinctes** (une case par objet, jamais un consentement global), **jamais pré-cochées**, **séparées du reste du formulaire**, et **chaque version du libellé horodatée et conservée** (art. 5 §2 et 7 §1). Le consentement à la prospection ne peut pas être une condition de l'achat (art. 7 §4).
+
+**Case 1 — contrat. Obligatoire.**
+
+> ☐ J'ai lu et j'accepte les **conditions générales de vente** et la **politique de confidentialité**.
+
+**Case 2 — la déclaration relative aux tiers. Obligatoire. C'est la case qui porte tout le §2.4.**
+
+> ☐ **Je déclare avoir obtenu l'accord de chaque personne dont le visage ou la voix figure dans les photos et les enregistrements que je dépose**, pour qu'ils soient utilisés dans ce cadeau. Si l'une de ces personnes est mineure, j'ai l'accord de ses représentants légaux. Je comprends que **chacune de ces personnes peut à tout moment demander à ouvrance la suppression de ses photos et de sa voix, et que le cadeau sera alors désactivé.**
+
+Ce libellé fait trois choses qu'une formule vague ne fait pas : il nomme **la voix** autant que l'image, il traite le cas du **mineur** (accord écrit des représentants légaux, cf. §3.2), et il **informe l'Offrant de la conséquence** — ce qui désamorce le litige de §6.5 avant qu'il n'existe.
+
+**Case 3 — renonciation au droit de rétractation. Obligatoire si la livraison intervient avant 14 jours.**
+
+Le délai de rétractation est de **14 jours** pour un achat à distance. L'exception de l'**article L221-28 du Code de la consommation** couvre le contenu numérique non fourni sur un support matériel, à condition que le consommateur ait « **expressément accepté** que l'exécution commence avant la fin du délai et **renoncé explicitement** à son droit de rétractation » ([service-public.gouv.fr](https://www.service-public.gouv.fr/particuliers/vosdroits/F10485)). Les deux éléments doivent apparaître :
+
+> ☐ **Je demande expressément que la fabrication de mon cadeau commence immédiatement**, avant la fin du délai de rétractation de 14 jours, et **je reconnais qu'une fois le cadeau livré je ne pourrai plus exercer mon droit de rétractation.**
+
+> **[ZONE GRISE]** ouvrance vend-elle un « contenu numérique » (rétractation perdue, art. L221-28) ou une « prestation de service » (rétractation conservée, avec paiement au prorata) ? L'expérience est un contenu numérique livré par lien, mais elle comporte une **validation humaine avant livraison**, qui a des allures de prestation. **À faire trancher.** En attendant, la voie prudente est double : retenir le libellé ci-dessus **et** prévoir un geste commercial en cas de demande dans les 14 jours — à 1,39 € de coût marginal, c'est indolore.
+
+**Case 4 — prospection. Facultative, et elle doit le rester.**
+
+> ☐ J'accepte de recevoir par email les nouveautés d'ouvrance. (Facultatif — vous pouvez vous désinscrire à tout moment.)
+
+**Ce qui n'est pas une case : la mention IA vue par le Destinataire.**
+
+Ce n'est **pas** un consentement et ce n'est **pas** dans les CGU : c'est une information due au Destinataire et à la Personne représentée, à l'écran d'ouverture du Lien, exigée cumulativement par l'article 50 §4 et §5 du règlement IA (§4.3) et par l'article 226-8 du Code pénal (§3.3). Libellé possible, compatible avec l'assouplissement « œuvre de fiction » :
+
+> **Cette expérience est une fiction. Les images et les sons ont été générés par une intelligence artificielle ; les photos et les voix qui y apparaissent ont été fournies par la personne qui vous offre ce cadeau.**
+
+Trois exigences sur cette mention : **avant la première image** (« au plus tard au moment de la première exposition », art. 50 §5), **lisible sans action de l'utilisateur**, et **conservée dans les captures d'écran** servant à la validation humaine, pour pouvoir démontrer qu'elle était bien là.
+
+---
+
+## 9. L'AIPD (art. 35) : oui, elle est obligatoire — et voici sur quoi
+
+### 9.1 Le raisonnement, en trois temps
+
+**Premier temps — l'article 35 §3 ne s'applique pas.** [RGPD art. 35 §3](https://www.cnil.fr/fr/reglement-europeen-protection-donnees/chapitre4) rend l'AIPD requise en particulier pour « le traitement **à grande échelle** de catégories particulières de données visées à l'article 9 §1 ». Or ouvrance ne traite pas de données de l'article 9 (§1.4) et n'est pas à grande échelle. **Cette porte est fermée.**
+
+**Deuxième temps — la liste de la CNIL non plus.** La [liste des types d'opérations pour lesquelles une AIPD est requise](https://www.cnil.fr/sites/cnil/files/atoms/files/liste-traitements-aipd-requise.pdf) a été lue intégralement. Aucune de ses quatorze entrées ne couvre le cas : la seule entrée biométrique vise les « traitements de données biométriques **aux fins d'identifier une personne physique de manière unique** parmi lesquelles figurent des personnes dites vulnérables », ce qui n'est pas la finalité d'ouvrance. **Cette porte est fermée aussi.**
+
+**Troisième temps — et pourtant l'article 35 §1 la rend obligatoire.** Le texte : « Lorsqu'un type de traitement, **en particulier par le recours à de nouvelles technologies**, […] est susceptible d'engendrer **un risque élevé** pour les droits et libertés des personnes physiques, le responsable du traitement effectue, **avant le traitement**, une analyse d'impact ».
+
+La [CNIL](https://www.cnil.fr/fr/ce-quil-faut-savoir-sur-lanalyse-dimpact-relative-la-protection-des-donnees-aipd) opérationnalise « risque élevé » par les **neuf critères du CEPD**, avec la règle : le seuil est atteint dès que **deux** critères sont remplis. Comptons :
+
+| Critère CEPD | Rempli ? |
+| --- | --- |
+| Collecte de **données sensibles ou à caractère hautement personnel** | **Oui.** Visage et voix d'une personne identifiable comptent parmi les données les plus personnelles qui soient, même hors article 9 |
+| **Usage innovant ou application de nouvelles solutions technologiques** | **Oui, frontalement.** IA générative vidéo et audio |
+| **Personnes vulnérables** | **Probablement.** La Personne représentée n'a **aucune relation** avec le responsable du traitement, aucun compte, aucun moyen de contrôle : c'est un déséquilibre de pouvoir caractérisé. Et des mineurs peuvent figurer sur les photos |
+| Évaluation ou notation, décision automatisée, surveillance systématique, croisement, grande échelle, exclusion d'un contrat | Non |
+
+**Deux critères sont atteints avec certitude, un troisième très probablement.**
+
+> **Réponse : oui, l'AIPD est obligatoire.** Et l'article 35 §1 précise « **avant le traitement** » — donc **avant la première vente**, pas après. C'est la pièce qui manque le plus au dossier aujourd'hui, et c'est aussi celle qui structure tout le reste : elle est le document qui *démontre* la conformité au sens de l'article 5 §2.
+
+### 9.2 [TEXTE] Ce qu'elle doit contenir
+
+Art. 35 §7, verbatim :
+
+> « L'analyse contient au moins :
+> **a)** une **description systématique** des opérations de traitement envisagées et des finalités du traitement, y compris, le cas échéant, l'intérêt légitime poursuivi par le responsable du traitement ;
+> **b)** une évaluation de la **nécessité et de la proportionnalité** des opérations de traitement au regard des finalités ;
+> **c)** une évaluation des **risques pour les droits et libertés des personnes concernées** […] ;
+> **d)** les **mesures envisagées pour faire face aux risques**, y compris les garanties, mesures et mécanismes de sécurité visant à assurer la protection des données à caractère personnel et à **apporter la preuve du respect** du présent règlement. »
+
+### 9.3 Les quatre risques qu'elle doit traiter nommément
+
+Une AIPD générique ne servira à rien. Celle d'ouvrance doit répondre à quatre questions précises, toutes déjà posées dans ce document :
+
+1. **Le détournement du produit** — un Offrant qui téléverse la photo d'un ex, d'un collègue, d'une personnalité. Mesure : la porte de validation humaine avant livraison (déjà décidée au ticket #1), avec une règle écrite (§8.2, clause 4).
+2. **L'absence d'information de la Personne représentée** quand elle n'est pas le Destinataire (§5.2). C'est le risque résiduel le plus élevé et l'AIPD doit dire comment il est traité — ou assumer qu'il ne l'est pas.
+3. **La rémanence des médias** — commandes non payées (§7), Cadeaux expirés (§6.4), sauvegardes, cache CDN. Mesure : purge à 24 h, expiration à 12 mois, bucket privé.
+4. **La chaîne de sous-traitance** — l'audit de [`rgpd-sous-traitants.md`](./rgpd-sous-traitants.md) est déjà l'essentiel du travail. Il faut en tirer les décisions : **Formspree n'a aucun DPA publié et son certificat DPF est retiré depuis le 26 avril 2022— il doit sortir de la chaîne**, ce n'est pas négociable au regard de l'article 28 §3 qui exige un contrat écrit avec chaque sous-traitant.
+
+### 9.4 Et le registre des traitements
+
+[RGPD art. 30 §5](https://www.cnil.fr/fr/reglement-europeen-protection-donnees/chapitre4) : l'exemption pour les organismes de moins de 250 salariés ne joue pas « **si le traitement** […] **est susceptible de comporter un risque** pour les droits et libertés des personnes concernées, **s'il n'est pas occasionnel** ou s'il porte […] sur les catégories particulières de données ».
+
+Le traitement d'ouvrance est à la fois risqué et **permanent** — deux motifs indépendants de non-exemption. **Le registre est obligatoire malgré la taille de la structure.** Il n'est pas lourd : il tient en un tableau, et le tableau du §6.3 en est déjà la moitié.
