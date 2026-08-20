@@ -1,8 +1,14 @@
-# Android WebView, Custom Tabs et Chrome — ce qu'un lien ouvert dans une app autorise
+# Ce qu'iOS Safari et Android Chrome autorisent vraiment
 
-**Recherche partielle du ticket [#3](https://github.com/fayssalbenouda936/ouvrance/issues/3).** Vérifié le 20/08/2026 sur sources primaires. Cette page ne couvre **que le volet Android WebView / Custom Tabs**. Le volet iOS Safari, les décodeurs simultanés, les codecs et le réseau restent à faire.
+**Recherche du ticket [#3](https://github.com/fayssalbenouda936/ouvrance/issues/3).** Vérifié le **20/08/2026** sur sources primaires : code WebKit et Chromium, documentation Apple et Google, spécifications W3C/WHATWG.
 
-**Convention de fiabilité** : `[OFF]` = documentation officielle Google/Chromium · `[SRC]` = code source Chromium (officiel, non documentaire) · `[COM]` = inférence, non confirmé sur source primaire.
+**Convention de fiabilité** : `[OFF]` = documentation officielle éditeur · `[SRC]` = code source du moteur (officiel, non documentaire) · `[COM]` = inférence, non confirmé sur source primaire.
+
+**Plan.** Partie A : Android WebView, Custom Tabs et Chrome. Partie B : iOS Safari. Partie C : codecs, cartographie par application, réseau. Puis les conséquences pour ouvrance.
+
+---
+
+# Partie A — Android WebView, Custom Tabs et Chrome
 
 ## 1. Quel moteur rend le contenu
 
@@ -145,6 +151,202 @@ Et le verdict explicite de Google sur l'alternative :
 | DevTools distant | ❌ apps Play Store | ✅ | ✅ |
 | `target="_blank"` sort de l'app | ❌ jamais | n/a | n/a |
 | `intent://` fiable | ❌ dépend de l'app hôte | n/a | ✅ |
+
+---
+
+# Partie B — iOS Safari
+
+Sauf mention contraire, le code cité est celui de `WebKit/WebKit` branche `main`, lue le **20/08/2026**. WebKit est le moteur de Safari : c'est la source de vérité la plus proche du comportement réel, la documentation Apple sur le sujet étant à la fois maigre et très ancienne.
+
+## 8. Autoplay et geste utilisateur sur iOS
+
+### 8.1 Les règles de base
+
+`[OFF]` [New `<video>` Policies for iOS](https://webkit.org/blog/6784/new-video-policies-for-ios/), WebKit, **25/07/2016** — verbatim :
+
+> « On iPhone, `<video playsinline>` elements will now be allowed to play inline, and will not automatically enter fullscreen mode when playback begins. »
+
+> « `<video muted>` elements will also be allowed to autoplay without a user gesture. »
+
+> « `<video>` elements will be allowed to `autoplay` without a user gesture if their source media contains no audio tracks. »
+
+> « When we say that an action must have happened "as a result of a user gesture", we mean that the JavaScript which resulted in the call to `video.play()`, for example, must have directly resulted from a handler for a `touchend`, `click`, `doubleclick`, or `keydown` event. »
+
+**Cette page a dix ans.** Elle reste la seule page normative publiée par Apple sur le sujet ; on la complète donc par le code, qui est à jour.
+
+⚠️ `[OFF]` L'ancien guide Apple [iOS-Specific Considerations](https://developer.apple.com/library/archive/documentation/AudioVideo/Conceptual/Using_HTML5_Audio_Video/Device-SpecificConsiderations/Device-SpecificConsiderations.html) (**dernière révision 13/12/2012**) affirme encore « all devices running iOS are limited to playback of a single audio or video stream at any time » et « preload and autoplay are disabled ». **Ces deux affirmations sont périmées** — contredites par le billet de 2016 et par le code actuel. Elle n'est citée ici que pour qu'on cesse de la retrouver dans les résultats de recherche et de la croire.
+
+### 8.2 `playsinline` — la règle exacte
+
+`[SRC]` `MediaElementSession::requiresFullscreenForVideoPlayback()`, `Source/WebCore/html/MediaElementSession.cpp` (l. 1097-1143). La logique, dans l'ordre :
+
+1. Un `<audio>` n'est jamais concerné.
+2. Si `allowsInlineMediaPlayback` est faux (réglage d'hôte, pertinent en WebView), **le plein écran est imposé, point**.
+3. Si `inlineMediaPlaybackRequiresPlaysInlineAttribute` est faux, l'inline est libre.
+4. Sinon : `return !element->hasAttributeWithoutSynchronization(HTMLNames::playsinlineAttr);`
+
+**Le piège pour les navigateurs in-app** — même fonction, bloc `#if PLATFORM(IOS_FAMILY)` :
+
+```cpp
+if (!linkedOnOrAfterSDKWithBehavior(SDKAlignedBehavior::UnprefixedPlaysInlineAttribute))
+    return !element->hasAttributeWithoutSynchronization(HTMLNames::webkit_playsinlineAttr);
+```
+
+`[SRC]` Une application liée contre un SDK antérieur à l'introduction de l'attribut non préfixé **n'honore que `webkit-playsinline`**. La parade est gratuite : **écrire les deux attributs**, `playsinline` et `webkit-playsinline`.
+
+`[SRC]` Un quirk par site existe aussi (`shouldIgnorePlaysInlineRequirementQuirk()`), et Apple Books est traité à part — deux rappels que le comportement n'est pas uniforme.
+
+### 8.3 Ce qu'un geste débloque exactement
+
+`[SRC]` Les restrictions sont des drapeaux de `MediaElementSession::BehaviorRestrictions`, posés à la construction de l'élément (`HTMLMediaElement::initializeMediaSession()`, `HTMLMediaElement.cpp` l. 710-772) :
+
+| Restriction | Posée quand | Effet |
+| --- | --- | --- |
+| `RequireUserGestureForVideoRateChange` | réglage plateforme (actif sur iOS) | tout `<video>` a besoin d'un geste |
+| `RequireUserGestureForAudioRateChange` | idem | mais **contournée si `muted()` ou `volume()==0`** |
+| `RequireUserGestureForLoad` | si `requiresUserGestureToLoadVideo()` | même charger l'octet 0 demande un geste |
+| `AutoPreloadingNotPermitted` | si `!mediaDataLoadsAutomatically()` | `preload` désobéi |
+| `InvisibleAutoplayNotPermitted` | réglage | pas d'autoplay hors écran |
+| `RequireUserGestureForFullscreen` | toujours | |
+| **`RequireUserGestureForVideoDueToLowPowerMode`** | `page->isLowPowerModeEnabled()` | |
+| **`RequireUserGestureForVideoDueToAggressiveThermalMitigation`** | `page->isAggressiveThermalMitigationEnabled()` | |
+
+`[SRC]` `MediaElementSession::playbackStateChangePermitted()` (l. 465-556) applique la règle du muet littéralement :
+
+```cpp
+if (m_restrictions & RequireUserGestureForAudioRateChange && (!element->isVideo() || element->hasAudio())
+    && !element->muted() && element->volume() && !document->processingUserGestureForMedia())
+    return makeUnexpectedDenial(...);
+```
+
+**Le fait le plus important de cette section, et il n'est documenté nulle part côté Apple :**
+
+```cpp
+if (m_restrictions & RequireUserGestureForVideoDueToLowPowerMode && element->isVideo()
+    && !document->processingUserGestureForMedia())
+    return makeUnexpectedDenial(..., "Video low power mode restriction"_s);
+
+if (m_restrictions & RequireUserGestureForVideoDueToAggressiveThermalMitigation && element->isVideo()
+    && !document->processingUserGestureForMedia())
+    return makeUnexpectedDenial(..., "Video aggressive thermal mitigation"_s);
+```
+
+Ces deux tests portent sur `element->isVideo()` **sans exception pour `muted`**. `[SRC]` Conclusion : **en mode économie d'énergie, ou quand l'appareil est en mitigation thermique, même une vidéo muette et sans piste audio n'autoplay pas.** Un iPhone à 15 % de batterie, ou qui vient de faire tourner du WebGL pendant deux minutes, casse l'autoplay muet.
+
+`[SRC]` WebKit expose d'ailleurs cet état en interne (`HTMLMediaElement.cpp` l. 8432) :
+
+```cpp
+return isVideo() && autoplay() && (mediaSession().hasBehaviorRestriction(MediaElementSession::RequireUserGestureForVideoDueToLowPowerMode)
+    || mediaSession().hasBehaviorRestriction(MediaElementSession::RequireUserGestureForVideoDueToAggressiveThermalMitigation));
+```
+
+`[COM]` Il n'existe **aucune API web** permettant de savoir si l'appareil est en mode économie d'énergie ou en mitigation thermique. On ne peut que constater l'échec de `play()` — donc **toujours traiter la promesse renvoyée par `play()`** et prévoir un écran « Toucher pour commencer ».
+
+### 8.4 Combien de temps le déblocage persiste — la réponse
+
+Deux mécanismes distincts, qu'il ne faut pas confondre.
+
+**(a) « Être dans un geste » — trois fenêtres temporelles.** `[SRC]` `Document::mediaUserGestureReason()`, `Source/WebCore/dom/Document.cpp` (l. 9636-9656) :
+
+```cpp
+if (UserGestureIndicator::processingUserGestureForMedia())          return MediaGestureReason::ActiveToken;
+if (m_domWindow && m_domWindow->hasTransientActivation())           return MediaGestureReason::TransientActivation;
+if (m_userActivatedMediaFinishedPlayingTimestamp + maxIntervalForUserGestureForwardingAfterMediaFinishesPlaying >= MonotonicTime::now())
+                                                                     return MediaGestureReason::MediaFinishedGrace;
+```
+
+| Fenêtre | Durée | Constante `[SRC]` |
+| --- | --- | --- |
+| Jeton de geste actif, transporté à travers une chaîne `fetch` | **10 s** | `maxIntervalForUserGestureForwardingForFetch { 10 }` — `dom/UserGestureIndicator.cpp` l. 114 |
+| Activation transitoire (`navigator.userActivation.isActive`) | **5 s** | `defaultTransientActivationDuration { 5_s }` — `page/LocalDOMWindow.cpp` l. 200 |
+| Grâce après qu'un média lancé par l'utilisateur s'est **terminé** | **1 s** | `maxIntervalForUserGestureForwardingAfterMediaFinishesPlaying { 1_s }` — `dom/Document.cpp` l. 499 |
+
+La fenêtre de 1 s est celle qui décide de l'enchaînement cinématique → gameplay → cinématique : **quand une vidéo lancée par l'utilisateur atteint sa fin, il reste une seconde pour démarrer la suivante sans nouveau geste**. Au-delà, il faut un nouveau tap.
+
+**(b) Le déblocage définitif, et il est *par élément*.** `[SRC]` `HTMLMediaElement::removeBehaviorRestrictionsAfterFirstUserGesture()` (l. 9184-9209) efface d'un coup, **sans minuterie ni expiration** :
+
+`RequireUserGestureForLoad`, `AutoPreloadingNotPermitted`, `RequireUserGestureForVideoRateChange`, `RequireUserGestureForAudioRateChange`, `RequireUserGestureForFullscreen`, `RequireUserGestureForVideoDueToLowPowerMode`, `RequireUserGestureForVideoDueToAggressiveThermalMitigation`, `InvisibleAutoplayNotPermitted`, `RequireUserGestureToControlControlsManager`.
+
+`[SRC]` Elle est appelée depuis `play()`, la variante à promesse de `play()`, `prepareForLoad()`, la pose de l'attribut `autoplay` — chaque fois sous condition `if (processingUserGestureForMedia())`.
+
+> **Le déblocage n'est ni par onglet ni par origine : il est porté par l'objet `MediaElementSession`, donc par l'élément `<video>` lui-même.** Un `<video>` créé plus tard repart avec toutes ses restrictions. Le déblocage dure aussi longtemps que l'élément vit — indéfiniment, tant qu'on ne le détruit pas.
+
+`[SRC]` La seule propagation au document est `mainFrameDocument->noteUserInteractionWithMediaElement()`, qui n'est consommée que derrière un quirk par site (`quirks().needsPerDocumentAutoplayBehavior()`) — donc **pas un comportement général sur lequel s'appuyer**.
+
+**Conséquence d'architecture directe** : au premier tap, appeler `play()` (quitte à `pause()` immédiatement après) sur **tous** les éléments `<video>` du parcours — intro, gameplay, fin — pour les débloquer à vie. Ne jamais détruire ces éléments ; les réutiliser en changeant leur source. Cette stratégie entre en tension frontale avec la limite de décodeurs simultanés (§ 10).
+
+## 9. AudioContext, mode silencieux, retour d'arrière-plan
+
+### 9.1 Déblocage de l'AudioContext — une règle différente de celle des `<video>`
+
+`[SRC]` `Source/WebCore/Modules/webaudio/AudioContext.cpp`, l. 93-101 :
+
+```cpp
+static bool shouldDocumentAllowWebAudioToAutoPlay(const Document& document)
+{
+    if (document.isCapturing()) return true;
+    RefPtr mainDocument = document.mainFrameDocument();
+    if (document.quirks().shouldAutoplayWebAudioForArbitraryUserGesture() && mainDocument && mainDocument->hasHadUserInteraction())
+        return true;
+    RefPtr window = document.window();
+    return window && window->hasTransientActivation();
+}
+```
+
+Appelée par `AudioContext::willBeginPlayback()` (l. 499-516), qui retire ensuite définitivement `RequireUserGestureForAudioStartRestriction`.
+
+> **Le Web Audio ne connaît que l'activation transitoire : une fenêtre de 5 s.** Il n'hérite **pas** de la grâce de 1 s après fin de média, ni du transport de jeton à 10 s à travers `fetch`. Un `audioContext.resume()` lancé plus de 5 s après le dernier tap échoue.
+
+`[COM]` Corollaire pratique : `resume()` doit être appelé dans le même geste que le premier `play()`. Le retarder « au moment où on en aura besoin » est un bug d'architecture, pas une optimisation.
+
+### 9.2 Retour d'arrière-plan — l'état `interrupted`
+
+`[SRC]` WebKit ajoute à `AudioContext` un état hors spécification, `State::Interrupted` (`AudioContext.cpp` l. 350-355 et 571-572) :
+
+```cpp
+bool interrupted = context.m_mediaSession->state() == PlatformMediaSession::State::Interrupted;
+context.setState(interrupted ? State::Interrupted : State::Running);
+```
+
+`[SRC]` `AudioContext::shouldOverrideBackgroundPlaybackRestriction()` (l. 781-800) : le passage en arrière-plan (`InterruptionType::EnteringBackground`) n'interrompt pas le contexte si sa destination n'est pas connectée, ou si le document tient déjà une session audio de type lecture (`hasPlayBackAudioSession`).
+
+`[COM]` Donc `audioContext.state` peut valoir `"interrupted"` — une valeur que la spécification W3C ne définit pas. **Tout code qui teste `state === "suspended"` pour décider s'il faut reprendre est cassé sur iOS.** Il faut tester `state !== "running"`, et rebrancher la reprise sur un geste puisque `resume()` hors activation transitoire échouera.
+
+### 9.3 Mode silencieux — `<video>` muet contre AudioContext
+
+C'est ici que se joue la différence, et elle est **entièrement déterminée par la catégorie de session audio que WebKit choisit pour la page**.
+
+`[SRC]` `MediaSessionManagerCocoa::updateSessionState()`, `Source/WebCore/platform/audio/cocoa/MediaSessionManagerCocoa.mm` (l. 176-197) :
+
+```cpp
+else if (hasAudibleVideoMediaType)          category = AudioSession::CategoryType::MediaPlayback;
+else if (hasAudibleAudioOrVideoMediaType)   category = AudioSession::CategoryType::MediaPlayback;
+else if (webAudioCount)                     category = AudioSession::CategoryType::AmbientSound;
+```
+
+`[SRC]` `AudioSessionIOS::setCategory()`, `Source/WebCore/platform/audio/ios/AudioSessionIOS.mm` (l. 214-249), la traduction vers AVFoundation :
+
+```cpp
+case CategoryType::AmbientSound:  categoryString = AVAudioSessionCategoryAmbient;  break;
+case CategoryType::MediaPlayback: categoryString = AVAudioSessionCategoryPlayback; break;
+```
+
+`[OFF]` Apple, [`AVAudioSession.Category.ambient`](https://developer.apple.com/documentation/avfaudio/avaudiosession/category-swift.struct/ambient) : « When you use this category, audio from other apps mixes with your audio. **Screen locking and the Silent switch (on iPhone, the Ring/Silent switch) silence your audio.** »
+
+`[OFF]` Apple, [`AVAudioSession.Category.playback`](https://developer.apple.com/documentation/avfaudio/avaudiosession/category-swift.struct/playback) : « **your app audio continues with the Silent switch set to silent or when the screen locks.** »
+
+| Ce que la page joue | Catégorie retenue | Coupé par le bouton silence ? |
+| --- | --- | --- |
+| `<video>` **avec piste audio, non muet** | `Playback` | **Non** |
+| `<video muted>` **seul** | ni l'un ni l'autre — le muet ne compte pas comme audible | rien à couper |
+| **AudioContext seul** | `Ambient` | **Oui — totalement silencieux** |
+| AudioContext **+** un `<video>`/`<audio>` audible qui joue | `Playback` | **Non** |
+
+> **Une expérience dont tout le son passe par le Web Audio est muette pour tout utilisateur dont le téléphone est sur silencieux.** Un `<video muted>` ne sauve pas la mise : muet, il ne fait pas passer la session en `Playback`.
+>
+> **Le seul levier identifié : faire jouer en permanence un élément `<audio>` ou `<video>` réellement audible** (au besoin une piste quasi silencieuse mais **non** muette et à `volume` non nul), ce qui force la catégorie `Playback` pour toute la page, Web Audio compris. `[COM]` Ce montage est déduit du code ci-dessus, pas d'une recommandation Apple ; **à vérifier sur appareil réel avant d'en dépendre**.
+
+`[COM]` Alternative plus propre quand elle suffit : **router tout le son par un unique `<audio>` audible** et ne garder le Web Audio que pour ce qui doit être synthétisé ou spatialisé.
 
 ## Conséquences pour ouvrance
 
