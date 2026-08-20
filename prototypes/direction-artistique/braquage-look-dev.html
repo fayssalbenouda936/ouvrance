@@ -27,9 +27,9 @@
   .bench{
     min-height:100vh; display:grid; gap:28px;
     grid-template-columns:minmax(0,1fr) 372px;
-    padding:26px 26px 156px;
+    padding:26px 26px 196px;
   }
-  @media (max-width:980px){ .bench{grid-template-columns:minmax(0,1fr); padding:18px 16px 190px} }
+  @media (max-width:980px){ .bench{grid-template-columns:minmax(0,1fr); padding:18px 16px 232px} }
 
   /* ---------- stage ---------- */
   .stage{display:flex; flex-direction:column; align-items:center; gap:16px; min-width:0}
@@ -135,6 +135,9 @@
     <span class="hint">|</span>
     <button data-flag="perso">Personnalisé</button>
     <button data-flag="pouce">Zones du pouce</button>
+    <span class="hint">|</span>
+    <button data-posture="libre">Hors visée</button>
+    <button data-posture="visee">À la visée</button>
   </div>
 </nav>
 
@@ -146,6 +149,7 @@ const state = {
   scene: params.get('scene') || 'couloir',
   orient: params.get('orient') || 'portrait',
   perso: params.get('perso') !== '0',
+  posture: params.get('posture') || 'libre',
   pouce: params.get('pouce') === '1'
 };
 if (!['A','B','C'].includes(state.variant)) state.variant = 'A';
@@ -157,14 +161,15 @@ const VARIANTS = {
     thesis:"La référence, assumée et dégraissée. Musée nocturne chaud, cônes de caméras turquoise, arme tenue. Le HUD reste, mais tombe de sept éléments à trois : objectif, alerte, action.",
     decides:[
       "Palette : pierre chaude sur plafond noir, la lumière vient des vitrines.",
-      "L'affordance est le viseur — on vise, on tire, on avance.",
+      "L'affordance est le viseur — mais le réticule n'existe qu'à la visée.",
+      "Hors visée l'arme est abaissée : aucune croix sur la photo de l'offrant.",
       "Vie et munitions supprimées : on ne meurt pas dans un cadeau.",
       "Minimap supprimée : le couloir se lit tout seul."
     ],
     tradeoffs:[
       ['plus',"Lisible sans tutoriel pour qui a déjà joué à un FPS."],
       ['plus',"Le musée est vu — la géométrie payée est la géométrie montrée."],
-      ['minus',"L'arme est dans chaque plan. Le pic filmable contient un pistolet."],
+      ['plus',"Le pic filmable est propre : ni croix ni canon pointé sur la photo."],
       ['minus',"Trois éléments de HUD restent trois choses à comprendre avant de ressentir."]
     ],
     pal:{
@@ -431,7 +436,7 @@ function hud(V, W, H){
     o.push('<text x="'+f1(x)+'" y="'+f1(y)+'" font-family="'+fam+', sans-serif" font-size="'+f1(size)+'" font-weight="'+weight+'" letter-spacing="'+ls+'" fill="'+fill+'" text-anchor="'+anchor+'">'+txt+'</text>');
 
   /* --- réticule --- */
-  if (V.reticle){
+  if (V.reticle && state.posture === 'visee'){
     const cx=W/2, cy=H*0.455, r=S*0.075;
     o.push('<circle cx="'+f1(cx)+'" cy="'+f1(cy)+'" r="'+f1(r)+'" fill="none" stroke="'+c.cone+'" stroke-width="'+f1(S*0.006)+'" opacity="0.9"/>');
     [[0,-1],[0,1],[-1,0],[1,0]].forEach(d=>{
@@ -442,6 +447,10 @@ function hud(V, W, H){
   /* --- arme --- */
   if (V.weapon){
     const bx=W*0.55, by=H*0.70, u=S*0.34;
+    const aim = state.posture === 'visee';
+    o.push('<g transform="' + (aim
+      ? 'translate('+f1(-W*0.11)+','+f1(-H*0.10)+')'
+      : 'translate('+f1(-W*0.09)+','+f1(H*0.19)+') rotate(34 '+f1(bx)+' '+f1(by)+')') + '">');
     const Q=(pts,fill,op='1')=>o.push('<polygon points="'+pts.map(q=>f1(q[0])+','+f1(q[1])).join(' ')+'" fill="'+fill+'" opacity="'+op+'"/>');
     Q([[bx+u*0.02,by+u*0.02],[bx+u*0.82,by-u*0.16],[bx+u*0.86,by-u*0.01],[bx+u*0.06,by+u*0.18]], '#2A2D36');      /* glissière */
     Q([[bx+u*0.06,by+u*0.18],[bx+u*0.86,by-u*0.01],[bx+u*0.88,by+u*0.07],[bx+u*0.08,by+u*0.26]], '#171A21');      /* dessous */
@@ -452,6 +461,7 @@ function hud(V, W, H){
     [0.42,0.60,0.78].forEach(t=>{
       Q([[bx+u*0.10,by+u*t],[bx+u*0.40,by+u*(t-0.06)],[bx+u*0.42,by+u*(t+0.07)],[bx+u*0.12,by+u*(t+0.13)]], '#D9A87F', '0.9');
     });
+    o.push('</g>');
   }
 
   /* --- chrome (A) : objectif, alerte, action --- */
@@ -462,7 +472,7 @@ function hud(V, W, H){
     for(let i=0;i<3;i++){
       o.push('<rect x="'+f1(W-pad-S*0.032-(i*S*0.042))+'" y="'+f1(safeT+S*0.072)+'" width="'+f1(S*0.032)+'" height="'+f1(S*0.032)+'" rx="'+f1(S*0.006)+'" fill="'+(i===0?c.cone:'rgba(255,255,255,.18)')+'"/>');
     }
-    actionButton(o, W-pad-S*0.115, H-safeB-S*0.115, S*0.115, c.cone, 'TIRER', S);
+    actionButton(o, W-pad-S*0.115, H-safeB-S*0.115, S*0.115, c.cone, state.posture==='visee'?'TIRER':'VISER', S);
     stick(o, pad+S*0.115, H-safeB-S*0.115, S*0.115);
   }
 
@@ -549,12 +559,12 @@ function render(){
   document.getElementById('caption').textContent = state.scene === 'couloir'
     ? "Cadres muraux = emplacements substituables. Vitrines au sol = décor, jamais remplacé."
     : (state.perso
-        ? "Un média de l'offrant occupe l'emplacement : cadre, faisceau, cartel. C'est le plan qui part sur TikTok."
+        ? "Un média de l'offrant occupe l'emplacement : cadre, faisceau, cartel. C'est le plan qui part sur TikTok — sans réticule, arme abaissée."
         : "Aucun média fourni. ADR-0003 : le contenu par défaut est l'état normal, pas un repli.");
 
   document.getElementById('notes').innerHTML = ''
     + '<div class="card">'
-    +   '<span class="vkey">Variante ' + V.key + '</span>'
+    +   '<span class="vkey">Variante ' + V.key + (V.key==='A' ? ' \u00b7 <b style="color:#EDE9F2">retenue</b>' : '') + '</span>'
     +   '<h2>' + V.name + '</h2>'
     +   '<p class="thesis">' + V.thesis + '</p>'
     + '</div>'
@@ -571,13 +581,14 @@ function render(){
   document.querySelectorAll('#toggles button').forEach(b => {
     const on = (b.dataset.scene && b.dataset.scene === state.scene)
       || (b.dataset.orient && b.dataset.orient === state.orient)
-      || (b.dataset.flag && state[b.dataset.flag]);
+      || (b.dataset.flag && state[b.dataset.flag])
+      || (b.dataset.posture && b.dataset.posture === state.posture);
     b.setAttribute('aria-pressed', on ? 'true' : 'false');
   });
 
   const q = new URLSearchParams({
     variant: state.variant, scene: state.scene, orient: state.orient,
-    perso: state.perso ? '1' : '0', pouce: state.pouce ? '1' : '0'
+    perso: state.perso ? '1' : '0', pouce: state.pouce ? '1' : '0', posture: state.posture
   });
   history.replaceState(null, '', location.pathname + '?' + q);
 }
@@ -594,6 +605,7 @@ document.getElementById('toggles').addEventListener('click', e => {
   if (b.dataset.scene) state.scene = b.dataset.scene;
   if (b.dataset.orient) state.orient = b.dataset.orient;
   if (b.dataset.flag) state[b.dataset.flag] = !state[b.dataset.flag];
+  if (b.dataset.posture) state.posture = b.dataset.posture;
   render();
 });
 addEventListener('keydown', e => {
