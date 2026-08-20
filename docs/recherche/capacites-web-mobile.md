@@ -504,6 +504,184 @@ static constexpr size_t maxActiveWorkerContexts = 4;
 
 `[COM]` La seule mesure fiable est empirique, sur les appareils de la cible. Aucune API web ne renseigne le niveau de gamme : `WEBGL_debug_renderer_info` est restreint sur iOS, et `deviceMemory` / `hardwareConcurrency` ne sont pas exposés de façon utile par Safari. **Ce trou est réel et doit être comblé par de la mesure terrain.**
 
+---
+
+# Partie C — codecs, navigateurs in-app, réseau
+
+## 12. Codecs et conteneurs
+
+### 12.1 Ce qui est lisible partout, sans condition
+
+**H.264 (AVC) en MP4, profil Main ou High, audio AAC.** `[COM]` Aucune source primaire n'a été relue pour le redater — c'est le socle depuis quinze ans, décodé matériellement sur tout iPhone et tout Android livré avec les services Google. **C'est le seul format sur lequel on peut s'engager sans conditionnel.**
+
+### 12.2 HEVC (H.265)
+
+| Plateforme | État | Source |
+| --- | --- | --- |
+| iOS Safari | Pris en charge, décodage matériel | `[OFF]` implicite dans les notes Safari 17.4 (« Fixed an HEVC decoder issue when translating annexb data ») |
+| Chrome / WebView Android | **Décodage matériel activé depuis M107** | `[OFF]` chromestatus, « Enable HEVC hardware decoding », *Enabled by default*, **M107 desktop, Android et WebView** — « Enables support for decoding HEVC video on platforms where hardware [...] for decoding HEVC is available » |
+
+> **Le HEVC est le meilleur compromis en 2026 : ~30-50 % de poids en moins qu'H.264 à qualité égale, décodage matériel des deux côtés.** `[COM]` Mais sur Android il dépend de la présence d'un décodeur matériel sur l'appareil — chromestatus le dit littéralement (« on platforms where hardware [...] is available »). **Il faut donc un repli H.264.**
+
+### 12.3 AV1 — le piège
+
+`[OFF]` chromestatus, « AV1 Decoder » : *Enabled by default* depuis **Chrome 70**, mais **desktop uniquement** — Windows, macOS, Linux, ChromeOS. **Android : non pris en charge.** Même chose pour l'encodeur (M90, desktop). AVIF sur Android est explicitement « gated on a DFM for the AV1 decoder ». Seul WebRTC a AV1 sur Android (M111).
+
+`[OFF]` Côté Apple, [notes de Safari 17](https://developer.apple.com/documentation/safari-release-notes/safari-17-release-notes) (septembre 2023) : « **Added support for AV1 codec support to the MediaCapabilities API for devices with hardware support.** » — c'est-à-dire uniquement les appareils dotés d'un décodeur AV1 matériel.
+
+> **Verdict : AV1 n'est pas un format de livraison sur mobile en 2026.** Il est absent de Chrome Android pour `<video>` selon chromestatus, et sur iOS il est réservé au matériel récent. `[COM]` Il est possible que le décodage matériel AV1 fonctionne sur certains Android via les décodeurs de plateforme sans que chromestatus le reflète — **cela n'a pas pu être vérifié sur source primaire, et ne doit pas être supposé.**
+
+### 12.4 VP9 / WebM
+
+`[OFF]` Notes de [Safari 17.4](https://developer.apple.com/documentation/safari-release-notes/safari-17_4-release-notes) (mars 2024) : « **Added support for VP8/VP9 and WebM on iOS and iPadOS.** (64825245) » et « Added support for the Vorbis audio codec on iOS, iPadOS, and in visionOS. »
+
+`[COM]` VP9 est donc lisible des deux côtés depuis iOS 17.4, mais **le décodage matériel sur iOS n'est pas garanti** — Apple ne le dit nulle part, et un décodage logiciel de VP9 sur un long plan est exactement ce qui déclenche la mitigation thermique du § 8.3. À écarter pour les cinématiques.
+
+### 12.5 Le choix de priorité fait par le moteur
+
+`[OFF]` Notes de Safari 17.4 : « **Added prioritizing video sources with power efficient hardware-decoded codecs before software-decoded codecs.** (120679553) »
+
+`[COM]` Autrement dit : **lister plusieurs `<source>` fonctionne**, et Safari 17.4+ choisit le codec décodé matériellement plutôt que le premier de la liste. Combiné à `MediaCapabilities.decodingInfo()` (`powerEfficient`), c'est le mécanisme correct de sélection.
+
+### 12.6 Impact sur le poids des maîtres
+
+`[COM]` Aucune source primaire ne chiffre le gain HEVC/H.264 ; les ordres de grandeur usuels (30-50 %) sont des résultats d'encodage, pas des affirmations d'éditeur. **Ce qui est sourcé, ce sont les contraintes qui encadrent ce poids :**
+
+- `[SRC]` **105 Mo par `SourceBuffer` MSE sur iOS** (§ 10.3) — plafond dur si l'on passe par MSE.
+- `[SRC]` **`MediaDataLoadsAutomatically` vaut `false` sur iOS** (§ 14.1) — le préchargement n'a pas lieu avant le geste, quel que soit `preload`.
+- `[SRC]` **Une vidéo cachée voit ses ressources marquées purgeables** (§ 10.2) — un maître lourd préchargé peut être jeté.
+
+> **Recommandation de livraison** `[COM]` : deux maîtres seulement — **HEVC/MP4** en premier `<source>`, **H.264/MP4** en repli — et pas d'AV1, pas de VP9. Le troisième encodage coûte plus cher qu'il ne rapporte.
+
+## 13. Cartographie par application — quel moteur sert vraiment le lien
+
+### 13.1 iOS : c'est toujours WebKit, et c'est une règle contractuelle
+
+`[OFF]` [App Review Guidelines](https://developer.apple.com/app-store/review/guidelines/), guideline **2.5.6**, verbatim, page consultée le 20/08/2026 :
+
+> « Apps that browse the web must use the appropriate WebKit framework and WebKit JavaScript. **You may apply for an entitlement to use an alternative web browser engine in your app.** Learn more about these entitlements for the **EU and Japan**. »
+
+> **L'hypothèse « ces apps utilisent le moteur système et non un Chromium embarqué » est VALIDÉE sur iOS, par une règle contractuelle publiée.** Un navigateur in-app dans TikTok, Instagram, WhatsApp ou Snapchat rend en WebKit. Aucun de ces éditeurs n'est un navigateur web ; l'exception d'entitlement UE/Japon vise les moteurs de navigateurs alternatifs et ne s'applique pas à eux.
+>
+> **Nuance 2026 à surveiller** : la dérogation UE/Japon existe désormais dans les guidelines. Elle ouvre la porte, à terme, à des moteurs non-WebKit sur iOS. `[COM]` Rien n'indique qu'une de ces quatre applications l'ait demandée.
+
+**Reste à savoir lequel des deux conteneurs WebKit** — et la différence est énorme.
+
+`[OFF]` [`SFSafariViewController`](https://developer.apple.com/documentation/safariservices/sfsafariviewcontroller) : « Interactions with the web interface aren't visible to your app, and **you can't access AutoFill data, browsing history, or website data.** » ; « The web interface supports Safari features such as Reader, AutoFill, Fraudulent Website Warning, and content blocking. » ; « You can't customize or interact with the web content » — si l'app veut le faire, elle **doit** utiliser `WKWebView`.
+
+> **`SFSafariViewController` ≈ Safari.** Mêmes capacités, mêmes cookies, l'app hôte ne voit rien. C'est l'équivalent iOS des Custom Tabs Android (§ 5).
+>
+> **`WKWebView` est un conteneur configuré par l'app hôte**, et ses défauts sont hostiles (§ 13.2).
+
+`[COM]` **Critère de discrimination, applicable sans source :** une application qui **injecte du JavaScript** dans la page, qui **surveille les saisies**, qui affiche une **barre d'outils personnalisée** avec ses propres actions, ou qui **réécrit les liens**, est nécessairement en `WKWebView` — la documentation Apple ci-dessus l'établit, puisque `SFSafariViewController` interdit tout accès au contenu.
+
+`[COM]` **Quelle application utilise quoi, nommément : non établi sur source primaire.** Aucune de ces quatre entreprises ne documente son conteneur, et l'introspection à distance est impossible. **Ce trou n'est pas comblé** ; il doit l'être par mesure sur appareil (§ 13.3).
+
+### 13.2 Les défauts hostiles de `WKWebView` — l'équivalent iOS du tableau `WebSettings`
+
+`[SRC]` `Source/WTF/Scripts/Preferences/UnifiedWebPreferences.yaml`, valeurs par défaut de la cible `WebKit` (c'est-à-dire `WKWebView`), branche `main` au 20/08/2026 :
+
+| Préférence | Défaut iOS | Défaut ailleurs | Conséquence |
+| --- | --- | --- | --- |
+| **`AllowsInlineMediaPlayback`** | **`false`** | `true` | **toute vidéo part dans le lecteur plein écran natif** |
+| **`MediaDataLoadsAutomatically`** | **`false`** | `true` | **aucun préchargement média avant un geste** |
+| `RequiresUserGestureForAudioPlayback` | **`true`** | `false` | geste requis pour tout son |
+| `RequiresUserGestureForVideoPlayback` | `false` | `false` | vidéo muette autorisée — *sauf* mode éco / thermique (§ 8.3) |
+| `RequiresUserGestureToLoadVideo` | `true` (cible `WebCore`) | `false` | charger l'octet 0 demande un geste |
+
+`[OFF]` Apple confirme le premier point mot pour mot — [`WKWebViewConfiguration.allowsInlineMediaPlayback`](https://developer.apple.com/documentation/webkit/wkwebviewconfiguration/allowsinlinemediaplayback) :
+
+> « **The default value of this property is `false` for iPhone and `true` for iPad.** » et « When adding a video element to an HTML document on iPhone, you must also include the `playsinline` attribute. » — avec la note : « Apps created before iOS 10.0 must use the `webkit-playsinline` attribute. »
+
+> **C'est le miroir exact du problème Android du § 4, mais inversé.**
+> Sur Android, l'échec est que **`requestFullscreen()` ne fait rien**.
+> Sur iOS, l'échec est que **la vidéo passe en plein écran natif qu'on le veuille ou non**, si l'application hôte n'a pas mis `allowsInlineMediaPlayback = true`.
+>
+> Dans les deux cas **le site ne peut rien** : on ne peut ni forcer le plein écran sur Android, ni l'empêcher sur iOS. Et le lecteur natif iOS **détruit toute composition** : plus d'overlay, plus de 3D par-dessus, plus d'UI.
+
+`[SRC]` La conséquence de `MediaDataLoadsAutomatically = false` est directe : `MediaElementSession` reçoit `AutoPreloadingNotPermitted` (§ 8.3), donc **`preload="auto"` est ignoré**. C'est la version moderne et sourcée de l'affirmation périmée de 2012 (§ 8.1) : ce n'est pas « le cellulaire » qui coupe le préchargement, c'est un défaut de plateforme.
+
+### 13.3 Android : comment vérifier soi-même, faute de source
+
+`[COM]` **L'hypothèse « WebView système, pas de Chromium embarqué » n'a PAS pu être validée sur source primaire pour Android.** Aucun de ces quatre éditeurs ne publie son architecture, et il n'existe pas d'équivalent Android à la guideline 2.5.6 qui l'imposerait. **Tout le § 2 à § 4 reste conditionné à cette hypothèse.**
+
+Ce qui est vérifiable, en revanche, c'est **la signature**. `[SRC]` `chromium/chromium`, `android_webview/browser/aw_content_browser_client.cc`, fonction `GetUserAgent()`, branche `main` :
+
+```cpp
+std::string GetUserAgent() {
+  // "Version/4.0" had been hardcoded in the legacy WebView.
+  std::string product = "Version/4.0 " + GetProduct();
+  ...
+  // The "Linux; Android 10; K; wv" string matches the
+  // expected format for a reduced WebView User-Agent.
+  constexpr char kUnifiedPlatformOsInfoWebview[] = "Linux; Android 10; K; wv";
+```
+
+Deux marqueurs, tous deux absents de Chrome pour Android :
+
+1. le jeton **`wv`** dans la section plateforme du User-Agent ;
+2. le préfixe **`Version/4.0 `** devant `Chrome/…`.
+
+> **Protocole de validation, à exécuter avant de figer l'architecture** `[COM]` : publier une page de sonde, ouvrir le lien depuis chacune des quatre applications, sur iOS et sur Android, et journaliser `navigator.userAgent`, le résultat de `document.documentElement.requestFullscreen()`, la présence de `window.localStorage`, la valeur de `audioContext.state` après un tap, et le comportement d'un `<video playsinline>` — plein écran ou non. **Une demi-journée de travail qui remplace huit hypothèses.**
+
+## 14. Réseau
+
+### 14.1 Le préchargement n'a pas lieu sur iOS avant un geste
+
+`[SRC]` `UnifiedWebPreferences.yaml` :
+
+```yaml
+MediaDataLoadsAutomatically:
+  defaultValue:
+    WebKit:
+      "PLATFORM(IOS_FAMILY)": false
+      default: true
+```
+
+`[SRC]` Ce réglage pose `MediaElementSession::AutoPreloadingNotPermitted`, levée seulement par `removeBehaviorRestrictionsAfterFirstUserGesture()` (§ 8.4).
+
+`[COM]` Le fichier donne le défaut pour l'API embarquée (`WKWebView`). **Safari lui-même peut surcharger ce réglage ; le fichier ne permet pas de le dire.** À vérifier sur appareil. Ce qui est certain, c'est que **dans tout navigateur in-app iOS, rien n'est préchargé avant le premier tap.**
+
+### 14.2 `Save-Data` : utilisable sur Android, inexistant sur iOS
+
+`[OFF]` chromestatus : « HTTP Client Hints: Save-Data », *Enabled by default* depuis **Chrome 49**, toutes plateformes ; formalisé en client hint avec la permissions policy `CH-Save-Data` en **Chrome 102**.
+
+`[SRC]` Côté WebKit, une recherche sur `Save-Data` dans `WebKit/WebKit` ne renvoie **que des fichiers de test importés de web-platform-tests** — aucune implémentation. **Safari n'envoie pas `Save-Data`.**
+
+`[OFF]` Et ce n'est pas un oubli. [WebKit Tracking Prevention](https://webkit.org/tracking-prevention/) liste les API « we have decided to not yet implement due to fingerprinting, security, and other concerns », parmi lesquelles :
+
+- **Network Information API** → `navigator.connection`, `effectiveType`, `downlink`, `rtt` : **indisponibles sur Safari**
+- **Device Memory API** → `navigator.deviceMemory` : **indisponible**
+- Battery Status API, Web Bluetooth, Web MIDI, WebHID, Serial, Web USB, Web NFC, User Idle Detection
+
+`[OFF]` La demande explicite d'une détection grossière du mode économie d'énergie — [WebKit/standards-positions#353](https://github.com/WebKit/standards-positions/issues/353), ouverte le **13/07/2020**, proposant précisément « detecting (in JS or in an HTTP header such as `Save-Data: On`) whether the user agent's device is currently in power saving mode » — a été **fermée avec le label `invalid` le 07/07/2026**, soit six semaines avant cette recherche.
+
+`[OFF]` `prefers-reduced-data` (chromestatus) est au stade **« Start prototyping »**, avec « No signal » de Firefox et Safari. **Ce n'est pas une option.**
+
+> **Sur iOS, on ne sait rien du réseau ni de l'appareil.** Ni le type de connexion, ni le débit, ni la RAM, ni le mode économie d'énergie. **Toute adaptation doit être mesurée par le site lui-même** — chronométrer le premier segment téléchargé et adapter ensuite — ou être décidée à l'avance de façon conservatrice.
+
+### 14.3 Autoplay Chrome Android, pour mémoire
+
+`[OFF]` [Autoplay policy in Chrome](https://developer.chrome.com/blog/autoplay), **dernière mise à jour affichée : 13/09/2017** — obsolète en apparence, mais toujours la page normative de Chrome :
+
+> « Muted autoplay is always allowed. Autoplay with sound is allowed if: The user has interacted with the domain (click, tap, etc.). **On desktop**, the user's Media Engagement Index threshold has been crossed [...] The user has added the site to their home screen on mobile or installed the PWA on desktop. »
+
+**Le Media Engagement Index est desktop uniquement.** Sur Android, l'autoplay sonore exige une interaction avec le domaine — ou une PWA installée. Et la recommandation de la page reste juste : « Don't assume a video will play, and don't show a pause button when the video is not actually playing. »
+
+`[SRC]` En WebView, c'est plus strict encore : `setMediaPlaybackRequiresUserGesture` vaut `true` par défaut (§ 2), donc **même l'autoplay muet est bloqué** tant que l'app hôte n'a pas fait l'opt-in.
+
+### 14.4 Ce qu'un préchargement agressif coûte
+
+`[COM]` Aucune source primaire ne chiffre le coût en données d'une stratégie de préchargement — c'est une propriété du contenu, pas de la plateforme. Ce que les sources établissent, c'est **pourquoi le préchargement agressif est structurellement perdant sur mobile** :
+
+1. `[SRC]` Sur iOS il **n'a pas lieu** avant le premier geste (§ 14.1).
+2. `[SRC]` Une fois lancé, s'il vise un élément **caché**, ses ressources sont **purgeables** (§ 10.2) — on paie les octets sans garantie de les garder.
+3. `[SRC]` Sous pression mémoire, WebKit **purge activement** tous les éléments en pause (§ 10.2) — on paie les octets et on les perd.
+4. `[SRC]` Chaque `<video>` prêt retient un décodeur matériel, même en pause (§ 10.1) — et le `play()` de trop échoue.
+5. `[OFF]` Sur iOS **on ne peut pas savoir** qu'on est en 4G médiocre (§ 14.2) — donc on ne peut pas décider de s'abstenir.
+
+> **Conclusion : la seule stratégie de préchargement défendable est séquentielle et juste-à-temps** — précharger la ressource *suivante*, une seule, pendant que la courante joue, et jamais les trois d'un coup.
+
 ## Conséquences pour ouvrance
 
 1. **La 3D passe.** WebGL est toujours actif en WebView, l'accélération matérielle aussi. Le pari Three.js / React Three Fiber n'est pas menacé par le chemin d'ouverture in-app.
