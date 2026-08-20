@@ -521,7 +521,7 @@ Une AIPD générique ne servira à rien. Celle d'ouvrance doit répondre à quat
 1. **Le détournement du produit** — un Offrant qui téléverse la photo d'un ex, d'un collègue, d'une personnalité. Mesure : la porte de validation humaine avant livraison (déjà décidée au ticket #1), avec une règle écrite (§8.2, clause 4).
 2. **L'absence d'information de la Personne représentée** quand elle n'est pas le Destinataire (§5.2). C'est le risque résiduel le plus élevé et l'AIPD doit dire comment il est traité — ou assumer qu'il ne l'est pas.
 3. **La rémanence des médias** — commandes non payées (§7), Cadeaux expirés (§6.4), sauvegardes, cache CDN. Mesure : purge à 24 h, expiration à 12 mois, bucket privé.
-4. **La chaîne de sous-traitance** — l'audit de [`rgpd-sous-traitants.md`](./rgpd-sous-traitants.md) est déjà l'essentiel du travail. Il faut en tirer les décisions : **Formspree n'a aucun DPA publié et son certificat DPF est retiré depuis le 26 avril 2022— il doit sortir de la chaîne**, ce n'est pas négociable au regard de l'article 28 §3 qui exige un contrat écrit avec chaque sous-traitant.
+4. **La chaîne de sous-traitance** — l'audit de [`rgpd-sous-traitants.md`](./rgpd-sous-traitants.md) est déjà l'essentiel du travail. Il faut en tirer les décisions : **Formspree n'a aucun DPA publié et son certificat DPF est retiré depuis le 26 avril 2022 — il doit sortir de la chaîne**, ce n'est pas négociable au regard de l'article 28 §3 qui exige un contrat écrit avec chaque sous-traitant.
 
 ### 9.4 Et le registre des traitements
 
