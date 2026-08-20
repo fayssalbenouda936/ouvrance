@@ -348,6 +348,162 @@ case CategoryType::MediaPlayback: categoryString = AVAudioSessionCategoryPlaybac
 
 `[COM]` Alternative plus propre quand elle suffit : **router tout le son par un unique `<audio>` audible** et ne garder le Web Audio que pour ce qui doit être synthétisé ou spatialisé.
 
+## 10. Décodeurs vidéo simultanés, préchargement, plafonds mémoire
+
+C'est la contrainte qui décide de la stratégie de préchargement. **Elle est mal documentée : Apple ne publie aucun chiffre.** Voici ce qui est établissable, et ce qui ne l'est pas.
+
+### 10.1 Ce qu'aucune source primaire ne donne
+
+`[COM]` **Il n'existe aucun nombre officiel de décodeurs vidéo simultanés sur iOS.** Recherche menée dans le code WebKit (`grep` sur `maxActiveContexts`, `maximumMediaElements`, `concurrent video decoders`, `decoderBudget`, `hardware decoder limit`) : **aucune constante de ce type n'existe côté WebKit**. La limite n'est pas dans le moteur — elle est appliquée par VideoToolbox / le matériel, en dessous.
+
+`[SRC]` La preuve que la limite existe et qu'elle est gérée comme une condition d'exécution normale : `Source/WebCore/platform/graphics/cocoa/WebCoreDecompressionSession.mm` rejette explicitement avec `kVTVideoDecoderNotAvailableNowErr` — le code d'erreur VideoToolbox qui signifie « décodeur indisponible **pour le moment** ».
+
+`[COM]` La seule quantification trouvée est un rapport d'utilisateur, **pas une source Apple** : WebKit Bugzilla [bug 193449, « Multiple playing videos pool needs to be managed by browser »](https://bugs.webkit.org/show_bug.cgi?id=193449), ouvert le **15/01/2019**, sévérité *Critical*, **toujours `NEW` — dernière modification 31/01/2022** :
+
+> « iOS by design can only play `<x>` concurrent videos as decoding is done on hardware. » — « for iPhone 6, it is 32 » — « **If a video is "paused" it still occupies the hardware decoder** » — « on `<x>`+1 video play, the call to `play()` method fails ».
+
+Un commentaire ultérieur (24/11/2019) note que le cas de test **faisait planter** iOS 13.3 beta.
+
+> **À retenir, en étant honnête sur le degré de confiance :** le chiffre « 32 » vient d'un rapporteur de bug en 2019 sur un iPhone 6 ; il ne doit **pas** servir de budget. Ce qui est solide, c'est la **forme** de la contrainte : la ressource est le décodeur matériel, elle est finie, **une vidéo en pause la retient toujours**, et le dépassement se manifeste par un `play()` qui échoue — pas par une dégradation douce. Et le bug est ouvert depuis 2019 : WebKit **ne gère pas** de pool ni d'éviction pour vous.
+
+### 10.2 Ce qui, en revanche, est certain : précharger une vidéo cachée ne marche pas
+
+`[SRC]` `MediaElementSession::preferredBufferingPolicy()`, `MediaElementSession.cpp` (l. 633-663) :
+
+```cpp
+if (isSuspended())          return MediaPlayer::BufferingPolicy::MakeResourcesPurgeable;
+if (bufferingSuspended())   return MediaPlayer::BufferingPolicy::LimitReadAhead;
+if (isPlaying)              return MediaPlayer::BufferingPolicy::Default;
+// ...
+if (m_elementIsHiddenUntilVisibleInViewport || m_elementIsHiddenBecauseItWasRemovedFromDOM || element->elementIsHidden())
+    return MediaPlayer::BufferingPolicy::MakeResourcesPurgeable;
+```
+
+> **Un `<video>` qui n'est pas en train de jouer et qui est caché — `display:none`, hors du viewport, retiré du DOM — voit ses ressources marquées *purgeables*.** C'est exactement la configuration dans laquelle on précharge naïvement la cinématique de fin pendant le gameplay. **Le préchargement n'est alors pas garanti** : le système peut reprendre la mémoire à tout moment.
+
+`[SRC]` Sous pression mémoire, la reprise est active et non plus seulement autorisée. `Source/WebCore/page/MemoryRelease.cpp` (l. 168-171) :
+
+```cpp
+for (auto& mediaElement : HTMLMediaElement::allMediaElements())
+    Ref { mediaElement.get() }->purgeBufferedDataIfPossible();
+```
+
+`[SRC]` `HTMLMediaElement::purgeBufferedDataIfPossible()` (l. 10011-10035) passe alors à `BufferingPolicy::PurgeResources` **pour tout élément en pause** (ou piloté par MSE). Un élément qui **joue** est épargné.
+
+`[SRC]` Le mappage vers AVFoundation est explicite dans les `static_assert` de `MediaPlayerPrivateAVFoundationObjC::setBufferingPolicy()` (l. 3699-3727) :
+
+| `BufferingPolicy` WebKit | `AVPlayerResourceConservationLevel` |
+| --- | --- |
+| `Default` | `None` |
+| `LimitReadAhead` | `ReduceReadAhead` |
+| `MakeResourcesPurgeable` | `ReuseActivePlayerResources` |
+| `PurgeResources` | `RecycleBuffer` |
+
+Et la propriété pilotée est `m_avPlayer.get().resourceConservationLevelWhilePaused` — **« while paused »**. `[COM]` Cela recoupe le rapport du bug 193449 : c'est bien l'état *en pause* qui est le levier de libération des ressources, et WebKit ne l'actionne que si l'élément est **caché ou suspendu**.
+
+**Conséquence opérationnelle** : pour qu'une vidéo reste réellement préchargée, elle doit être **visible** (même à 1×1 px derrière un calque, `opacity` non nulle et pas de `display:none`) ou **en train de jouer**. `[COM]` Ce montage se déduit du code ; il n'est pas documenté par Apple et doit être mesuré sur appareil.
+
+### 10.3 Plafond dur du buffer MSE
+
+`[SRC]` `SettingsBase::defaultMaximumSourceBufferSize()`, `Source/WebCore/page/cocoa/SettingsBaseCocoa.mm` (l. 80-91), commentaire littéral :
+
+```cpp
+#if PLATFORM(IOS_FAMILY)
+    // iOS Devices have lower memory limits, enforced by jetsam rates, and a very limited
+    // ability to swap. Allow SourceBuffers to store up to 105MB each, roughly a third of
+    // the limit on macOS, and approximately equivalent to the limit on Firefox.
+    return 110376422;
+#endif
+    return 318767104;
+```
+
+**105 Mo par `SourceBuffer` sur iOS, contre 304 Mo ailleurs.** Si l'on passe par Media Source Extensions, c'est le plafond dur de ce qu'on peut tenir en mémoire par piste.
+
+### 10.4 Plafonds mémoire avant éviction d'onglet
+
+`[SRC]` Sur iOS, la « RAM » vue par WebKit **n'est pas la RAM de l'appareil** : c'est la limite jetsam du processus. `Source/WTF/wtf/RAMSize.cpp` :
+
+```cpp
+size_t ramSize() { static size_t ramSize = availableMemory(); return ramSize; }
+// et, plus bas, une fonction nommée sans ambiguïté :
+size_t ramSizeDisregardingJetsamLimit()
+```
+
+`[SRC]` `Source/WTF/wtf/AvailableMemory.cpp` (l. 88-98 et 140-151) :
+
+```cpp
+static size_t jetsamLimit()
+{
+    memorystatus_memlimit_properties_t properties;
+    if (memorystatus_control(MEMORYSTATUS_CMD_GET_MEMLIMIT_PROPERTIES, getpid(), 0, &properties, sizeof(properties)))
+        return 840 * MB;                       // repli quand la requête noyau échoue
+    if (properties.memlimit_active < 0) return std::numeric_limits<size_t>::max();
+    return static_cast<size_t>(properties.memlimit_active) * MB;
+}
+// ...
+sizeAccordingToKernel = std::min(sizeAccordingToKernel, jetsamLimit());   // arrondi au multiple de 128 Mo supérieur
+```
+
+**Le plafond est le `memlimit_active` que le noyau attribue au processus WebContent**, pas la RAM installée. `[SRC]` Le repli codé en dur, **840 Mo**, donne l'ordre de grandeur qu'Apple juge plausible. `[COM]` La valeur réelle varie par appareil et par version d'iOS et **n'est pas publiée** ; on ne peut pas la lire depuis le web.
+
+`[SRC]` Les seuils de réaction, `Source/WTF/wtf/MemoryPressureHandler.cpp` (l. 46-55, 139-175, 377-384) — **plus stricts sur iOS que partout ailleurs** :
+
+| Seuil | iOS | autres plateformes |
+| --- | --- | --- |
+| `Conservative` | **0,50 × base** | 0,33 × base |
+| `Strict` | **0,65 × base** | 0,50 × base |
+
+avec `baseThreshold = min(3 GB, ramSize())` et une scrutation toutes les **30 s** (`s_pollInterval = 30_s`).
+
+`[SRC]` Au-delà, `MemoryPressureHandler` tente de réduire l'empreinte puis, en cas d'échec, tue le processus — trace littérale : `"Unable to shrink memory footprint of process (%zu MB) below the kill thresold (%zu MB). Killed"`. `[COM]` C'est ce qui se manifeste dans Safari par le rechargement silencieux de l'onglet, ou par « A problem repeatedly occurred ».
+
+> **Budget de travail proposé, à valider sur appareil** `[COM]` : viser **≤ 50 % du plafond** pour rester sous le seuil `Conservative`, soit de l'ordre de **400 Mo d'empreinte totale** si l'on retient 840 Mo comme plafond de travail — textures WebGL, buffers vidéo, JS et DOM compris. Ce chiffre est une inférence à partir des constantes ci-dessus, **pas une garantie Apple**.
+
+## 11. WebGL et WebGPU sur iOS Safari
+
+### 11.1 Disponibilité
+
+**WebGL 1 et WebGL 2** : disponibles de longue date sur iOS Safari. `[COM]` Aucune note de version récente n'a été relue pour redater WebGL 2 ; l'affirmation repose sur l'usage courant, pas sur une source primaire.
+
+**WebGPU : disponible.** `[OFF]` [News from WWDC25: WebGPU in Safari](https://webkit.org/blog/16993/news-from-wwdc25-webgpu-in-safari/), WebKit, **09/06/2025** : « WebKit for Safari 26 beta adds support for WebGPU » sur **macOS, iOS, iPadOS et visionOS**. Safari 26 étant diffusé depuis, **WebGPU est disponible sur iOS Safari en août 2026**.
+
+`[COM]` Ce billet **ne dit rien** des limites de mémoire texture, ni du comportement sur matériel ancien, ni d'un plancher de version d'appareil. Aucune source primaire n'a été trouvée sur ces points côté iOS. **À mesurer, pas à supposer.**
+
+### 11.2 La limite qui existe vraiment : le nombre de contextes
+
+`[SRC]` `Source/WebCore/html/canvas/WebGLRenderingContextBase.cpp` (l. 190-191) :
+
+```cpp
+static constexpr size_t maxActiveContexts = 16;
+static constexpr size_t maxActiveWorkerContexts = 4;
+```
+
+`[SRC]` `addActiveContext()` (l. 326-340) : au-delà, WebKit **détruit le contexte le plus ancien** (`recycleContext()`), avec ce message console verbatim :
+
+> « There are too many active WebGL contexts on this page, the oldest context will be lost. »
+
+`[SRC]` Et le point qui fait mal — `recycleContext()` utilise `SyntheticLostContext`, avec ce commentaire :
+
+```cpp
+// Using SyntheticLostContext means the developer won't be able to force the restoration
+// of the context by calling preventDefault() in a "webglcontextlost" event handler.
+```
+
+> **Un contexte perdu par éviction ne peut pas être récupéré par `preventDefault()` dans `webglcontextlost`.** Il faut recréer le contexte et **retéléverser toutes les textures**.
+
+`[SRC]` Cette limite est **la même sur toutes les plateformes** — ce n'est pas une restriction iOS. La restriction iOS, elle, est mémoire (§ 10.4) et thermique (§ 8.3).
+
+### 11.3 Textures sur appareil bas de gamme
+
+`[COM]` **Aucun chiffre primaire trouvé** : ni Apple ni WebKit ne publient de plafond de mémoire texture par appareil, et `MAX_TEXTURE_SIZE` est une valeur d'exécution, pas une constante documentée. Ce qu'on peut affirmer :
+
+- `[SRC]` La perte de contexte WebGL est un chemin de code normal et prévu (`RealLostContext` par le pilote, `SyntheticLostContext` par éviction). **Gérer `webglcontextlost` / `webglcontextrestored` n'est pas un raffinement, c'est une obligation.**
+- `[SRC]` WebKit retente la restauration au maximum une fois par seconde (`secondsBetweenRestoreAttempts { 1_s }`).
+- `[SRC]` Le budget mémoire textures est prélevé sur la même enveloppe jetsam que tout le reste (§ 10.4) : **une texture de plus, c'est un buffer vidéo de moins.**
+- `[SRC]` Et sous mitigation thermique, ce n'est plus le rendu qui casse en premier mais **l'autoplay vidéo** (§ 8.3).
+
+`[COM]` La seule mesure fiable est empirique, sur les appareils de la cible. Aucune API web ne renseigne le niveau de gamme : `WEBGL_debug_renderer_info` est restreint sur iOS, et `deviceMemory` / `hardwareConcurrency` ne sont pas exposés de façon utile par Safari. **Ce trou est réel et doit être comblé par de la mesure terrain.**
+
 ## Conséquences pour ouvrance
 
 1. **La 3D passe.** WebGL est toujours actif en WebView, l'accélération matérielle aussi. Le pari Three.js / React Three Fiber n'est pas menacé par le chemin d'ouverture in-app.
