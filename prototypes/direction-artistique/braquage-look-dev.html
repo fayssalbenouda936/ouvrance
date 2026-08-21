@@ -114,7 +114,7 @@
 <div class="bench">
   <section class="stage">
     <p class="eyebrow" id="stageLabel">Couloir de la galerie</p>
-    <div class="frame portrait" id="frame"></div>
+    <div class="frame paysage" id="frame"></div>
     <p class="caption" id="caption"></p>
   </section>
   <aside class="notes" id="notes"></aside>
@@ -147,7 +147,7 @@ const params = new URLSearchParams(location.search);
 const state = {
   variant: (params.get('variant') || 'A').toUpperCase(),
   scene: params.get('scene') || 'couloir',
-  orient: params.get('orient') || 'portrait',
+  orient: params.get('orient') || 'paysage',
   perso: params.get('perso') !== '0',
   posture: params.get('posture') || 'libre',
   pouce: params.get('pouce') === '1'
@@ -161,6 +161,7 @@ const VARIANTS = {
     thesis:"La référence, assumée et dégraissée. Musée nocturne chaud, cônes de caméras turquoise, arme tenue. Le HUD reste, mais tombe de sept éléments à trois : objectif, alerte, action.",
     decides:[
       "Palette : pierre chaude sur plafond noir, la lumière vient des vitrines.",
+      "Format 16:9 : les œuvres sont sur les murs, le champ latéral est le jeu.",
       "L'affordance est le viseur — mais le réticule n'existe qu'à la visée.",
       "Hors visée l'arme est abaissée : aucune croix sur la photo de l'offrant.",
       "Vie et munitions supprimées : on ne meurt pas dans un cadeau.",
@@ -170,7 +171,8 @@ const VARIANTS = {
       ['plus',"Lisible sans tutoriel pour qui a déjà joué à un FPS."],
       ['plus',"Le musée est vu — la géométrie payée est la géométrie montrée."],
       ['plus',"Le pic filmable est propre : ni croix ni canon pointé sur la photo."],
-      ['minus',"Trois éléments de HUD restent trois choses à comprendre avant de ressentir."]
+      ['minus',"Trois éléments de HUD restent trois choses à comprendre avant de ressentir."],
+      ['minus',"Le 16:9 impose de faire pivoter le téléphone avant de jouer."]
     ],
     pal:{
       sky:'#0E0B0A', ceil:'#17120E', wallL:'#7A6857', wallR:'#5B4C40', wallFar:'#4A3E35',
@@ -446,11 +448,12 @@ function hud(V, W, H){
 
   /* --- arme --- */
   if (V.weapon){
-    const bx=W*0.55, by=H*0.70, u=S*0.34;
     const aim = state.posture === 'visee';
-    o.push('<g transform="' + (aim
-      ? 'translate('+f1(-W*0.11)+','+f1(-H*0.10)+')'
-      : 'translate('+f1(-W*0.09)+','+f1(H*0.19)+') rotate(34 '+f1(bx)+' '+f1(by)+')') + '">');
+    /* ancré en proportion du cadre : tient en 9:16 comme en 16:9 */
+    const u  = S * (aim ? 0.34 : 0.30);
+    const bx = aim ? W*0.5 - S*0.16 : W*0.72 - u*0.2;
+    const by = aim ? H*0.5 + S*0.10 : H*0.86 - u*0.1;
+    o.push('<g transform="' + (aim ? '' : 'rotate(22 '+f1(bx)+' '+f1(by)+')') + '">');
     const Q=(pts,fill,op='1')=>o.push('<polygon points="'+pts.map(q=>f1(q[0])+','+f1(q[1])).join(' ')+'" fill="'+fill+'" opacity="'+op+'"/>');
     Q([[bx+u*0.02,by+u*0.02],[bx+u*0.82,by-u*0.16],[bx+u*0.86,by-u*0.01],[bx+u*0.06,by+u*0.18]], '#2A2D36');      /* glissière */
     Q([[bx+u*0.06,by+u*0.18],[bx+u*0.86,by-u*0.01],[bx+u*0.88,by+u*0.07],[bx+u*0.08,by+u*0.26]], '#171A21');      /* dessous */
