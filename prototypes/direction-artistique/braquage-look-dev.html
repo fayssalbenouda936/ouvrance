@@ -114,7 +114,7 @@
 <div class="bench">
   <section class="stage">
     <p class="eyebrow" id="stageLabel">Couloir de la galerie</p>
-    <div class="frame paysage" id="frame"></div>
+    <div class="frame portrait" id="frame"></div>
     <p class="caption" id="caption"></p>
   </section>
   <aside class="notes" id="notes"></aside>
@@ -129,6 +129,7 @@
   <div class="row sub" id="toggles">
     <button data-scene="couloir">Couloir</button>
     <button data-scene="oeuvre">L'oeuvre</button>
+    <button data-scene="panoramique">Champ élargi</button>
     <span class="hint">|</span>
     <button data-orient="portrait">9:16</button>
     <button data-orient="paysage">16:9</button>
@@ -147,7 +148,7 @@ const params = new URLSearchParams(location.search);
 const state = {
   variant: (params.get('variant') || 'A').toUpperCase(),
   scene: params.get('scene') || 'couloir',
-  orient: params.get('orient') || 'paysage',
+  orient: params.get('orient') || 'portrait',
   perso: params.get('perso') !== '0',
   posture: params.get('posture') || 'libre',
   pouce: params.get('pouce') === '1'
@@ -161,7 +162,7 @@ const VARIANTS = {
     thesis:"La référence, assumée et dégraissée. Musée nocturne chaud, cônes de caméras turquoise, arme tenue. Le HUD reste, mais tombe de sept éléments à trois : objectif, alerte, action.",
     decides:[
       "Palette : pierre chaude sur plafond noir, la lumière vient des vitrines.",
-      "Format 16:9 : les œuvres sont sur les murs, le champ latéral est le jeu.",
+      "Format 9:16 : l'écran est une fenêtre, le musée est plus large que le cadre.",
       "L'affordance est le viseur — mais le réticule n'existe qu'à la visée.",
       "Hors visée l'arme est abaissée : aucune croix sur la photo de l'offrant.",
       "Vie et munitions supprimées : on ne meurt pas dans un cadeau.",
@@ -172,7 +173,7 @@ const VARIANTS = {
       ['plus',"Le musée est vu — la géométrie payée est la géométrie montrée."],
       ['plus',"Le pic filmable est propre : ni croix ni canon pointé sur la photo."],
       ['minus',"Trois éléments de HUD restent trois choses à comprendre avant de ressentir."],
-      ['minus',"Le 16:9 impose de faire pivoter le téléphone avant de jouer."]
+      ['minus',"En 9:16 le champ est étroit : une caméra hors cadre peut voir sans être vue."]
     ],
     pal:{
       sky:'#0E0B0A', ceil:'#17120E', wallL:'#7A6857', wallR:'#5B4C40', wallFar:'#4A3E35',
@@ -520,9 +521,24 @@ function stick(o, cx, cy, r){
 }
 
 /* ============================ rendu ============================ */
+function panoOverlay(W,H){
+  const ww = H*9/16, x0 = (W-ww)/2, o = [], dim = 'rgba(5,4,8,.74)';
+  o.push('<rect x="0" y="0" width="'+f1(x0)+'" height="'+H+'" fill="'+dim+'"/>');
+  o.push('<rect x="'+f1(x0+ww)+'" y="0" width="'+f1(W-x0-ww)+'" height="'+H+'" fill="'+dim+'"/>');
+  o.push('<rect x="'+f1(x0)+'" y="0" width="'+f1(ww)+'" height="'+H+'" fill="none" stroke="#4FD6C0" stroke-width="3"/>');
+  const L = (x,y,t,anchor,fill,size) => o.push('<text x="'+f1(x)+'" y="'+f1(y)+'" font-family="Barlow Condensed, sans-serif" font-size="'+f1(size)+'" font-weight="600" letter-spacing="0.16em" text-anchor="'+anchor+'" fill="'+fill+'">'+t+'</text>');
+  L(W/2, H*0.075, "\u00c0 L'\u00c9CRAN \u00b7 9:16", 'middle', '#4FD6C0', H*0.036);
+  L(x0*0.5, H*0.50, '\u2190 EN TOURNANT', 'middle', 'rgba(255,255,255,.60)', H*0.030);
+  L(x0*0.5, H*0.55, 'LA T\u00caTE', 'middle', 'rgba(255,255,255,.60)', H*0.030);
+  L(x0+ww+x0*0.5, H*0.50, 'EN TOURNANT \u2192', 'middle', 'rgba(255,255,255,.60)', H*0.030);
+  L(x0+ww+x0*0.5, H*0.55, 'LA T\u00caTE', 'middle', 'rgba(255,255,255,.60)', H*0.030);
+  return o.join('');
+}
+
 function render(){
   const V = VARIANTS[state.variant];
-  const portrait = state.orient === 'portrait';
+  const pano = state.scene === 'panoramique';
+  const portrait = pano ? false : state.orient === 'portrait';
   const W = portrait ? 900 : 1600, H = portrait ? 1600 : 900;
   const c = V.pal;
 
@@ -550,16 +566,21 @@ function render(){
     + '</radialGradient>'
     + '</defs>';
 
-  const body = state.scene === 'couloir' ? sceneCorridor(V,W,H) : sceneArtwork(V,W,H);
+  const body = pano
+    ? sceneCorridor(V,W,H) + panoOverlay(W,H)
+    : (state.scene === 'couloir' ? sceneCorridor(V,W,H) : sceneArtwork(V,W,H));
   const frame = document.getElementById('frame');
-  frame.className = 'frame ' + state.orient;
+  frame.className = 'frame ' + (pano ? 'paysage' : state.orient);
   frame.innerHTML = '<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Maquette : '+V.name+'">'
-    + defs + body + hud(V,W,H) + '</svg>';
+    + defs + body + (pano ? '' : hud(V,W,H)) + '</svg>';
 
   document.getElementById('vlabel').textContent = V.key + ' — ' + V.name;
-  document.getElementById('stageLabel').textContent =
-    state.scene === 'couloir' ? 'Couloir de la galerie' : "L'oeuvre personnelle — le pic émotionnel";
-  document.getElementById('caption').textContent = state.scene === 'couloir'
+  document.getElementById('stageLabel').textContent = pano
+    ? 'Le champ élargi — ce que le cadre montre, ce que la tête découvre'
+    : (state.scene === 'couloir' ? 'Couloir de la galerie' : "L'oeuvre personnelle — le pic émotionnel");
+  document.getElementById('caption').textContent = pano
+    ? "Le 9:16 ne rétrécit pas le musée, il rétrécit le champ instantané. La salle est plus large que le cadre — on la découvre en tournant la caméra."
+    : state.scene === 'couloir'
     ? "Cadres muraux = emplacements substituables. Vitrines au sol = décor, jamais remplacé."
     : (state.perso
         ? "Un média de l'offrant occupe l'emplacement : cadre, faisceau, cartel. C'est le plan qui part sur TikTok — sans réticule, arme abaissée."
