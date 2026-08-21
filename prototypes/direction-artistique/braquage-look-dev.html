@@ -159,13 +159,13 @@ if (!['A','B','C'].includes(state.variant)) state.variant = 'A';
 const VARIANTS = {
   A: {
     key:'A', name:'Le musée éclairé',
-    thesis:"La référence, assumée et dégraissée. Musée nocturne chaud, cônes de caméras turquoise, arme tenue. Le HUD reste, mais tombe de sept éléments à quatre : minicarte, vie, objectif, alerte.",
+    thesis:"La référence, assumée et dégraissée. Musée nocturne chaud, cônes de caméras turquoise, arme tenue. Le HUD reste, mais tombe de sept éléments à quatre : vie, objectif, minicarte, alerte.",
     decides:[
       "Palette : pierre chaude sur plafond noir, la lumière vient des vitrines.",
       "Format 9:16 : l'écran est une fenêtre, le musée est plus large que le cadre.",
       "L'affordance est le viseur — mais le réticule n'existe qu'à la visée.",
       "Hors visée l'arme est abaissée : aucune croix sur la photo de l'offrant.",
-      "Minicarte en haut à gauche, transparente : elle situe sans s'imposer.",
+      "Minicarte sous la vie et l'objectif, transparente : elle situe sans s'imposer.",
       "Barre de vie conservée. Munitions supprimées : on ne compte pas ses balles."
     ],
     tradeoffs:[
@@ -471,14 +471,14 @@ function hud(V, W, H){
 
   /* --- chrome (A) : objectif, alerte, action --- */
   if (V.hud === 'chrome'){
-    const mm = S*0.21, mx = pad, my = safeT + S*0.014;
-    minimap(o, mx, my, mm, c);
-    const hy = my + mm + S*0.034;
+    /* vie, puis objectif, puis minicarte — la carte se consulte, elle ne se surveille pas */
+    const mm = S*0.19, mx = pad, hy = safeT + S*0.052;
     T(mx, hy - S*0.012, 'VIE', S*0.026, 'rgba(255,255,255,.48)');
     o.push('<rect x="'+f1(mx)+'" y="'+f1(hy)+'" width="'+f1(mm)+'" height="'+f1(S*0.017)+'" rx="'+f1(S*0.0085)+'" fill="rgba(255,255,255,.16)"/>');
     o.push('<rect x="'+f1(mx)+'" y="'+f1(hy)+'" width="'+f1(mm*0.72)+'" height="'+f1(S*0.017)+'" rx="'+f1(S*0.0085)+'" fill="#ffffff" opacity="0.88"/>');
-    T(mx, hy + S*0.064, 'OBJECTIF', S*0.026, 'rgba(255,255,255,.48)');
-    T(mx, hy + S*0.106, 'Trouver la toile', S*0.042, '#fff', 'start', 700, '0.02em');
+    T(mx, hy + S*0.060, 'OBJECTIF', S*0.026, 'rgba(255,255,255,.48)');
+    T(mx, hy + S*0.102, 'Trouver la toile', S*0.042, '#fff', 'start', 700, '0.02em');
+    minimap(o, mx, hy + S*0.126, mm, c);
     T(W-pad, safeT+S*0.046, 'ALERTE', S*0.024, 'rgba(255,255,255,.40)', 'end');
     for(let i=0;i<3;i++){
       o.push('<rect x="'+f1(W-pad-S*0.024-(i*S*0.032))+'" y="'+f1(safeT+S*0.060)+'" width="'+f1(S*0.024)+'" height="'+f1(S*0.024)+'" rx="'+f1(S*0.005)+'" fill="'+(i===0?c.cone:'rgba(255,255,255,.13)')+'" opacity="0.8"/>');
