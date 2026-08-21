@@ -159,20 +159,21 @@ if (!['A','B','C'].includes(state.variant)) state.variant = 'A';
 const VARIANTS = {
   A: {
     key:'A', name:'Le musée éclairé',
-    thesis:"La référence, assumée et dégraissée. Musée nocturne chaud, cônes de caméras turquoise, arme tenue. Le HUD reste, mais tombe de sept éléments à trois : objectif, alerte, action.",
+    thesis:"La référence, assumée et dégraissée. Musée nocturne chaud, cônes de caméras turquoise, arme tenue. Le HUD reste, mais tombe de sept éléments à quatre : minicarte, vie, objectif, alerte.",
     decides:[
       "Palette : pierre chaude sur plafond noir, la lumière vient des vitrines.",
       "Format 9:16 : l'écran est une fenêtre, le musée est plus large que le cadre.",
       "L'affordance est le viseur — mais le réticule n'existe qu'à la visée.",
       "Hors visée l'arme est abaissée : aucune croix sur la photo de l'offrant.",
-      "Vie et munitions supprimées : on ne meurt pas dans un cadeau.",
-      "Minimap supprimée : le couloir se lit tout seul."
+      "Minicarte en haut à gauche, transparente : elle situe sans s'imposer.",
+      "Barre de vie conservée. Munitions supprimées : on ne compte pas ses balles."
     ],
     tradeoffs:[
       ['plus',"Lisible sans tutoriel pour qui a déjà joué à un FPS."],
       ['plus',"Le musée est vu — la géométrie payée est la géométrie montrée."],
       ['plus',"Le pic filmable est propre : ni croix ni canon pointé sur la photo."],
-      ['minus',"Trois éléments de HUD restent trois choses à comprendre avant de ressentir."],
+      ['minus',"Quatre éléments de HUD restent quatre choses à comprendre avant de ressentir."],
+      ['minus',"Une barre de vie implique qu'on puisse la perdre — l'échec reste à définir."],
       ['minus',"En 9:16 le champ est étroit : une caméra hors cadre peut voir sans être vue."]
     ],
     pal:{
@@ -470,11 +471,17 @@ function hud(V, W, H){
 
   /* --- chrome (A) : objectif, alerte, action --- */
   if (V.hud === 'chrome'){
-    T(pad, safeT+S*0.052, 'OBJECTIF', S*0.030, 'rgba(255,255,255,.55)');
-    T(pad, safeT+S*0.100, 'Trouver la toile', S*0.048, '#fff', 'start', 700, '0.02em');
-    T(W-pad, safeT+S*0.052, 'ALERTE', S*0.030, 'rgba(255,255,255,.55)', 'end');
+    const mm = S*0.21, mx = pad, my = safeT + S*0.014;
+    minimap(o, mx, my, mm, c);
+    const hy = my + mm + S*0.034;
+    T(mx, hy - S*0.012, 'VIE', S*0.026, 'rgba(255,255,255,.48)');
+    o.push('<rect x="'+f1(mx)+'" y="'+f1(hy)+'" width="'+f1(mm)+'" height="'+f1(S*0.017)+'" rx="'+f1(S*0.0085)+'" fill="rgba(255,255,255,.16)"/>');
+    o.push('<rect x="'+f1(mx)+'" y="'+f1(hy)+'" width="'+f1(mm*0.72)+'" height="'+f1(S*0.017)+'" rx="'+f1(S*0.0085)+'" fill="#ffffff" opacity="0.88"/>');
+    T(mx, hy + S*0.064, 'OBJECTIF', S*0.026, 'rgba(255,255,255,.48)');
+    T(mx, hy + S*0.106, 'Trouver la toile', S*0.042, '#fff', 'start', 700, '0.02em');
+    T(W-pad, safeT+S*0.046, 'ALERTE', S*0.024, 'rgba(255,255,255,.40)', 'end');
     for(let i=0;i<3;i++){
-      o.push('<rect x="'+f1(W-pad-S*0.032-(i*S*0.042))+'" y="'+f1(safeT+S*0.072)+'" width="'+f1(S*0.032)+'" height="'+f1(S*0.032)+'" rx="'+f1(S*0.006)+'" fill="'+(i===0?c.cone:'rgba(255,255,255,.18)')+'"/>');
+      o.push('<rect x="'+f1(W-pad-S*0.024-(i*S*0.032))+'" y="'+f1(safeT+S*0.060)+'" width="'+f1(S*0.024)+'" height="'+f1(S*0.024)+'" rx="'+f1(S*0.005)+'" fill="'+(i===0?c.cone:'rgba(255,255,255,.13)')+'" opacity="0.8"/>');
     }
     actionButton(o, W-pad-S*0.115, H-safeB-S*0.115, S*0.115, c.cone, state.posture==='visee'?'TIRER':'VISER', S);
     stick(o, pad+S*0.115, H-safeB-S*0.115, S*0.115);
@@ -510,6 +517,20 @@ function hud(V, W, H){
     T(W*0.04, safeT-S*0.012, 'SAFE AREA iOS', S*0.020, '#E8B76A', 'start', 600, '0.12em');
   }
   return o.join('');
+}
+function minimap(o, x, y, sz, c){
+  /* transparente : elle situe sans s'imposer */
+  const box = 'x="'+f1(x)+'" y="'+f1(y)+'" width="'+f1(sz)+'" height="'+f1(sz)+'" rx="'+f1(sz*0.10)+'"';
+  o.push('<rect '+box+' fill="#05060A" opacity="0.30"/>');
+  o.push('<rect '+box+' fill="none" stroke="rgba(255,255,255,.20)" stroke-width="1.5"/>');
+  const R = (a,b,w,h,op) => o.push('<rect x="'+f1(x+sz*a)+'" y="'+f1(y+sz*b)+'" width="'+f1(sz*w)+'" height="'+f1(sz*h)+'" fill="rgba(255,255,255,'+op+')"/>');
+  R(0.14,0.12,0.32,0.32,'.15'); R(0.54,0.16,0.30,0.22,'.15');
+  R(0.40,0.44,0.20,0.42,'.15'); R(0.12,0.58,0.24,0.20,'.11');
+  [[0.26,0.20],[0.70,0.28],[0.48,0.62]].forEach(q =>
+    o.push('<circle cx="'+f1(x+sz*q[0])+'" cy="'+f1(y+sz*q[1])+'" r="'+f1(sz*0.030)+'" fill="'+c.cone+'" opacity="0.60"/>'));
+  o.push('<circle cx="'+f1(x+sz*0.68)+'" cy="'+f1(y+sz*0.24)+'" r="'+f1(sz*0.046)+'" fill="'+c.glow+'" opacity="0.85"/>');
+  const px = x+sz*0.49, py = y+sz*0.74;
+  o.push('<polygon points="'+[[px,py-sz*0.065],[px+sz*0.052,py+sz*0.050],[px-sz*0.052,py+sz*0.050]].map(q=>f1(q[0])+','+f1(q[1])).join(' ')+'" fill="#fff" opacity="0.95"/>');
 }
 function actionButton(o, cx, cy, r, col, label, S, outline){
   o.push('<circle cx="'+f1(cx)+'" cy="'+f1(cy)+'" r="'+f1(r)+'" fill="'+(outline?'rgba(0,0,0,.35)':col)+'" stroke="'+col+'" stroke-width="'+f1(S*0.006)+'" opacity="0.92"/>');
