@@ -139,6 +139,9 @@
     <span class="hint">|</span>
     <button data-posture="libre">Hors visée</button>
     <button data-posture="visee">À la visée</button>
+    <span class="hint">|</span>
+    <button data-vie="pleine">Vie pleine</button>
+    <button data-vie="basse">Vie basse</button>
   </div>
 </nav>
 
@@ -151,6 +154,7 @@ const state = {
   orient: params.get('orient') || 'portrait',
   perso: params.get('perso') !== '0',
   posture: params.get('posture') || 'libre',
+  vie: params.get('vie') || 'pleine',
   pouce: params.get('pouce') === '1'
 };
 if (!['A','B','C'].includes(state.variant)) state.variant = 'A';
@@ -166,7 +170,8 @@ const VARIANTS = {
       "L'affordance est le viseur — mais le réticule n'existe qu'à la visée.",
       "Hors visée l'arme est abaissée : aucune croix sur la photo de l'offrant.",
       "Minicarte sous la vie et l'objectif, transparente : elle situe sans s'imposer.",
-      "Barre de vie conservée. Munitions supprimées : on ne compte pas ses balles."
+      "Barre de vie conservée. Munitions supprimées : on ne compte pas ses balles.",
+      "Vie basse : voile rouge stylisé. Trousses de secours au mur pour se soigner."
     ],
     tradeoffs:[
       ['plus',"Lisible sans tutoriel pour qui a déjà joué à un FPS."],
@@ -349,6 +354,15 @@ function sceneCorridor(V, W, H){
   art( 1, 0.38, 0.52, 0.38, 0.70, 'audio');
   art( 1, 0.68, 0.78, 0.42, 0.66, 'defaut');
 
+  /* trousse de secours — objet de décor soignant, à ne pas confondre avec un emplacement */
+  const trousse = (side, z1, z2, y1, y2) => {
+    const x = side*0.972, my=(y1+y2)/2, mz=(z1+z2)/2;
+    poly([[x,y1,z1],[x,y1,z2],[x,y2,z2],[x,y2,z1]], '#EDF1EA', 'opacity="'+(V.torch?0.45:0.92)+'"');
+    poly([[x,my-0.020,z1+0.012],[x,my-0.020,z2-0.012],[x,my+0.020,z2-0.012],[x,my+0.020,z1+0.012]], '#2FA35E');
+    poly([[x,y1+0.022,mz-0.009],[x,y1+0.022,mz+0.009],[x,y2-0.022,mz+0.009],[x,y2-0.022,mz-0.009]], '#2FA35E');
+  };
+  trousse(1, 0.30, 0.355, 0.46, 0.62);
+
   /* caméras + cônes de vision : la furtivité lisible sans tutoriel */
   const cam = (side, z, spread) => {
     const x = side*0.94;
@@ -475,7 +489,8 @@ function hud(V, W, H){
     const mm = S*0.19, mx = pad, hy = safeT + S*0.052;
     T(mx, hy - S*0.012, 'VIE', S*0.026, 'rgba(255,255,255,.48)');
     o.push('<rect x="'+f1(mx)+'" y="'+f1(hy)+'" width="'+f1(mm)+'" height="'+f1(S*0.017)+'" rx="'+f1(S*0.0085)+'" fill="rgba(255,255,255,.16)"/>');
-    o.push('<rect x="'+f1(mx)+'" y="'+f1(hy)+'" width="'+f1(mm*0.72)+'" height="'+f1(S*0.017)+'" rx="'+f1(S*0.0085)+'" fill="#ffffff" opacity="0.88"/>');
+    const bas = state.vie === 'basse';
+    o.push('<rect x="'+f1(mx)+'" y="'+f1(hy)+'" width="'+f1(mm*(bas?0.17:0.72))+'" height="'+f1(S*0.017)+'" rx="'+f1(S*0.0085)+'" fill="'+(bas?'#E0454C':'#ffffff')+'" opacity="'+(bas?1:0.88)+'"/>');
     T(mx, hy + S*0.060, 'OBJECTIF', S*0.026, 'rgba(255,255,255,.48)');
     T(mx, hy + S*0.102, 'Trouver la toile', S*0.042, '#fff', 'start', 700, '0.02em');
     minimap(o, mx, hy + S*0.126, mm, c);
@@ -516,6 +531,13 @@ function hud(V, W, H){
     T(W*0.04, H-safeB-S*0.62-S*0.022, 'PORTÉE DU POUCE, MAIN DROITE', S*0.024, '#4FD6C0', 'start', 600, '0.12em');
     T(W*0.04, safeT-S*0.012, 'SAFE AREA iOS', S*0.020, '#E8B76A', 'start', 600, '0.12em');
   }
+  return o.join('');
+}
+function vieBasse(W,H){
+  const o = [], S = Math.min(W,H);
+  o.push('<rect width="'+W+'" height="'+H+'" fill="url(#sang)"/>');
+  [[0.05,0.16,0.11],[0.94,0.28,0.13],[0.14,0.84,0.12],[0.86,0.90,0.10],[0.52,0.03,0.09]].forEach(b =>
+    o.push('<ellipse cx="'+f1(W*b[0])+'" cy="'+f1(H*b[1])+'" rx="'+f1(S*b[2])+'" ry="'+f1(S*b[2]*0.66)+'" fill="#6E0E12" opacity="0.36"/>'));
   return o.join('');
 }
 function minimap(o, x, y, sz, c){
@@ -570,6 +592,11 @@ function render(){
     +   '<stop offset="55%" stop-color="'+c.fog+'" stop-opacity="'+(V.fogOpacity*0.30)+'"/>'
     +   '<stop offset="100%" stop-color="'+c.fog+'" stop-opacity="0"/>'
     + '</radialGradient>'
+    + '<radialGradient id="sang" cx="50%" cy="50%" r="64%">'
+    +   '<stop offset="30%" stop-color="#7A0F14" stop-opacity="0"/>'
+    +   '<stop offset="72%" stop-color="#7A0F14" stop-opacity="0.34"/>'
+    +   '<stop offset="100%" stop-color="#6E0E12" stop-opacity="0.78"/>'
+    + '</radialGradient>'
     + '<radialGradient id="vig" cx="50%" cy="48%" r="72%">'
     +   '<stop offset="55%" stop-color="#000" stop-opacity="0"/>'
     +   '<stop offset="100%" stop-color="#000" stop-opacity="0.72"/>'
@@ -593,13 +620,15 @@ function render(){
   const frame = document.getElementById('frame');
   frame.className = 'frame ' + (pano ? 'paysage' : state.orient);
   frame.innerHTML = '<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Maquette : '+V.name+'">'
-    + defs + body + (pano ? '' : hud(V,W,H)) + '</svg>';
+    + defs + body + (pano || state.vie !== 'basse' ? '' : vieBasse(W,H)) + (pano ? '' : hud(V,W,H)) + '</svg>';
 
   document.getElementById('vlabel').textContent = V.key + ' — ' + V.name;
   document.getElementById('stageLabel').textContent = pano
     ? 'Le champ élargi — ce que le cadre montre, ce que la tête découvre'
     : (state.scene === 'couloir' ? 'Couloir de la galerie' : "L'oeuvre personnelle — le pic émotionnel");
-  document.getElementById('caption').textContent = pano
+  document.getElementById('caption').textContent = state.vie === 'basse' && !pano
+    ? "Vie basse : voile rouge stylisé plutôt que giclées réalistes — même lisibilité, sans casser le low-poly ni l'usage TikTok. La trousse de secours au mur est l'objet qui soigne."
+    : pano
     ? "Le 9:16 ne rétrécit pas le musée, il rétrécit le champ instantané. La salle est plus large que le cadre — on la découvre en tournant la caméra."
     : state.scene === 'couloir'
     ? "Cadres muraux = emplacements substituables. Vitrines au sol = décor, jamais remplacé."
@@ -627,13 +656,14 @@ function render(){
     const on = (b.dataset.scene && b.dataset.scene === state.scene)
       || (b.dataset.orient && b.dataset.orient === state.orient)
       || (b.dataset.flag && state[b.dataset.flag])
-      || (b.dataset.posture && b.dataset.posture === state.posture);
+      || (b.dataset.posture && b.dataset.posture === state.posture)
+      || (b.dataset.vie && b.dataset.vie === state.vie);
     b.setAttribute('aria-pressed', on ? 'true' : 'false');
   });
 
   const q = new URLSearchParams({
     variant: state.variant, scene: state.scene, orient: state.orient,
-    perso: state.perso ? '1' : '0', pouce: state.pouce ? '1' : '0', posture: state.posture
+    perso: state.perso ? '1' : '0', pouce: state.pouce ? '1' : '0', posture: state.posture, vie: state.vie
   });
   history.replaceState(null, '', location.pathname + '?' + q);
 }
@@ -651,6 +681,7 @@ document.getElementById('toggles').addEventListener('click', e => {
   if (b.dataset.orient) state.orient = b.dataset.orient;
   if (b.dataset.flag) state[b.dataset.flag] = !state[b.dataset.flag];
   if (b.dataset.posture) state.posture = b.dataset.posture;
+  if (b.dataset.vie) state.vie = b.dataset.vie;
   render();
 });
 addEventListener('keydown', e => {
