@@ -1,72 +1,50 @@
-<title>Trois ouvrance.fr</title>
+<title>Trois voix d'ouvrance</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!--
   PROTOTYPE — jetable. Ticket #7 « Le site public et son pouvoir de conversion ».
-  Trois structures radicalement différentes de la page d'atterrissage post-TikTok,
-  commutables via ?variant=A|B|C. Mobile d'abord : tout est rendu dans un cadre 390x844.
-  A — La bobine (la vidéo continue)   B — La maison (vitrine premium)   C — Le seuil (configurateur)
+  TOUR 2. Le tour 1 a tranché la STRUCTURE : entonnoir vertical plein écran, sans
+  en-tête, prix au dernier panneau (maquette « La bobine »). Restaient deux refus :
+  l'identité empruntée au musée, et une écriture centrée sur le virement.
+  Ici la structure est donc TENUE CONSTANTE — c'est l'axe déjà décidé — et on ne fait
+  varier que ce qui reste ouvert : l'identité de marque et la voix.
+  A1 L'atelier · A2 La console · A3 L'écrin — commutables via ?variant=A1|A2|A3.
+  Les trois posent la même thèse produit : le produit est un JEU PERSONNALISABLE,
+  le musée n'est qu'un décor parmi d'autres, le lien de virement est une option de fin.
   Ne pas promouvoir ce code en production : aucune abstraction, aucun test.
 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Calistoga&family=Cormorant:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=IBM+Plex+Mono:wght@400;600&family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;700&display=swap">
 <style>
 /* ============================== BANC D'ESSAI ============================== */
 :root{
-  --bench-ground:#0B0A0C; --bench-panel:#141219; --bench-panel-2:#1B1823; --bench-line:#2C2734;
+  --bench-ground:#0B0A0C; --bench-panel:#141219; --bench-line:#2C2734;
   --bench-ink:#EDE9F2; --bench-ink-2:#A79FB8; --bench-ink-3:#6E6782; --bench-accent:#4FD6C0;
   --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
   --ui:'Inter',system-ui,-apple-system,sans-serif;
 }
 *{box-sizing:border-box}
 html,body{margin:0}
-body{
-  background:var(--bench-ground); color:var(--bench-ink);
-  font-family:var(--ui); font-size:15px; line-height:1.55; -webkit-font-smoothing:antialiased;
-}
-.bench{
-  min-height:100vh; display:grid; gap:30px;
-  grid-template-columns:minmax(0,1fr) 400px;
-  padding:28px 28px 190px;
-}
+body{background:var(--bench-ground); color:var(--bench-ink); font-family:var(--ui); font-size:15px; line-height:1.55; -webkit-font-smoothing:antialiased}
+.bench{min-height:100vh; display:grid; gap:30px; grid-template-columns:minmax(0,1fr) 400px; padding:28px 28px 190px}
 @media (max-width:1040px){ .bench{grid-template-columns:minmax(0,1fr); padding:18px 16px 210px} }
-
 .stage{display:flex; flex-direction:column; align-items:center; gap:16px; min-width:0}
-.eyebrow{
-  font-family:'Barlow Condensed',sans-serif; text-transform:uppercase; letter-spacing:.16em;
-  font-size:14px; font-weight:600; color:var(--bench-ink-3); text-align:center;
-}
+.eyebrow{font-family:var(--mono); text-transform:uppercase; letter-spacing:.14em; font-size:11.5px; color:var(--bench-ink-3); text-align:center}
 .eyebrow b{color:var(--bench-accent); font-weight:600}
-
-/* --- le téléphone --- */
 .phone{
-  position:relative; width:390px; max-width:100%;
-  --sh:min(844px,74vh); height:var(--sh); border-radius:44px; padding:10px;
-  background:linear-gradient(160deg,#2A2731,#0E0D11);
-  box-shadow:0 50px 100px -34px #000, 0 0 0 1px #322D3C inset;
-  flex:none;
+  position:relative; width:390px; max-width:100%; --sh:min(844px,74vh); height:var(--sh);
+  border-radius:44px; padding:10px; background:linear-gradient(160deg,#2A2731,#0E0D11);
+  box-shadow:0 50px 100px -34px #000, 0 0 0 1px #322D3C inset; flex:none;
 }
-.screen{
-  position:relative; width:100%; height:100%; border-radius:35px; overflow:hidden;
-  background:#000; overflow-y:auto; scrollbar-width:none; -webkit-overflow-scrolling:touch;
-}
+.screen{position:relative; width:100%; height:100%; border-radius:35px; overflow:hidden; background:#000; overflow-y:auto; scrollbar-width:none; scroll-snap-type:y proximity}
 .screen::-webkit-scrollbar{display:none}
-.notch{
-  position:absolute; top:14px; left:50%; transform:translateX(-50%);
-  width:112px; height:26px; border-radius:14px; background:#08070A; z-index:60; pointer-events:none;
-}
-.caption{
-  font-family:var(--mono); font-size:11.5px; color:var(--bench-ink-3);
-  letter-spacing:.02em; text-align:center; max-width:62ch;
-}
-
-/* --- le panneau de notes --- */
+.notch{position:absolute; top:14px; left:50%; transform:translateX(-50%); width:112px; height:26px; border-radius:14px; background:#08070A; z-index:60; pointer-events:none}
+.caption{font-family:var(--mono); font-size:11.5px; color:var(--bench-ink-3); text-align:center; max-width:62ch}
 .notes{display:flex; flex-direction:column; gap:14px; min-width:0}
 .card{background:var(--bench-panel); border:1px solid var(--bench-line); border-radius:16px; padding:18px 20px}
-.card h2{
-  margin:0 0 10px; font-family:'Barlow Condensed',sans-serif; font-size:15px; font-weight:600;
-  text-transform:uppercase; letter-spacing:.14em; color:var(--bench-accent);
-}
+.card.flag{border-color:#5A4522; background:#191308}
+.card h2{margin:0 0 10px; font-family:var(--mono); font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:.14em; color:var(--bench-accent)}
+.card.flag h2{color:#E8B76A}
 .card h3{margin:14px 0 4px; font-size:13px; font-weight:600; color:var(--bench-ink)}
 .card h3:first-of-type{margin-top:0}
 .card p{margin:0 0 8px; font-size:13.5px; color:var(--bench-ink-2)}
@@ -78,286 +56,123 @@ body{
 .card .warn{color:#E8B76A}
 .swatches{display:flex; gap:6px; margin-top:10px; flex-wrap:wrap}
 .sw{width:30px; height:30px; border-radius:8px; border:1px solid #ffffff1a}
-.meta{font-family:var(--mono); font-size:11px; color:var(--bench-ink-3); letter-spacing:.03em}
-
-/* --- la barre de commutation --- */
 .switcher{
   position:fixed; left:50%; bottom:26px; transform:translateX(-50%); z-index:200;
-  display:flex; align-items:center; gap:4px; padding:6px;
-  background:#F4F1F8; color:#14121A; border-radius:999px;
-  box-shadow:0 24px 60px -18px #000, 0 0 0 1px #ffffff30;
+  display:flex; align-items:center; gap:4px; padding:6px; background:#F4F1F8; color:#14121A;
+  border-radius:999px; box-shadow:0 24px 60px -18px #000, 0 0 0 1px #ffffff30;
 }
-.switcher button{
-  width:44px; height:44px; border:0; border-radius:999px; background:transparent; color:#14121A;
-  cursor:pointer; display:grid; place-items:center; transition:background .18s ease;
-}
+.switcher button{width:44px; height:44px; border:0; border-radius:999px; background:transparent; color:#14121A; cursor:pointer; display:grid; place-items:center; transition:background .18s ease}
 .switcher button:hover{background:#00000012}
 .switcher button:focus-visible{outline:2px solid #4FD6C0; outline-offset:2px}
-.switcher .label{
-  min-width:236px; text-align:center; padding:0 10px;
-  font-family:'Barlow Condensed',sans-serif; text-transform:uppercase; letter-spacing:.1em;
-  font-size:15px; font-weight:600; line-height:1.15;
-}
-.switcher .label span{display:block; font-family:var(--mono); font-size:10.5px; letter-spacing:.06em; color:#6A6478; text-transform:none}
+.switcher .label{min-width:250px; text-align:center; padding:0 10px; font-family:var(--ui); font-size:15px; font-weight:600; line-height:1.2}
+.switcher .label span{display:block; font-family:var(--mono); font-size:10.5px; letter-spacing:.04em; color:#6A6478; font-weight:400}
 @media (max-width:1040px){ .switcher{bottom:16px} }
 
 /* ====================================================================== */
-/* ============ A — LA BOBINE : la vidéo TikTok ne s'arrête pas ========== */
+/* SQUELETTE COMMUN — l'entonnoir. Décidé au tour 1, tenu constant ici.    */
 /* ====================================================================== */
-.vA{
-  --ground:#0A0908; --ink:#F5F0E8; --ink-2:#A79E92; --gold:#E8B76A; --turq:#4FD6C0;
-  font-family:'Inter',system-ui,sans-serif; color:var(--ink); background:var(--ground);
-}
-.screen:has(.vA){scroll-snap-type:y proximity}
-.vA .pan{
+.funnel{font-family:var(--body); color:var(--ink); background:var(--ground)}
+.funnel .pan{
   position:relative; min-height:calc(var(--sh) - 20px); scroll-snap-align:start;
-  display:flex; flex-direction:column; justify-content:flex-end;
-  padding:0 22px 118px; overflow:hidden;
+  display:flex; flex-direction:column; justify-content:flex-end; padding:0 22px 112px; overflow:hidden;
 }
-.vA .wordmark{
-  position:absolute; top:58px; left:22px; z-index:20;
-  font-family:'Barlow Condensed',sans-serif; text-transform:uppercase; letter-spacing:.34em;
-  font-size:12px; font-weight:600; color:#FFFFFFB0;
+.funnel .scene{position:absolute; inset:0; z-index:0}
+.funnel .scene svg{width:100%; height:100%; display:block}
+.funnel .veil{position:absolute; inset:0; z-index:1; background:linear-gradient(180deg,var(--ground) 0%,transparent 13%,transparent 26%,var(--ground) 49%,var(--ground) 100%)}
+.funnel .pan > *:not(.scene):not(.veil):not(.mark):not(.hint){position:relative; z-index:2}
+.funnel .mark{
+  position:absolute; top:58px; left:22px; z-index:20; font-family:var(--display);
+  font-size:var(--mark-size,16px); font-weight:var(--mark-weight,700);
+  letter-spacing:var(--mark-track,.02em); text-transform:var(--mark-case,none); color:var(--ink);
 }
-.vA .scene{position:absolute; inset:0; z-index:0}
-.vA .scene svg{width:100%; height:100%; display:block}
-.vA .veil{
-  position:absolute; inset:0; z-index:1;
-  background:linear-gradient(180deg,#0A0908E6 0%,#0A090833 26%,#0A090800 44%,#0A0908D9 76%,#0A0908 100%);
-}
-.vA .pan > *:not(.scene):not(.veil):not(.wordmark):not(.hint){position:relative; z-index:2}
-.vA h1{
-  margin:0 0 14px; font-family:'Barlow Condensed',sans-serif; font-weight:700;
-  font-size:46px; line-height:.95; letter-spacing:-.01em; text-transform:uppercase;
-}
-.vA h1 em{font-style:normal; color:var(--gold); display:block}
-.vA .kicker{
-  font-family:'Barlow Condensed',sans-serif; text-transform:uppercase; letter-spacing:.22em;
-  font-size:11.5px; font-weight:600; color:var(--turq); margin-bottom:12px;
-}
-.vA p{margin:0 0 18px; font-size:15px; line-height:1.5; color:var(--ink-2); max-width:30ch}
-.vA .cta{
+.funnel .kicker{font-family:var(--mono); text-transform:uppercase; letter-spacing:.2em; font-size:10.5px; color:var(--accent); margin-bottom:12px}
+.funnel h1{margin:0 0 14px; font-family:var(--display); font-weight:var(--h1-weight,700); font-size:var(--h1-size,44px); line-height:var(--h1-lh,1); letter-spacing:var(--h1-track,-.02em); text-transform:var(--h1-case,none)}
+.funnel h1 em{font-style:var(--em-style,normal); color:var(--accent); display:block}
+.funnel .lede{margin:0 0 20px; font-size:15.5px; line-height:1.5; color:var(--ink-2); max-width:31ch}
+.funnel .cta{
   display:flex; align-items:center; justify-content:center; gap:9px; min-height:56px;
-  border-radius:999px; background:var(--gold); color:#1A1206; text-decoration:none;
-  font-weight:700; font-size:16.5px; letter-spacing:.01em;
-  box-shadow:0 16px 40px -14px #E8B76A80;
+  border-radius:var(--radius,999px); background:var(--accent); color:var(--on-accent);
+  text-decoration:none; font-weight:700; font-size:16.5px; box-shadow:0 16px 40px -16px var(--accent);
 }
-.vA .micro{
-  margin:10px 0 0; font-size:12.5px; color:#A79E92; text-align:center;
-  display:flex; align-items:center; justify-content:center; gap:6px;
-}
-.vA .hint{
-  position:absolute; left:50%; bottom:26px; transform:translateX(-50%); z-index:3;
-  display:flex; flex-direction:column; align-items:center; gap:5px;
-  font-family:var(--mono); font-size:10px; letter-spacing:.14em; color:#6E675D; text-transform:uppercase;
-}
-.vA .beats{display:flex; gap:11px; overflow-x:auto; padding-bottom:6px; margin:0 -22px 20px; padding-left:22px; padding-right:22px; scrollbar-width:none}
-.vA .beats::-webkit-scrollbar{display:none}
-.vA .beat{flex:none; width:132px}
-.vA .beat .thumb{width:132px; height:198px; border-radius:14px; overflow:hidden; background:#131110; border:1px solid #2A2520}
-.vA .beat .thumb svg{width:100%; height:100%; display:block}
-.vA .beat b{display:block; margin-top:9px; font-size:13px; font-weight:600}
-.vA .beat span{display:block; font-size:12px; color:var(--ink-2); line-height:1.4}
-.vA .steps{list-style:none; margin:0 0 22px; padding:0; display:flex; flex-direction:column; gap:14px}
-.vA .steps li{display:flex; gap:13px; align-items:flex-start}
-.vA .steps .n{
-  flex:none; width:26px; height:26px; border-radius:999px; border:1px solid #3A342C;
-  display:grid; place-items:center; font-family:var(--mono); font-size:11px; color:var(--gold);
-}
-.vA .steps b{display:block; font-size:14.5px}
-.vA .steps span{font-size:13px; color:var(--ink-2)}
-.vA .offer{border:1px solid #2A2520; border-radius:18px; padding:18px; background:#100E0D; margin-bottom:12px}
-.vA .offer.hero{border-color:#5A4522; background:linear-gradient(170deg,#1A1408,#100E0D)}
-.vA .offer .tag{
-  font-family:var(--mono); font-size:10px; letter-spacing:.14em; text-transform:uppercase;
-  color:#1A1206; background:var(--gold); padding:3px 8px; border-radius:5px; display:inline-block; margin-bottom:11px;
-}
-.vA .offer h3{margin:0 0 4px; font-family:'Barlow Condensed',sans-serif; font-size:27px; text-transform:uppercase; letter-spacing:.01em}
-.vA .offer .price{font-family:'Barlow Condensed',sans-serif; font-size:27px; color:var(--gold)}
-.vA .offer p{margin:6px 0 0; font-size:13.5px; max-width:none}
-.vA .bar{
+.funnel .micro{margin:11px 0 0; font-size:12.5px; color:var(--ink-2); text-align:center; display:flex; align-items:center; justify-content:center; gap:6px}
+.funnel .micro svg{flex:none}
+.funnel .hint{position:absolute; left:50%; bottom:24px; transform:translateX(-50%); z-index:3; display:flex; flex-direction:column; align-items:center; gap:4px; font-family:var(--mono); font-size:9.5px; letter-spacing:.16em; color:var(--ink-3); text-transform:uppercase}
+
+/* les trois traces — ce que l'offrant met dedans */
+.funnel .traces{display:flex; flex-direction:column; gap:12px; margin-bottom:20px}
+.funnel .trace{display:flex; gap:14px; align-items:flex-start; padding:15px; border-radius:var(--radius-sm,16px); background:var(--surface); border:1px solid var(--line)}
+.funnel .trace .ico{flex:none; width:38px; height:38px; border-radius:var(--radius-sm,12px); background:var(--accent-soft); color:var(--accent); display:grid; place-items:center}
+.funnel .trace .ico svg{width:20px; height:20px}
+.funnel .trace b{display:block; font-size:15px; margin-bottom:3px; font-weight:600}
+.funnel .trace span{display:block; font-size:13px; color:var(--ink-2); line-height:1.45}
+
+/* le catalogue — le musée n'est qu'un décor parmi d'autres */
+.funnel .deck{display:flex; gap:11px; overflow-x:auto; margin:0 -22px 16px; padding:2px 22px 8px; scrollbar-width:none}
+.funnel .deck::-webkit-scrollbar{display:none}
+.funnel .tile{flex:none; width:146px}
+.funnel .tile .art{width:146px; height:196px; border-radius:var(--radius-sm,16px); overflow:hidden; background:var(--surface); border:1px solid var(--line)}
+.funnel .tile .art svg{width:100%; height:100%; display:block}
+.funnel .tile b{display:block; margin-top:10px; font-size:14px; font-weight:600}
+.funnel .tile span{display:block; font-family:var(--mono); font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-3); margin-top:2px}
+.funnel .tile.soon b, .funnel .tile.soon span{opacity:.55}
+
+/* les prix */
+.funnel .offer{border:1px solid var(--line); border-radius:var(--radius-sm,18px); padding:17px; background:var(--surface); margin-bottom:11px}
+.funnel .offer.lead{border-color:var(--accent); background:var(--accent-soft)}
+.funnel .offer .tag{font-family:var(--mono); font-size:9.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--on-accent); background:var(--accent); padding:3px 8px; border-radius:5px; display:inline-block; margin-bottom:10px}
+.funnel .offer .row{display:flex; align-items:baseline; justify-content:space-between; gap:10px}
+.funnel .offer h3{margin:0; font-family:var(--display); font-size:var(--h3-size,23px); font-weight:var(--h1-weight,700); letter-spacing:var(--h1-track,-.01em); text-transform:var(--h1-case,none)}
+.funnel .offer .price{font-family:var(--display); font-size:var(--h3-size,23px); font-weight:var(--h1-weight,700); color:var(--accent); white-space:nowrap}
+.funnel .offer p{margin:7px 0 0; font-size:13.5px; color:var(--ink-2); line-height:1.5}
+.funnel .bar{
   position:sticky; bottom:0; z-index:30; padding:12px 18px calc(12px + env(safe-area-inset-bottom));
-  background:#0A0908F2; backdrop-filter:blur(14px); border-top:1px solid #221E1A;
-  display:flex; align-items:center; gap:12px;
+  background:color-mix(in srgb, var(--ground) 94%, transparent); backdrop-filter:blur(14px);
+  border-top:1px solid var(--line); display:flex; align-items:center; gap:12px;
 }
-.vA .bar .txt{flex:1; min-width:0}
-.vA .bar b{display:block; font-size:13.5px}
-.vA .bar span{display:block; font-size:11.5px; color:var(--ink-2)}
-.vA .bar a{
-  flex:none; min-height:46px; padding:0 20px; border-radius:999px; background:var(--gold); color:#1A1206;
-  display:grid; place-items:center; text-decoration:none; font-weight:700; font-size:14.5px;
-}
-
-/* ====================================================================== */
-/* ================ B — LA MAISON : la vitrine premium ================== */
-/* ====================================================================== */
-.vB{
-  --paper:#FAF8F5; --ink:#0C0A09; --ink-2:#5A534C; --line:#E4DED6; --gold:#8A6A1F; --deep:#141110;
-  font-family:'Montserrat',system-ui,sans-serif; color:var(--ink); background:var(--paper);
-}
-.vB header{
-  position:sticky; top:0; z-index:40; display:flex; align-items:center; justify-content:space-between;
-  padding:calc(env(safe-area-inset-top) + 52px) 20px 14px;
-  background:#FAF8F5F2; backdrop-filter:blur(12px); border-bottom:1px solid var(--line);
-}
-.vB .wordmark{font-family:'Cormorant',serif; font-size:23px; font-weight:600; letter-spacing:.02em}
-.vB header a{
-  min-height:38px; padding:0 16px; border-radius:999px; background:var(--ink); color:#fff;
-  display:grid; place-items:center; text-decoration:none; font-size:13px; font-weight:600;
-}
-.vB section{padding:44px 20px; border-bottom:1px solid var(--line)}
-.vB .hero{padding-top:34px; text-align:center}
-.vB .eye{
-  font-size:11px; font-weight:600; letter-spacing:.2em; text-transform:uppercase; color:var(--gold); margin-bottom:14px;
-}
-.vB h1{
-  margin:0 0 16px; font-family:'Cormorant',serif; font-weight:500;
-  font-size:44px; line-height:1.04; letter-spacing:-.01em;
-}
-.vB h1 em{font-style:italic; color:var(--gold)}
-.vB .lede{margin:0 auto 24px; font-size:15.5px; line-height:1.6; color:var(--ink-2); max-width:32ch}
-.vB .btns{display:flex; flex-direction:column; gap:10px}
-.vB .btn{
-  min-height:52px; border-radius:999px; display:grid; place-items:center; text-decoration:none;
-  font-size:15.5px; font-weight:600;
-}
-.vB .btn.p{background:var(--ink); color:#fff}
-.vB .btn.s{background:transparent; color:var(--ink); border:1px solid #C9C1B6}
-.vB .shot{
-  margin:30px -20px 0; height:300px; background:var(--deep); position:relative; overflow:hidden;
-}
-.vB .shot svg{width:100%; height:100%; display:block}
-.vB h2{
-  margin:0 0 8px; font-family:'Cormorant',serif; font-weight:500; font-size:33px; line-height:1.1;
-}
-.vB .sub{margin:0 0 26px; font-size:14.5px; color:var(--ink-2); line-height:1.6}
-.vB .obj{border:1px solid var(--line); border-radius:20px; overflow:hidden; background:#fff; margin-bottom:16px}
-.vB .obj .top{height:186px; position:relative; overflow:hidden}
-.vB .obj .top svg{width:100%; height:100%; display:block}
-.vB .obj .body{padding:20px}
-.vB .obj .nature{
-  font-size:10.5px; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:var(--gold); margin-bottom:9px;
-}
-.vB .obj h3{margin:0 0 8px; font-family:'Cormorant',serif; font-weight:600; font-size:27px}
-.vB .obj p{margin:0 0 14px; font-size:14px; color:var(--ink-2); line-height:1.6}
-.vB .obj .row{display:flex; align-items:center; justify-content:space-between; gap:12px}
-.vB .obj .price{font-family:'Cormorant',serif; font-size:26px; font-weight:600}
-.vB .obj .price small{display:block; font-family:'Montserrat',sans-serif; font-size:11px; font-weight:500; color:var(--ink-2)}
-.vB .obj .pick{
-  min-height:44px; padding:0 20px; border-radius:999px; background:var(--ink); color:#fff;
-  display:grid; place-items:center; text-decoration:none; font-size:14px; font-weight:600;
-}
-.vB .how{list-style:none; margin:0; padding:0; counter-reset:s}
-.vB .how li{display:flex; gap:15px; padding:16px 0; border-bottom:1px solid var(--line)}
-.vB .how li:last-child{border-bottom:0; padding-bottom:0}
-.vB .how .n{
-  flex:none; width:32px; height:32px; border-radius:999px; border:1px solid var(--line);
-  display:grid; place-items:center; font-family:'Cormorant',serif; font-size:17px; font-weight:600; color:var(--gold);
-}
-.vB .how b{display:block; font-size:15px; margin-bottom:3px}
-.vB .how span{font-size:13.5px; color:var(--ink-2); line-height:1.55}
-.vB .trust{background:var(--deep); color:#F2EEE8; border-bottom:0}
-.vB .trust h2{color:#F2EEE8}
-.vB .trust .sub{color:#A79E92; margin-bottom:0}
-.vB .chips{display:flex; flex-wrap:wrap; gap:8px}
-.vB .chip{
-  padding:9px 15px; border-radius:999px; border:1px solid var(--line); background:#fff;
-  font-size:13.5px; min-height:40px; display:inline-flex; align-items:center;
-}
-.vB .faq{border-bottom:1px solid var(--line); padding:15px 0}
-.vB .faq b{display:block; font-size:14.5px; margin-bottom:5px}
-.vB .faq span{font-size:13.5px; color:var(--ink-2); line-height:1.6}
-.vB footer{padding:30px 20px calc(34px + env(safe-area-inset-bottom)); background:#F2EEE8}
-.vB footer .links{display:flex; flex-wrap:wrap; gap:14px; margin-bottom:16px}
-.vB footer a{font-size:12.5px; color:var(--ink-2); text-decoration:none; border-bottom:1px solid #C9C1B6; padding-bottom:2px}
-.vB footer p{margin:0; font-size:11.5px; color:#8A837B}
-
-/* ====================================================================== */
-/* ============== C — LE SEUIL : on entre par la question =============== */
-/* ====================================================================== */
-.vC{
-  --cream:#FDF8F3; --ink:#241A22; --ink-2:#6E5E68; --line:#EADFD6;
-  --plum:#4A2340; --terra:#C4643C; --terra-soft:#FBEDE6;
-  font-family:'Inter',system-ui,sans-serif; color:var(--ink); background:var(--cream);
-}
-.vC .top{
-  position:sticky; top:0; z-index:40; padding:calc(env(safe-area-inset-top) + 50px) 20px 12px;
-  background:#FDF8F3F2; backdrop-filter:blur(12px);
-}
-.vC .toprow{display:flex; align-items:center; justify-content:space-between; margin-bottom:12px}
-.vC .wordmark{font-family:'Calistoga',serif; font-size:20px; letter-spacing:.01em; color:var(--plum)}
-.vC .back{
-  width:38px; height:38px; border-radius:999px; border:1px solid var(--line); background:#fff;
-  display:grid; place-items:center; cursor:pointer;
-}
-.vC .rail{height:3px; border-radius:999px; background:var(--line); overflow:hidden}
-.vC .rail i{display:block; height:100%; width:40%; background:var(--terra); border-radius:999px}
-.vC .railtxt{margin-top:8px; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-2)}
-.vC .step{padding:26px 20px 34px}
-.vC .q{
-  margin:0 0 6px; font-family:'Calistoga',serif; font-size:31px; line-height:1.14; color:var(--plum);
-}
-.vC .qsub{margin:0 0 20px; font-size:14px; color:var(--ink-2); line-height:1.55}
-.vC .opts{display:grid; grid-template-columns:1fr 1fr; gap:10px}
-.vC .opt{
-  min-height:88px; border-radius:16px; border:1px solid var(--line); background:#fff;
-  padding:14px; display:flex; flex-direction:column; justify-content:flex-end; gap:6px;
-  cursor:pointer; text-align:left; font:inherit; color:inherit; transition:border-color .18s ease, box-shadow .18s ease, background .18s ease;
-}
-.vC .opt:hover{border-color:#D8C6BA}
-.vC .opt[aria-pressed="true"]{border-color:var(--terra); background:var(--terra-soft); box-shadow:0 0 0 1px var(--terra)}
-.vC .opt b{font-size:15px; font-weight:600}
-.vC .opt span{font-size:12px; color:var(--ink-2); line-height:1.35}
-.vC .opt svg{width:22px; height:22px; color:var(--terra)}
-.vC .chips{display:flex; flex-wrap:wrap; gap:9px}
-.vC .chip{
-  min-height:44px; padding:0 16px; border-radius:999px; border:1px solid var(--line); background:#fff;
-  display:inline-flex; align-items:center; font:inherit; font-size:14px; cursor:pointer;
-  transition:border-color .18s ease, background .18s ease;
-}
-.vC .chip[aria-pressed="true"]{border-color:var(--terra); background:var(--terra-soft); color:#8A3E1C; font-weight:600}
-.vC .fold{margin-top:30px; padding-top:26px; border-top:1px dashed var(--line)}
-.vC .foldtag{
-  font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; color:#A8998F; margin-bottom:14px;
-}
-.vC .preview{
-  border-radius:20px; overflow:hidden; background:#140F13; color:#F3EBE6;
-  box-shadow:0 24px 60px -26px #4A234066;
-}
-.vC .preview .art{height:200px; position:relative}
-.vC .preview .art svg{width:100%; height:100%; display:block}
-.vC .preview .body{padding:20px}
-.vC .preview .nature{font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; color:#C9A98F; margin-bottom:8px}
-.vC .preview h3{margin:0 0 8px; font-family:'Calistoga',serif; font-size:24px; line-height:1.2}
-.vC .preview p{margin:0; font-size:13.5px; color:#B6A69E; line-height:1.6}
-.vC .money{
-  margin-top:16px; border-radius:18px; border:1px solid var(--line); background:#fff; padding:18px;
-}
-.vC .money .line{display:flex; align-items:baseline; justify-content:space-between; padding:9px 0; font-size:14px}
-.vC .money .line + .line{border-top:1px solid var(--line)}
-.vC .money .line span{color:var(--ink-2)}
-.vC .money .line b{font-size:16px}
-.vC .money .line.tot b{font-family:'Calistoga',serif; font-size:22px; color:var(--plum)}
-.vC .money .note{margin:12px 0 0; font-size:12.5px; color:var(--ink-2); line-height:1.55; display:flex; gap:8px}
-.vC .money .note svg{flex:none; width:16px; height:16px; margin-top:2px; color:var(--terra)}
-.vC .alt{
-  margin-top:14px; padding:15px 16px; border-radius:14px; background:#F5EEE7;
-  display:flex; align-items:center; justify-content:space-between; gap:12px;
-}
-.vC .alt b{display:block; font-size:13.5px}
-.vC .alt span{display:block; font-size:12px; color:var(--ink-2)}
-.vC .alt a{font-size:13px; font-weight:600; color:var(--terra); text-decoration:none; white-space:nowrap}
-.vC .dock{
-  position:sticky; bottom:0; z-index:30; padding:12px 20px calc(14px + env(safe-area-inset-bottom));
-  background:#FDF8F3F2; backdrop-filter:blur(14px); border-top:1px solid var(--line);
-}
-.vC .dock a{
-  min-height:54px; border-radius:999px; background:var(--plum); color:#FDF8F3;
-  display:flex; align-items:center; justify-content:center; gap:9px; text-decoration:none;
-  font-size:16px; font-weight:600;
-}
-.vC .dock .micro{margin:9px 0 0; font-size:11.5px; color:var(--ink-2); text-align:center}
+.funnel .bar .txt{flex:1; min-width:0}
+.funnel .bar b{display:block; font-size:13.5px}
+.funnel .bar span{display:block; font-size:11.5px; color:var(--ink-2)}
+.funnel .bar a{flex:none; min-height:46px; padding:0 20px; border-radius:var(--radius,999px); background:var(--accent); color:var(--on-accent); display:grid; place-items:center; text-decoration:none; font-weight:700; font-size:14.5px}
 @media (prefers-reduced-motion:reduce){ *{animation:none !important; transition:none !important} }
+
+/* ====================================================================== */
+/* A1 — L'ATELIER : la marque est une maison qui fabrique                 */
+/* ====================================================================== */
+.vA1{
+  --ground:#14100E; --surface:#1D1815; --line:#2E2622;
+  --ink:#F7F1EA; --ink-2:#A99A8E; --ink-3:#6E625A;
+  --accent:#E4573D; --accent-soft:#2A1712; --on-accent:#1A0703;
+  --display:'Bricolage Grotesque',system-ui,sans-serif; --body:'Inter',system-ui,sans-serif;
+  --h1-size:44px; --h1-weight:800; --h1-lh:1.02; --h1-track:-.03em;
+  --h3-size:23px; --radius:999px; --radius-sm:16px;
+  --mark-size:18px; --mark-weight:800; --mark-track:-.02em;
+}
+
+/* ====================================================================== */
+/* A2 — LA CONSOLE : la marque est un label de jeux                       */
+/* ====================================================================== */
+.vA2{
+  --ground:#08090C; --surface:#101319; --line:#1E2430;
+  --ink:#EDF1F7; --ink-2:#8A93A6; --ink-3:#5A6376;
+  --accent:#B4F461; --accent-soft:#151D0E; --on-accent:#0B1203;
+  --display:'Space Grotesk',system-ui,sans-serif; --body:'Space Grotesk',system-ui,sans-serif;
+  --h1-size:41px; --h1-weight:700; --h1-lh:1.04; --h1-track:-.035em;
+  --h3-size:21px; --radius:12px; --radius-sm:12px;
+  --mark-size:15px; --mark-weight:700; --mark-track:.12em; --mark-case:uppercase;
+}
+
+/* ====================================================================== */
+/* A3 — L'ÉCRIN : la marque est une maison de cadeaux                     */
+/* ====================================================================== */
+.vA3{
+  --ground:#17121A; --surface:#211A25; --line:#332A38;
+  --ink:#F6EFF3; --ink-2:#B0A0AC; --ink-3:#786A76;
+  --accent:#F0C3B8; --accent-soft:#2B1F22; --on-accent:#2A1310;
+  --display:'Instrument Serif',Georgia,serif; --body:'Inter',system-ui,sans-serif;
+  --h1-size:50px; --h1-weight:400; --h1-lh:1.02; --h1-track:-.015em; --em-style:italic;
+  --h3-size:27px; --radius:999px; --radius-sm:18px;
+  --mark-size:22px; --mark-weight:400; --mark-track:.01em;
+}
 </style>
 
 <div class="bench">
@@ -381,543 +196,340 @@ body{
 
 <script>
 /* ---------------------------------------------------------------------- */
-/* Décors : SVG en ligne, aucun asset externe. Jetable, non optimisé.      */
+/* Décors. Le châssis prend les jetons de la marque (var(--accent)…) ;     */
+/* les vignettes du catalogue gardent LEURS couleurs — c'est le point :    */
+/* la marque encadre les fictions, elle ne les porte pas.                  */
 /* ---------------------------------------------------------------------- */
 
-const museeLarge = `
-<svg viewBox="0 0 390 844" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Couloir de musée nocturne">
+const heroScene = `
+<svg viewBox="0 0 390 844" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Un jeu personnalisé ouvert sur un téléphone">
   <defs>
-    <linearGradient id="mSol" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#4A3B2C"/><stop offset="1" stop-color="#120E0B"/>
-    </linearGradient>
-    <linearGradient id="mMur" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#0D0B09"/><stop offset=".55" stop-color="#3B2E22"/><stop offset="1" stop-color="#1A140F"/>
-    </linearGradient>
-    <radialGradient id="mHalo" cx=".5" cy=".5" r=".5">
-      <stop offset="0" stop-color="#FFD9A0" stop-opacity=".55"/><stop offset="1" stop-color="#FFD9A0" stop-opacity="0"/>
+    <radialGradient id="hg" cx=".5" cy=".3" r=".6">
+      <stop offset="0" stop-color="var(--accent)" stop-opacity=".26"/>
+      <stop offset="1" stop-color="var(--accent)" stop-opacity="0"/>
     </radialGradient>
-    <linearGradient id="mCone" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#4FD6C0" stop-opacity=".34"/><stop offset="1" stop-color="#4FD6C0" stop-opacity="0"/>
+    <linearGradient id="hp" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="var(--surface)"/><stop offset="1" stop-color="var(--ground)"/>
     </linearGradient>
+    <radialGradient id="hh" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#FFD9A0" stop-opacity=".42"/><stop offset="1" stop-color="#FFD9A0" stop-opacity="0"/>
+    </radialGradient>
+    <clipPath id="hc"><rect x="9" y="9" width="182" height="402" rx="23"/></clipPath>
   </defs>
-  <rect width="390" height="844" fill="#08070A"/>
-  <path d="M0 0 H390 V150 L250 236 H140 L0 150 Z" fill="#0F0C0A"/>
-  <path d="M0 150 L140 236 V520 L0 648 Z" fill="url(#mMur)"/>
-  <path d="M390 150 L250 236 V520 L390 648 Z" fill="url(#mMur)"/>
-  <path d="M0 648 L140 520 H250 L390 648 V844 H0 Z" fill="url(#mSol)"/>
-  <path d="M140 236 H250 V520 H140 Z" fill="#171210"/>
-  <ellipse cx="60" cy="380" rx="140" ry="190" fill="url(#mHalo)"/>
-  <ellipse cx="330" cy="410" rx="120" ry="170" fill="url(#mHalo)" opacity=".7"/>
-  <g>
-    <path d="M24 268 L106 306 V462 L24 512 Z" fill="#231A14" stroke="#7A5B33" stroke-width="1.5"/>
-    <path d="M36 290 L94 318 V450 L36 490 Z" fill="#C79A5E" opacity=".5"/>
+  <rect width="390" height="844" fill="var(--ground)"/>
+  <rect width="390" height="844" fill="url(#hg)"/>
+
+  <g transform="translate(96 104) rotate(-4 100 210)">
+    <rect width="200" height="420" rx="30" fill="url(#hp)" stroke="var(--line)" stroke-width="1.5"/>
+    <g clip-path="url(#hc)">
+      <rect x="9" y="9" width="182" height="402" fill="#16110D"/>
+      <path d="M9 168 L82 210 V318 L9 360 Z" fill="#2A2018"/>
+      <path d="M191 168 L118 210 V318 L191 360 Z" fill="#2A2018"/>
+      <path d="M9 360 L82 318 H118 L191 360 V411 H9 Z" fill="#3C2E20"/>
+      <path d="M82 210 H118 V318 H82 Z" fill="#1B1410"/>
+      <ellipse cx="100" cy="248" rx="98" ry="112" fill="url(#hh)"/>
+      <rect x="70" y="186" width="60" height="82" rx="2" fill="#1E1712" stroke="#B08A56" stroke-width="2"/>
+      <rect x="77" y="194" width="46" height="66" fill="#5E4A52"/>
+      <circle cx="92" cy="220" r="10" fill="#C79A7E"/>
+      <circle cx="110" cy="224" r="9" fill="#A8785E"/>
+      <path d="M77 260 q16 -22 32 -14 q13 7 18 14 Z" fill="#3E2F36"/>
+      <g fill="#FFE7C2" opacity=".3">
+        <circle cx="46" cy="290" r="1.4"/><circle cx="152" cy="252" r="1.2"/><circle cx="66" cy="356" r="1"/>
+      </g>
+    </g>
+    <rect x="9" y="9" width="182" height="402" rx="23" fill="none" stroke="#000" stroke-opacity=".5"/>
+
+    <g transform="translate(-46 150)">
+      <rect width="96" height="36" rx="18" fill="var(--surface)" stroke="var(--line)"/>
+      <circle cx="18" cy="18" r="9" fill="var(--accent)"/>
+      <g stroke="var(--accent)" stroke-width="2.2" stroke-linecap="round" opacity=".95">
+        <path d="M38 12v12M46 8v20M54 14v8M62 10v16M70 15v6M78 12v12"/>
+      </g>
+    </g>
+    <g transform="translate(112 40)">
+      <rect width="98" height="34" rx="17" fill="var(--surface)" stroke="var(--line)"/>
+      <rect x="14" y="12" width="48" height="3.6" rx="1.8" fill="var(--ink-2)"/>
+      <rect x="14" y="20" width="30" height="3.6" rx="1.8" fill="var(--ink-3)"/>
+      <circle cx="80" cy="17" r="7" fill="var(--accent)"/>
+    </g>
   </g>
-  <g>
-    <path d="M366 278 L294 312 V456 L366 502 Z" fill="#231A14" stroke="#7A5B33" stroke-width="1.5"/>
-    <path d="M354 300 L306 324 V446 L354 482 Z" fill="#8FA9C7" opacity=".38"/>
-  </g>
-  <g>
-    <rect x="164" y="318" width="62" height="94" rx="3" fill="#1E1712" stroke="#8A6A3C" stroke-width="1.6"/>
-    <rect x="172" y="329" width="46" height="72" rx="2" fill="#E8C48C" opacity=".72"/>
-  </g>
-  <rect x="176" y="470" width="38" height="50" rx="2" fill="#2A2018" stroke="#6E5433"/>
-  <path d="M298 150 L390 150 L390 372 Z" fill="url(#mCone)"/>
-  <circle cx="332" cy="158" r="5" fill="#4FD6C0" opacity=".85"/>
-  <path d="M58 150 L156 372 L58 372 Z" fill="url(#mCone)" opacity=".55"/>
-  <g fill="#FFE7C2" opacity=".28">
-    <circle cx="120" cy="420" r="1.3"/><circle cx="205" cy="560" r="1"/><circle cx="290" cy="380" r="1.2"/>
-    <circle cx="88" cy="600" r=".9"/><circle cx="248" cy="470" r="1.1"/><circle cx="150" cy="690" r="1"/>
-  </g>
-  <rect width="390" height="844" fill="#0A0908" opacity=".18"/>
 </svg>`;
 
-const vignette = (teinte) => `
+const lueur = (o) => `
 <svg viewBox="0 0 390 844" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-  <defs><radialGradient id="v${teinte.replace('#','')}" cx=".5" cy=".38" r=".72">
-    <stop offset="0" stop-color="${teinte}" stop-opacity=".5"/><stop offset="1" stop-color="${teinte}" stop-opacity="0"/>
+  <defs><radialGradient id="lg${o}" cx="${o}" cy=".3" r=".7">
+    <stop offset="0" stop-color="var(--accent)" stop-opacity=".09"/>
+    <stop offset="1" stop-color="var(--accent)" stop-opacity="0"/>
   </radialGradient></defs>
-  <rect width="390" height="844" fill="#0A0908"/>
-  <rect width="390" height="844" fill="url(#v${teinte.replace('#','')})"/>
+  <rect width="390" height="844" fill="var(--ground)"/>
+  <rect width="390" height="844" fill="url(#lg${o})"/>
 </svg>`;
 
-const vignetteSMS = `
-<svg viewBox="0 0 132 198" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Un lien reçu par SMS">
-  <rect width="132" height="198" fill="#101014"/>
-  <rect x="14" y="34" width="86" height="30" rx="12" fill="#22212A"/>
-  <rect x="22" y="43" width="60" height="4" rx="2" fill="#5C5A6B"/>
-  <rect x="22" y="52" width="42" height="4" rx="2" fill="#45434F"/>
-  <rect x="40" y="78" width="78" height="42" rx="12" fill="#2F6BE8"/>
-  <rect x="48" y="88" width="56" height="4" rx="2" fill="#BBD1FA"/>
-  <rect x="48" y="98" width="44" height="4" rx="2" fill="#8FB4F5"/>
-  <rect x="48" y="108" width="50" height="4" rx="2" fill="#E4EDFD"/>
-  <rect x="14" y="140" width="104" height="34" rx="10" fill="#1A1A20" stroke="#2E2D38"/>
-  <circle cx="32" cy="157" r="8" fill="#E8B76A"/>
-  <rect x="46" y="151" width="56" height="4" rx="2" fill="#4E4C58"/>
-  <rect x="46" y="160" width="36" height="4" rx="2" fill="#3A3844"/>
-</svg>`;
-
-const vignettePoster = `
-<svg viewBox="0 0 132 198" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Écran Toucher pour commencer">
-  <defs><radialGradient id="pg" cx=".5" cy=".42" r=".6">
-    <stop offset="0" stop-color="#3A2A17"/><stop offset="1" stop-color="#0A0908"/>
+const artBraquage = `
+<svg viewBox="0 0 146 196" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Le braquage du musée">
+  <defs><radialGradient id="abH" cx=".5" cy=".45" r=".55">
+    <stop offset="0" stop-color="#FFD5AE" stop-opacity=".5"/><stop offset="1" stop-color="#FFD5AE" stop-opacity="0"/>
   </radialGradient></defs>
-  <rect width="132" height="198" fill="url(#pg)"/>
-  <path d="M0 118 L52 90 H80 L132 118 V198 H0 Z" fill="#241B12"/>
-  <rect x="44" y="52" width="44" height="58" rx="2" fill="#1A140F" stroke="#8A6A3C"/>
-  <rect x="50" y="60" width="32" height="42" fill="#E8C48C" opacity=".55"/>
-  <circle cx="66" cy="150" r="17" fill="none" stroke="#E8B76A" stroke-width="1.4" opacity=".8"/>
-  <circle cx="66" cy="150" r="26" fill="none" stroke="#E8B76A" stroke-width="1" opacity=".35"/>
-  <circle cx="66" cy="150" r="6" fill="#E8B76A"/>
+  <rect width="146" height="196" fill="#150F0B"/>
+  <path d="M0 74 L46 100 V150 L0 178 Z" fill="#2A2018"/>
+  <path d="M146 74 L100 100 V150 L146 178 Z" fill="#2A2018"/>
+  <path d="M0 178 L46 150 H100 L146 178 V196 H0 Z" fill="#3A2C1E"/>
+  <ellipse cx="73" cy="108" rx="72" ry="72" fill="url(#abH)"/>
+  <rect x="52" y="70" width="42" height="56" rx="2" fill="#1E1712" stroke="#B08A56" stroke-width="1.8"/>
+  <rect x="58" y="77" width="30" height="42" fill="#5E4A52"/>
+  <circle cx="68" cy="94" r="7" fill="#C79A7E"/><circle cx="80" cy="97" r="6" fill="#A8785E"/>
+  <path d="M124 0 L146 0 L146 52 Z" fill="#4FD6C0" opacity=".2"/>
+  <circle cx="134" cy="5" r="3" fill="#4FD6C0" opacity=".8"/>
 </svg>`;
 
-const vignetteScelle = `
-<svg viewBox="0 0 132 198" preserveAspectRatio="xMidYMid slice" role="img" aria-label="La fin reste cachée">
-  <rect width="132" height="198" fill="#0F0D0C"/>
-  <g opacity=".22">
-    <rect x="18" y="46" width="96" height="12" rx="6" fill="#E8B76A"/>
-    <rect x="18" y="68" width="72" height="12" rx="6" fill="#E8B76A"/>
-    <rect x="18" y="90" width="88" height="12" rx="6" fill="#E8B76A"/>
-  </g>
-  <rect width="132" height="198" fill="#0F0D0C" opacity=".55"/>
-  <circle cx="66" cy="122" r="20" fill="#1C1712" stroke="#5A4522"/>
-  <path d="M58 121 v-6 a8 8 0 0 1 16 0 v6" fill="none" stroke="#E8B76A" stroke-width="2"/>
-  <rect x="55" y="121" width="22" height="17" rx="3" fill="#E8B76A"/>
-</svg>`;
-
-const objetPhare = `
-<svg viewBox="0 0 390 300" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Le cadeau, ouvert sur un téléphone">
-  <defs>
-    <radialGradient id="opG" cx=".5" cy=".46" r=".62">
-      <stop offset="0" stop-color="#3E2F1C"/><stop offset="1" stop-color="#100E0D"/>
-    </radialGradient>
-    <linearGradient id="opE" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#241B14"/><stop offset="1" stop-color="#0D0B0A"/>
-    </linearGradient>
-  </defs>
-  <rect width="390" height="300" fill="url(#opG)"/>
-  <ellipse cx="195" cy="268" rx="130" ry="20" fill="#000" opacity=".55"/>
-  <g transform="translate(147 40)">
-    <rect width="96" height="200" rx="16" fill="url(#opE)" stroke="#6A5433" stroke-width="1.2"/>
-    <rect x="6" y="6" width="84" height="188" rx="12" fill="#0A0908"/>
-    <rect x="20" y="34" width="56" height="76" rx="2" fill="#1A140F" stroke="#8A6A3C" stroke-width="1.2"/>
-    <rect x="27" y="43" width="42" height="58" fill="#E8C48C" opacity=".62"/>
-    <rect x="20" y="126" width="56" height="4" rx="2" fill="#5A4E3E"/>
-    <rect x="20" y="136" width="40" height="4" rx="2" fill="#3F372C"/>
-    <rect x="20" y="156" width="56" height="18" rx="9" fill="#E8B76A"/>
-  </g>
-  <g fill="#FFE7C2" opacity=".3">
-    <circle cx="96" cy="90" r="1.4"/><circle cx="300" cy="130" r="1.2"/><circle cx="76" cy="196" r="1"/>
-    <circle cx="322" cy="212" r="1.3"/><circle cx="120" cy="248" r="1"/>
+const artLettre = `
+<svg viewBox="0 0 146 196" preserveAspectRatio="xMidYMid slice" role="img" aria-label="La lettre cachetée">
+  <rect width="146" height="196" fill="#F3EADC"/>
+  <g transform="translate(19 56)">
+    <rect x="-3" y="7" width="112" height="82" rx="5" fill="#E0CDB0"/>
+    <rect width="108" height="84" rx="4" fill="#FBF4E8" stroke="#D9C6A8"/>
+    <path d="M0 0 L54 42 L108 0" fill="none" stroke="#D2BC98" stroke-width="1.4"/>
+    <rect x="18" y="54" width="72" height="3" rx="1.5" fill="#C9B392"/>
+    <rect x="18" y="63" width="52" height="3" rx="1.5" fill="#D6C4A6"/>
+    <circle cx="54" cy="40" r="12" fill="#9B3B2E"/>
+    <path d="M49 40h10M54 35v10" stroke="#F2D7CE" stroke-width="1.5" stroke-linecap="round"/>
   </g>
 </svg>`;
 
-const objCarte = `
-<svg viewBox="0 0 390 186" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Une enveloppe cachetée qui s'ouvre">
-  <defs><linearGradient id="ocP" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0" stop-color="#FBF3E7"/><stop offset="1" stop-color="#EEDFC9"/>
-  </linearGradient></defs>
-  <rect width="390" height="186" fill="#F6EFE4"/>
-  <g transform="translate(105 26)">
-    <rect x="-4" y="10" width="188" height="126" rx="6" fill="#E3D2B8"/>
-    <rect y="0" width="180" height="130" rx="5" fill="url(#ocP)" stroke="#D9C6A8"/>
-    <path d="M0 0 L90 66 L180 0" fill="none" stroke="#D2BC98" stroke-width="1.6"/>
-    <rect x="26" y="80" width="128" height="3.5" rx="1.75" fill="#C9B392"/>
-    <rect x="26" y="92" width="96" height="3.5" rx="1.75" fill="#D6C4A6"/>
-    <circle cx="90" cy="62" r="17" fill="#9B3B2E"/>
-    <circle cx="90" cy="62" r="12" fill="none" stroke="#C4614F" stroke-width="1.2"/>
-    <path d="M84 62 h12 M90 56 v12" stroke="#F2D7CE" stroke-width="1.6" stroke-linecap="round"/>
+const artBientot = `
+<svg viewBox="0 0 146 196" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Décor en préparation">
+  <rect width="146" height="196" fill="var(--surface)"/>
+  <rect x="10" y="10" width="126" height="176" rx="10" fill="none" stroke="var(--line)" stroke-width="1.5" stroke-dasharray="7 7"/>
+  <g transform="translate(73 92)" stroke="var(--ink-3)" stroke-width="2" fill="none" stroke-linecap="round">
+    <rect x="-13" y="-4" width="26" height="20" rx="4"/><path d="M-7 -4v-6a7 7 0 0 1 14 0v6"/>
   </g>
-</svg>`;
-
-const objJeu = `
-<svg viewBox="0 0 390 186" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Le musée à la première personne">
-  <defs>
-    <linearGradient id="ojM" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#0C0A09"/><stop offset=".6" stop-color="#3A2D21"/><stop offset="1" stop-color="#171109"/>
-    </linearGradient>
-    <linearGradient id="ojC" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#4FD6C0" stop-opacity=".36"/><stop offset="1" stop-color="#4FD6C0" stop-opacity="0"/>
-    </linearGradient>
-    <radialGradient id="ojH" cx=".5" cy=".5" r=".5">
-      <stop offset="0" stop-color="#FFD9A0" stop-opacity=".5"/><stop offset="1" stop-color="#FFD9A0" stop-opacity="0"/>
-    </radialGradient>
-  </defs>
-  <rect width="390" height="186" fill="url(#ojM)"/>
-  <path d="M0 60 L120 96 V150 L0 186 Z" fill="#241B14"/>
-  <path d="M390 60 L270 96 V150 L390 186 Z" fill="#241B14"/>
-  <ellipse cx="195" cy="120" rx="140" ry="80" fill="url(#ojH)"/>
-  <rect x="164" y="62" width="62" height="80" rx="2" fill="#1A140F" stroke="#8A6A3C" stroke-width="1.5"/>
-  <rect x="172" y="71" width="46" height="62" fill="#E8C48C" opacity=".62"/>
-  <path d="M300 0 L390 0 L390 110 Z" fill="url(#ojC)"/>
-  <circle cx="336" cy="8" r="4.5" fill="#4FD6C0"/>
-  <g stroke="#4FD6C0" stroke-width="1.6" fill="none" opacity=".9">
-    <path d="M22 20 h14 M22 20 v14"/><path d="M368 166 h-14 M368 166 v-14"/>
-  </g>
-</svg>`;
-
-const apercuArt = `
-<svg viewBox="0 0 350 200" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Une photo du couple exposée au musée">
-  <defs>
-    <linearGradient id="aaM" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#120D11"/><stop offset=".65" stop-color="#33232E"/><stop offset="1" stop-color="#1A1116"/>
-    </linearGradient>
-    <radialGradient id="aaH" cx=".5" cy=".46" r=".5">
-      <stop offset="0" stop-color="#FFD5AE" stop-opacity=".55"/><stop offset="1" stop-color="#FFD5AE" stop-opacity="0"/>
-    </radialGradient>
-  </defs>
-  <rect width="350" height="200" fill="url(#aaM)"/>
-  <ellipse cx="175" cy="104" rx="120" ry="76" fill="url(#aaH)"/>
-  <rect x="126" y="42" width="98" height="118" rx="3" fill="#1E1419" stroke="#B08A56" stroke-width="2.4"/>
-  <rect x="134" y="50" width="82" height="102" fill="#5E4A52"/>
-  <circle cx="160" cy="92" r="17" fill="#C79A7E"/>
-  <circle cx="192" cy="96" r="15" fill="#A8785E"/>
-  <path d="M134 152 q26 -34 52 -22 q22 10 30 22 Z" fill="#3E2F36"/>
-  <g transform="translate(238 128)">
-    <circle r="17" fill="#C4643C"/>
-    <path d="M-4 -7 v14 l11 -7 Z" fill="#FDF8F3"/>
-  </g>
-  <text x="126" y="180" fill="#C9A98F" font-family="monospace" font-size="10" letter-spacing="1.4">14 JUIN 2019 — LE PREMIER SOIR</text>
+  <rect x="49" y="128" width="48" height="4" rx="2" fill="var(--line)"/>
 </svg>`;
 
 const ic = {
-  lock:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>',
   arrow:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
-  chev:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>',
-  back:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>',
-  heart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 5.6a5 5 0 0 0-7.1 0L12 7.3l-1.7-1.7a5 5 0 1 0-7.1 7.1l8.8 8.8 8.8-8.8a5 5 0 0 0 0-7.1z"/></svg>',
-  rings:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="14" r="6"/><circle cx="16" cy="14" r="6"/></svg>',
-  users:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17.5" cy="9" r="2.8"/><path d="M16 15.5a5.5 5.5 0 0 1 5.5 4.5"/></svg>',
-  home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9.5V21h13V9.5"/></svg>',
-  shield:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5 20 6v6c0 5-3.4 8.6-8 9.5-4.6-.9-8-4.5-8-9.5V6z"/></svg>',
+  chev:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>',
+  photo:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="M4 17l5-5 4 4 3-2 4 3"/></svg>',
+  mic:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2.5" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>',
+  quote:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 11h12M4 16h8"/></svg>',
+  clock:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
 };
 
 /* ---------------------------------------------------------------------- */
-/* A — LA BOBINE                                                          */
+/* Le squelette, identique pour les trois. Seuls les jetons et les mots    */
+/* changent — c'est exactement l'axe qui reste ouvert.                     */
 /* ---------------------------------------------------------------------- */
-const A = `
-<div class="vA">
+const CATALOGUE = [
+  {art:artBraquage, nom:'Le braquage du musée', meta:'Jeu · 8 min'},
+  {art:artLettre,   nom:'La lettre cachetée',   meta:'Carte · 3 min'},
+  {art:artBientot,  nom:'Le prochain décor',    meta:'En préparation', soon:true},
+];
+
+const funnel = (cls, t) => `
+<div class="funnel ${cls}">
   <section class="pan">
-    <div class="scene">${museeLarge}</div><div class="veil"></div>
-    <div class="wordmark">ouvrance</div>
-    <div class="kicker">Tu viens de le voir sur TikTok</div>
-    <h1>Tu allais<br>envoyer 200 €.<em>Envoie un braquage.</em></h1>
-    <p>Même virement. Sauf qu'avant de le recevoir, il faudra le voler.</p>
-    <a class="cta" href="#">Offrir ce cadeau ${ic.arrow}</a>
-    <p class="micro">${ic.lock} L'argent ne passe jamais par ouvrance</p>
-    <div class="hint">${ic.chev} continuer</div>
+    <div class="scene">${heroScene}</div><div class="veil"></div>
+    <div class="mark">ouvrance</div>
+    <div class="kicker">${t.k1}</div>
+    <h1>${t.h1}</h1>
+    <p class="lede">${t.l1}</p>
+    <a class="cta" href="#">${t.cta} ${ic.arrow}</a>
+    <p class="micro">${ic.clock} ${t.m1}</p>
+    <div class="hint">${ic.chev} ${t.hint}</div>
   </section>
 
   <section class="pan">
-    <div class="scene">${vignette('#3A2A17')}</div><div class="veil"></div>
-    <div class="kicker">Ce qu'il reçoit</div>
-    <h1>Un lien.<em>Rien d'autre.</em></h1>
-    <div class="beats">
-      <div class="beat"><div class="thumb">${vignetteSMS}</div><b>Le lien</b><span>Par SMS. Aucune appli, aucun compte à créer.</span></div>
-      <div class="beat"><div class="thumb">${vignettePoster}</div><b>Le seuil</b><span>Il touche l'écran. Le film démarre.</span></div>
-      <div class="beat"><div class="thumb">${vignetteScelle}</div><b>La fin</b><span>On ne la montre nulle part. C'est le principe.</span></div>
+    <div class="scene">${lueur('.22')}</div><div class="veil"></div>
+    <div class="kicker">${t.k2}</div>
+    <h1>${t.h2}</h1>
+    <div class="traces">
+      ${t.traces.map(x => `<div class="trace"><span class="ico">${ic[x.i]}</span><div><b>${x.b}</b><span>${x.s}</span></div></div>`).join('')}
     </div>
-    <p>Tu ne verras pas la fin sur ce site. Lui non plus, tant qu'il n'a pas joué.</p>
   </section>
 
   <section class="pan">
-    <div class="scene">${vignette('#1E2A2A')}</div><div class="veil"></div>
-    <div class="kicker">Ce que tu prépares</div>
-    <h1>Quinze minutes<em>et c'est parti.</em></h1>
-    <ul class="steps">
-      <li><span class="n">01</span><div><b>Tes photos</b><span>Elles deviennent les tableaux du musée. Il les découvre en s'approchant.</span></div></li>
-      <li><span class="n">02</span><div><b>Ta voix</b><span>Un mémo vocal accroché à une œuvre. Il l'entend en s'en approchant.</span></div></li>
-      <li><span class="n">03</span><div><b>Ton lien de virement</b><span>Révélé à la toute fin, avec ton message. Revolut, Wero, ce que tu veux.</span></div></li>
-    </ul>
-    <a class="cta" href="#">Commencer ${ic.arrow}</a>
+    <div class="scene">${lueur('.78')}</div><div class="veil"></div>
+    <div class="kicker">${t.k3}</div>
+    <h1>${t.h3}</h1>
+    <div class="deck">
+      ${CATALOGUE.map(c => `<div class="tile${c.soon ? ' soon' : ''}"><div class="art">${c.art}</div><b>${c.nom}</b><span>${c.meta}</span></div>`).join('')}
+    </div>
+    <p class="lede">${t.l3}</p>
   </section>
 
   <section class="pan">
-    <div class="scene">${vignette('#2A1E17')}</div><div class="veil"></div>
-    <div class="kicker">Combien</div>
-    <h1>Deux façons<em>d'offrir.</em></h1>
-    <div class="offer hero">
-      <span class="tag">Le plus offert</span>
-      <h3>Le braquage <span class="price">69,99 €</span></h3>
-      <p>Un jeu d'infiltration à vivre sur son téléphone. Tes photos exposées, ta voix dans la salle, ton message au bout. Livré en 2 à 3 jours.</p>
+    <div class="scene">${lueur('.5')}</div><div class="veil"></div>
+    <div class="kicker">${t.k4}</div>
+    <h1>${t.h4}</h1>
+    <div class="offer lead">
+      <span class="tag">${t.offers[0].tag}</span>
+      <div class="row"><h3>${t.offers[0].nom}</h3><span class="price">${t.offers[0].prix}</span></div>
+      <p>${t.offers[0].desc}</p>
     </div>
     <div class="offer">
-      <h3>La carte animée <span class="price">14,99 €</span></h3>
-      <p>Une enveloppe cachetée, une lettre qui se déplie, tes photos. Livrée en 24 à 48 h.</p>
+      <div class="row"><h3>${t.offers[1].nom}</h3><span class="price">${t.offers[1].prix}</span></div>
+      <p>${t.offers[1].desc}</p>
     </div>
-    <p class="micro">${ic.lock} Ton lien de virement, pas le nôtre. Nous ne touchons pas à l'argent.</p>
+    <p class="micro">${t.virement}</p>
   </section>
 
-  <div class="bar" id="aBar">
-    <div class="txt"><b>Le braquage — 69,99 €</b><span>Livré en 2 à 3 jours</span></div>
-    <a href="#">Offrir</a>
+  <div class="bar" id="bar">
+    <div class="txt"><b>${t.barB}</b><span>${t.barS}</span></div>
+    <a href="#">${t.barCta}</a>
   </div>
 </div>`;
 
-/* ---------------------------------------------------------------------- */
-/* B — LA MAISON                                                          */
-/* ---------------------------------------------------------------------- */
-const B = `
-<div class="vB">
-  <header>
-    <div class="wordmark">ouvrance</div>
-    <a href="#">Offrir</a>
-  </header>
+const MOTS = {
+  A1:{
+    k1:"Tu viens de le voir sur TikTok", hint:"continuer",
+    h1:"Tes photos.<br>Ta voix.<em>Son jeu.</em>",
+    l1:"Un jeu fabriqué avec vos souvenirs. Il y joue sur son téléphone — et il te retrouve dedans.",
+    cta:"Fabriquer le sien", m1:"Prêt en 2 à 3 jours · sans appli, sans compte",
+    k2:"Ce que tu mets dedans", h2:"Trois traces de toi.<em>Rien de plus.</em>",
+    traces:[
+      {i:'photo', b:"Tes photos", s:"Elles ne sont pas collées sur un écran de fin. Elles sont accrochées dans le décor, et il les découvre en s'approchant."},
+      {i:'mic',   b:"Ta voix",    s:"Un mémo vocal posé sur une œuvre. Il l'entend au moment où il arrive devant."},
+      {i:'quote', b:"Tes mots",   s:"Une phrase écrite à même la toile. Une anecdote que lui seul peut comprendre."},
+    ],
+    k3:"Ce qu'il vit", h3:"Le décor,<em>c'est toi qui choisis.</em>",
+    l3:"Les trois traces se posent de la même façon dans chaque décor. C'est le monde autour qui change.",
+    k4:"Combien", h4:"Deux façons<em>de fabriquer.</em>",
+    offers:[
+      {tag:"Le plus offert", nom:"Un jeu", prix:"69,99 €", desc:"Un film d'ouverture, une partie à jouer, une fin. Tes photos, ta voix et tes mots posés dans le décor. Prêt en 2 à 3 jours."},
+      {nom:"Une carte", prix:"14,99 €", desc:"Une enveloppe cachetée, une lettre qui se déplie, tes photos et ton message. Prête en 24 à 48 h."},
+    ],
+    virement:"Tu peux glisser ton lien de virement à la fin. Ou pas — c'est ton cadeau.",
+    barB:"Un jeu — 69,99 €", barS:"Prêt en 2 à 3 jours", barCta:"Fabriquer",
+  },
+  A2:{
+    k1:"Vu sur TikTok", hint:"suite",
+    h1:"Un jeu.<em>Fait avec vous deux.</em>",
+    l1:"Tes photos dedans. Ta voix dedans. Il joue, il te trouve.",
+    cta:"Créer le jeu", m1:"2 à 3 jours · rien à installer",
+    k2:"Tu remplis", h2:"Trois trucs.<em>On monte le reste.</em>",
+    traces:[
+      {i:'photo', b:"Des photos", s:"Accrochées dans le décor. Il tombe dessus en jouant."},
+      {i:'mic',   b:"Un vocal",   s:"Il se déclenche quand il s'approche."},
+      {i:'quote', b:"Une phrase", s:"Écrite dans le jeu. Que lui seul comprend."},
+    ],
+    k3:"Le terrain", h3:"Choisis le décor.",
+    l3:"Même personnalisation partout. Seul le monde change.",
+    k4:"Le prix", h4:"Deux tarifs.",
+    offers:[
+      {tag:"Le plus pris", nom:"Un jeu", prix:"69,99 €", desc:"Film d'intro, partie, fin. Tes photos, ta voix, tes mots dedans. 2 à 3 jours."},
+      {nom:"Une carte", prix:"14,99 €", desc:"Enveloppe, lettre, photos, message. 24 à 48 h."},
+    ],
+    virement:"Ton lien de virement à la fin, si tu veux.",
+    barB:"Un jeu — 69,99 €", barS:"2 à 3 jours", barCta:"Créer",
+  },
+  A3:{
+    k1:"Vous venez de le voir sur TikTok", hint:"continuer",
+    h1:"Un jeu où<em>vous êtes dedans.</em>",
+    l1:"Vos photos accrochées aux murs, votre voix dans la pièce, vos mots sur la toile. Elle joue — et elle vous trouve.",
+    cta:"Composer le cadeau", m1:"Prêt en 2 à 3 jours · sans application",
+    k2:"Ce que vous y déposez", h2:"Trois traces<em>de vous.</em>",
+    traces:[
+      {i:'photo', b:"Vos photos", s:"Elles ne sont pas reléguées à un écran de fin : elles sont exposées dans le décor et se découvrent en s'approchant."},
+      {i:'mic',   b:"Votre voix", s:"Un message vocal déposé sur une œuvre, qui se déclenche au moment où elle arrive devant."},
+      {i:'quote', b:"Vos mots",   s:"Une phrase écrite à même la toile. Une anecdote qu'elle seule peut reconnaître."},
+    ],
+    k3:"Ce qu'elle traverse", h3:"Le décor<em>vous appartient.</em>",
+    l3:"Les trois traces se déposent de la même façon dans chaque décor. Seul le monde autour change.",
+    k4:"Les formules", h4:"Deux façons<em>d'offrir.</em>",
+    offers:[
+      {tag:"La plus offerte", nom:"Un jeu", prix:"69,99 €", desc:"Un film d'ouverture, une partie à jouer, une fin. Vos photos, votre voix et vos mots déposés dans le décor. Prêt en 2 à 3 jours."},
+      {nom:"Une carte", prix:"14,99 €", desc:"Une enveloppe cachetée, une lettre qui se déplie, vos photos et votre message. Prête en 24 à 48 h."},
+    ],
+    virement:"Vous pouvez y joindre votre lien de virement, révélé à la toute fin. C'est facultatif.",
+    barB:"Un jeu — 69,99 €", barS:"Prêt en 2 à 3 jours", barCta:"Offrir",
+  },
+};
 
-  <section class="hero">
-    <div class="eye">Le cadeau en argent, autrement</div>
-    <h1>Le plus beau<br>des <em>virements</em>.</h1>
-    <p class="lede">Vous offrez de l'argent. Nous en faisons une expérience qu'on ouvre, qu'on joue, et dont on se souvient. Le virement, lui, reste entre vous.</p>
-    <div class="btns">
-      <a class="btn p" href="#">Découvrir les deux formules</a>
-      <a class="btn s" href="#">Voir un exemple en 40 secondes</a>
-    </div>
-    <div class="shot">${objetPhare}</div>
-  </section>
-
-  <section>
-    <h2>Deux objets,<br>deux intentions.</h2>
-    <p class="sub">Ce ne sont pas deux niveaux de la même chose. Une lettre et un braquage ne s'offrent pas pour les mêmes raisons.</p>
-
-    <article class="obj">
-      <div class="top">${objCarte}</div>
-      <div class="body">
-        <div class="nature">Une carte</div>
-        <h3>La lettre cachetée</h3>
-        <p>Une enveloppe qu'on décachette du doigt, une lettre qui se déplie, vos photos et votre message. Trois minutes, tout en douceur.</p>
-        <div class="row">
-          <div class="price">14,99 €<small>Livrée en 24 à 48 h</small></div>
-          <a class="pick" href="#">Choisir</a>
-        </div>
-      </div>
-    </article>
-
-    <article class="obj">
-      <div class="top">${objJeu}</div>
-      <div class="body">
-        <div class="nature">Un jeu</div>
-        <h3>Le braquage du musée</h3>
-        <p>Un film d'ouverture, une infiltration à jouer sur son téléphone, une fuite en hélicoptère. Vos photos sont les œuvres exposées ; votre message est le butin.</p>
-        <div class="row">
-          <div class="price">69,99 €<small>Livré en 2 à 3 jours</small></div>
-          <a class="pick" href="#">Choisir</a>
-        </div>
-      </div>
-    </article>
-  </section>
-
-  <section>
-    <h2>Comment ça marche</h2>
-    <p class="sub">Chaque cadeau est monté à la main puis relu par un humain avant d'être livré.</p>
-    <ul class="how">
-      <li><span class="n">1</span><div><b>Vous choisissez et vous personnalisez</b><span>Photos, messages vocaux, textes, occasion. Un formulaire, une quinzaine de minutes.</span></div></li>
-      <li><span class="n">2</span><div><b>Nous montons votre cadeau</b><span>Vos contenus prennent leur place dans la mise en scène. Relecture humaine systématique.</span></div></li>
-      <li><span class="n">3</span><div><b>Vous recevez un lien à transmettre</b><span>Vous l'envoyez quand vous voulez. Il s'ouvre sans appli et sans compte.</span></div></li>
-    </ul>
-  </section>
-
-  <section class="trust">
-    <h2>L'argent ne passe<br>jamais par nous.</h2>
-    <p class="sub">Vous payez l'expérience, 14,99 € ou 69,99 €. Le montant que vous offrez, lui, part de votre Revolut ou de votre Wero directement vers la personne. Nous ne faisons que révéler votre lien de virement au bon moment.</p>
-  </section>
-
-  <section>
-    <h2>Pour quelles occasions</h2>
-    <p class="sub">La mise en scène ne change pas ; les mots, eux, sont les vôtres.</p>
-    <div class="chips">
-      <span class="chip">Mariage</span><span class="chip">Demande en mariage</span><span class="chip">Anniversaire</span>
-      <span class="chip">Naissance</span><span class="chip">Retraite</span><span class="chip">Diplôme</span><span class="chip">Déclaration</span>
-    </div>
-  </section>
-
-  <section>
-    <h2>Questions</h2>
-    <div class="faq"><b>Faut-il installer quelque chose ?</b><span>Non. Le lien s'ouvre dans le navigateur du téléphone, sans compte et sans application.</span></div>
-    <div class="faq"><b>Puis-je voir le cadeau avant de l'envoyer ?</b><span>Vous recevez le lien avant tout le monde. Vous le transmettez quand vous le décidez.</span></div>
-    <div class="faq"><b>Et si la personne n'aime pas les jeux ?</b><span>La carte existe pour ça. Même émotion, aucune manette.</span></div>
-  </section>
-
-  <footer>
-    <div class="links">
-      <a href="#">Mentions légales</a><a href="#">CGV</a><a href="#">Confidentialité</a><a href="#">Contact</a>
-    </div>
-    <p>ouvrance — Les cadeaux sont montés à la main en France. Les visages et les voix que vous nous confiez sont supprimés sur simple demande.</p>
-  </footer>
-</div>`;
-
-/* ---------------------------------------------------------------------- */
-/* C — LE SEUIL                                                           */
-/* ---------------------------------------------------------------------- */
-const C = `
-<div class="vC">
-  <div class="top">
-    <div class="toprow">
-      <button class="back" aria-label="Étape précédente">${ic.back}</button>
-      <div class="wordmark">ouvrance</div>
-      <div style="width:38px"></div>
-    </div>
-    <div class="rail"><i></i></div>
-    <div class="railtxt">Étape 2 sur 5</div>
-  </div>
-
-  <div class="step">
-    <h2 class="q">C'est pour qui ?</h2>
-    <p class="qsub">Ça décide qui joue dans le film. Pas l'histoire, juste les visages.</p>
-    <div class="opts">
-      <button class="opt" aria-pressed="false">${ic.heart}<b>Ma moitié</b><span>Elle, lui, nous deux</span></button>
-      <button class="opt" aria-pressed="true">${ic.rings}<b>Un couple</b><span>Deux personnes ensemble</span></button>
-      <button class="opt" aria-pressed="false">${ic.users}<b>Un ami, une amie</b><span>Bientôt disponible</span></button>
-      <button class="opt" aria-pressed="false">${ic.home}<b>Mes parents</b><span>Bientôt disponible</span></button>
-    </div>
-
-    <h2 class="q" style="margin-top:32px">Pour quelle occasion ?</h2>
-    <p class="qsub">Ça ne change que les mots. La mise en scène, elle, ne bouge pas.</p>
-    <div class="chips">
-      <button class="chip" aria-pressed="true">Mariage</button>
-      <button class="chip" aria-pressed="false">Demande en mariage</button>
-      <button class="chip" aria-pressed="false">Anniversaire</button>
-      <button class="chip" aria-pressed="false">Naissance</button>
-      <button class="chip" aria-pressed="false">Retraite</button>
-      <button class="chip" aria-pressed="false">Diplôme</button>
-      <button class="chip" aria-pressed="false">Déclaration</button>
-    </div>
-
-    <div class="fold">
-      <div class="foldtag">D'après vos réponses</div>
-      <div class="preview">
-        <div class="art">${apercuArt}</div>
-        <div class="body">
-          <div class="nature">Un jeu · environ 8 minutes</div>
-          <h3>Le braquage du musée</h3>
-          <p>Vos photos deviennent les œuvres exposées. Votre voix résonne dans la salle quand ils s'en approchent. Le butin, c'est votre message.</p>
-        </div>
-      </div>
-
-      <div class="money">
-        <div class="line"><span>Ce que vous offrez</span><b>300 €</b></div>
-        <div class="line"><span>L'écrin ouvrance</span><b>69,99 €</b></div>
-        <div class="line tot"><span>À payer ici</span><b>69,99 €</b></div>
-        <p class="note">${ic.shield} Les 300 € ne passent jamais par nous. Votre lien de virement est simplement révélé à la fin du jeu.</p>
-      </div>
-
-      <div class="alt">
-        <div><b>Plus simple, plus vite ?</b><span>La lettre cachetée — 14,99 €, livrée en 24 h</span></div>
-        <a href="#">Voir</a>
-      </div>
-    </div>
-  </div>
-
-  <div class="dock">
-    <a href="#">Continuer ${ic.arrow}</a>
-    <p class="micro">Aucun paiement à cette étape.</p>
-  </div>
-</div>`;
-
-/* ---------------------------------------------------------------------- */
-/* Notes de banc                                                          */
-/* ---------------------------------------------------------------------- */
 const nuances = (cs) => '<div class="swatches">' + cs.map(c => `<i class="sw" style="background:${c}" title="${c}"></i>`).join('') + '</div>';
 
+/* Constante aux trois — c'est le déplacement demandé, pas une option. */
+const SOCLE = `
+  <div class="card flag">
+    <h2>Ce qui change par rapport au tour 1</h2>
+    <h3>La marque n'habite plus le musée</h3>
+    <p>Le châssis — fond, accent, typographie, boutons — appartient à <b>ouvrance</b>. Les décors gardent <b>leurs</b> couleurs et n'apparaissent qu'<b>encadrés</b> : dans l'écran du téléphone au premier panneau, dans les vignettes du catalogue au troisième. Un décor qui arrive demain ne demande aucun changement de marque.</p>
+    <h3>Le produit est le jeu personnalisable</h3>
+    <p>Le panneau 2 n'est plus « un lien, rien d'autre » mais <b>les trois traces</b> — photo, voix, mots — qui sont le vrai produit. Le mot « virement » a disparu du titre, de l'accroche et du bouton ; il ne survit qu'en une ligne de bas de page, <b>explicitement facultative</b>.</p>
+    <h3>Le catalogue est affirmé dès le tour 1 de lecture</h3>
+    <p>Trois vignettes, dont une « en préparation ». Le braquage est <b>un décor parmi d'autres</b>, y compris pour un visiteur qui ne verra jamais le second.</p>
+  </div>`;
+
 const VARIANTS = {
-  A: {
-    nom:'La bobine',
-    sous:'La vidéo TikTok ne s\'arrête pas',
-    html:A,
-    legende:'Panneaux plein écran empilés, aucune barre de navigation. Le prix arrive au quatrième écran. Faire défiler dans le téléphone.',
+  A1:{
+    nom:"L'atelier", sous:"la marque est une maison qui fabrique", cls:'vA1',
+    legende:"Bricolage Grotesque, vermillon sur charbon chaud. Tutoiement, phrases courtes et tendres. Le verbe est « fabriquer ».",
     notes:`
       <div class="card">
-        <h2>Thèse de conversion</h2>
-        <p>Le visiteur ne vient pas <b>consulter un site</b>, il vient <b>retrouver ce qu'il vient de voir</b>. Donc on ne l'accueille pas : on continue la vidéo. Aucun en-tête, aucun menu, aucune promesse de marque — la même grammaire verticale que TikTok, le pouce continue son geste.</p>
-        <p>La page est un <b>entonnoir à sens unique</b> : émotion, preuve, préparation, prix. Le prix n'apparaît qu'au quatrième écran, une fois le désir installé.</p>
+        <h2>La thèse d'identité</h2>
+        <p>ouvrance est un <b>atelier</b> : quelqu'un monte ton cadeau à la main. C'est ce que dit la promesse de délai (2 à 3 jours) et c'est vrai — un humain valide chaque livraison. L'identité assume la fabrication au lieu de la cacher.</p>
+        <p>Le vermillon n'appartient à aucun décor : ni l'or du musée, ni le turquoise des caméras. Il est disponible pour la marque seule.</p>
+        ${nuances(['#14100E','#E4573D','#F7F1EA','#1D1815','#A99A8E'])}
       </div>
       <div class="card">
-        <h2>Ce que la maquette tranche</h2>
-        <h3>Page d'atterrissage</h3>
-        <p>Une <b>page dédiée</b>, distincte de l'accueil, une par vidéo virale si besoin. L'accueil devient secondaire.</p>
-        <h3>Divulgâchage</h3>
-        <p>Traité comme un <b>argument de vente</b> : « on ne montre pas la fin, c'est le principe ». Le cadenas devient une promesse au lieu d'un manque.</p>
-        <h3>Grille de formules</h3>
-        <p>Pas de grille : <b>une seule offre poussée</b> (69,99 €), la carte reléguée en second. Aucune cannibalisation possible — la moins chère n'est jamais mise en balance.</p>
-        <h3>Identité</h3>
-        <p>Le site <b>emprunte l'identité de la fiction</b> : nuit, pierre chaude, or, turquoise des caméras. Barlow Condensed en capitales, Inter pour le texte.</p>
-        ${nuances(['#0A0908','#E8B76A','#4FD6C0','#F5F0E8','#A79E92'])}
+        <h2>La voix</h2>
+        <p>Tutoiement, phrases courtes, verbes concrets. « Fabriquer le sien » place l'offrant en <b>auteur</b>, pas en acheteur — cohérent avec un produit dont la valeur est ce qu'il y met.</p>
+        <p>Registre le plus proche de TikTok des trois sans tomber dans le jargon de plateforme.</p>
       </div>
       <div class="card">
         <h2>Ce que ça coûte</h2>
         <ul>
-          <li class="warn"><b>Zéro SEO.</b> Cette page ne se référence sur rien. Il faut un deuxième site derrière — l'accueil, les occasions, les pages légales — donc deux surfaces à concevoir, pas une.</li>
-          <li class="warn"><b>Aucune réassurance.</b> Un inconnu qui parle d'argent sans en-tête, sans mentions, sans prix visible : c'est exactement la forme d'une arnaque. À compenser par les micro-mentions de bas d'écran.</li>
-          <li><b>Une identité empruntée à un seul jeu.</b> Le jour où une deuxième expérience arrive, la marque est déjà mariée au musée.</li>
-          <li><b>Prix tardif</b> : chaque écran est un point de fuite. Fort si l'émotion tient, ruineux sinon.</li>
+          <li><b>« Atelier » plafonne le volume.</b> L'identité promet une main humaine ; le jour où la chaîne d'auteur s'industrialise, la promesse devient un mensonge ou une contrainte.</li>
+          <li><b>Le vermillon est chaud, proche du terracotta.</b> À surveiller face à la pierre chaude des décors : la marque et la fiction peuvent se confondre à l'écran.</li>
         </ul>
-      </div>`
+      </div>` + SOCLE
   },
-  B: {
-    nom:'La maison',
-    sous:'La vitrine premium',
-    html:B,
-    legende:'Accueil éditorial classique : en-tête, héros, deux objets, mode d\'emploi, réassurance, occasions, questions, pied de page légal.',
+  A2:{
+    nom:"La console", sous:"la marque est un label de jeux", cls:'vA2',
+    legende:"Space Grotesk, lime acide sur bleu-noir, angles à 12 px. Phrases très courtes, presque des cartons. Le verbe est « créer ».",
     notes:`
       <div class="card">
-        <h2>Thèse de conversion</h2>
-        <p>Le frein n'est pas le désir — TikTok l'a déjà créé — c'est <b>la crédibilité</b>. On demande 69,99 € à quelqu'un qui s'apprête à virer plusieurs centaines d'euros, sur un site qu'il ne connaissait pas il y a trente secondes. Le rôle de la page est de répondre à « est-ce que c'est sérieux ? » avant « est-ce que c'est beau ? ».</p>
-        <p>D'où la référence Apple citée par l'auteur : <b>l'objet est présenté, pas vanté</b>. Blanc, grande typographie, une seule idée par section.</p>
+        <h2>La thèse d'identité</h2>
+        <p>Si le produit est un jeu, la marque est un <b>label qui sort des jeux</b>. Le châssis ressemble à une bibliothèque : chrome neutre, vignettes colorées, un accent qui ne sert qu'à l'action. C'est la structure qui encaisse le mieux un catalogue qui grandit.</p>
+        <p>Le lime acide est le plus éloigné de toute palette de décor possible — il ne peut pas être confondu avec une fiction.</p>
+        ${nuances(['#08090C','#B4F461','#EDF1F7','#101319','#8A93A6'])}
       </div>
       <div class="card">
-        <h2>Ce que la maquette tranche</h2>
-        <h3>Page d'atterrissage</h3>
-        <p>C'est <b>l'accueil</b>. Une seule page à tenir, une seule à référencer, une seule à faire vivre.</p>
-        <h3>Grille de formules</h3>
-        <p><b>Deux objets, pas deux paliers.</b> La carte et le braquage sont présentés comme deux natures différentes — une lettre, un jeu — avec chacune sa raison d'être. C'est la réponse structurelle à la cannibalisation : on ne peut pas comparer ce qui n'est pas de même nature.</p>
-        <h3>Divulgâchage</h3>
-        <p>Assumé partiellement : on montre le décor et le dispositif, jamais la récompense. « Voir un exemple en 40 s » est la zone dangereuse — c'est ce montage qui décide de ce qui est éventé.</p>
-        <h3>Identité</h3>
-        <p>Le site <b>diverge de la fiction</b> : papier clair, Cormorant, or sourd. Le musée reste la fiction, la marque est un écrin. Elles ne se contredisent pas, elles se répondent.</p>
-        ${nuances(['#FAF8F5','#0C0A09','#8A6A1F','#141110','#E4DED6'])}
+        <h2>La voix</h2>
+        <p>Trois à six mots par phrase. « Un jeu. Fait avec vous deux. » Aucun adjectif. C'est le registre qui se lit le plus vite en sortie de vidéo, et le seul des trois qui tienne dans un carton de TikTok sans être réécrit.</p>
       </div>
       <div class="card">
         <h2>Ce que ça coûte</h2>
         <ul>
-          <li class="warn"><b>Rupture de rythme.</b> On sort d'une vidéo verticale plein écran pour tomber sur un en-tête et un pied de page. Le contraste peut se lire comme un refroidissement.</li>
-          <li><b>La page la plus longue à faire.</b> Sept sections, une FAQ, un pied de page légal : c'est le plus gros volume de contenu et de rédaction des trois.</li>
-          <li class="warn"><b>Le prix est visible tôt.</b> 69,99 € juxtaposé à 14,99 € sans contexte : le risque de cannibalisation ne disparaît pas, il se déplace dans la rédaction.</li>
-          <li><b>Le seul des trois qui se référence vraiment</b> — titres, contenu, balisage. C'est aussi son principal atout.</li>
+          <li class="warn"><b>Le froid contre l'émotion.</b> C'est un cadeau qui parle d'amour, de mariage, de naissance. Un langage de console peut assécher exactement ce qui fait vendre.</li>
+          <li class="warn"><b>La carte animée détonne.</b> Une enveloppe cachetée dans une bibliothèque de jeux : la formule à 14,99 € n'a plus de place naturelle dans l'identité.</li>
+          <li><b>Le lime plaît peu au-delà d'un certain âge.</b> Or les occasions visées — mariage, retraite, naissance — ne sont pas un public de joueurs.</li>
         </ul>
-      </div>`
+      </div>` + SOCLE
   },
-  C: {
-    nom:'Le seuil',
-    sous:'On entre par la question',
-    html:C,
-    legende:'Pas de page d\'accueil : le tunnel commence à la première seconde. Les options sont cliquables. Le prix n\'arrive qu\'une fois le cadeau projeté.',
+  A3:{
+    nom:"L'écrin", sous:"la marque est une maison de cadeaux", cls:'vA3',
+    legende:"Instrument Serif, rosé pâle sur prune sombre. Vouvoiement, phrases pleines. Le verbe est « composer ».",
     notes:`
       <div class="card">
-        <h2>Thèse de conversion</h2>
-        <p>Le visiteur n'arrive pas curieux, il arrive avec une <b>intention datée</b> : « le mariage de ma cousine, samedi ». Une page d'accueil lui demande de traduire cette intention en navigation. Ici on la prend telle quelle et on la fait avancer.</p>
-        <p>Deux leviers : l'<b>engagement progressif</b> — deux clics faciles avant de parler d'argent — et surtout le <b>cadrage du prix</b>. 69,99 € dans l'absolu, c'est cher. 69,99 € en face des 300 € qu'on s'apprête à offrir, c'est un emballage. C'est le seul des trois écrans qui met les deux chiffres côte à côte.</p>
+        <h2>La thèse d'identité</h2>
+        <p>La marque n'est ni le décor ni le jeu : elle est ce qui les <b>présente</b>. Sérif de titrage, rosé sourd, prune profonde — le registre du cadeau, pas du divertissement. C'est l'identité qui vieillit le mieux si le catalogue s'éloigne du jeu.</p>
+        <p>Elle a un avantage rare : elle rend crédible qu'une carte à 14,99 € et un jeu à 69,99 € <b>viennent de la même maison</b>.</p>
+        ${nuances(['#17121A','#F0C3B8','#F6EFF3','#211A25','#B0A0AC'])}
       </div>
       <div class="card">
-        <h2>Ce que la maquette tranche</h2>
-        <h3>Page d'atterrissage</h3>
-        <p>Il n'y en a pas. <b>La landing est le tunnel</b> — la page publique et le formulaire de commande fusionnent en une seule surface.</p>
-        <h3>Grille de formules</h3>
-        <p>Supprimée. Le configurateur <b>recommande</b> une formule ; l'autre apparaît en repli discret. Cannibalisation impossible puisque les deux ne sont jamais montrées à égalité.</p>
-        <h3>Divulgâchage</h3>
-        <p>Le meilleur des trois : l'aperçu montre <b>le cadeau de cet offrant-là</b> — une photo encadrée, un vocal — sans jamais montrer la fin ni le déroulé.</p>
-        <h3>Identité</h3>
-        <p>Chaleur, papier, prune profonde. Calistoga et Inter. Le site est <b>l'atelier</b>, pas le musée : c'est là qu'on prépare, pas là qu'on joue.</p>
-        ${nuances(['#FDF8F3','#4A2340','#C4643C','#241A22','#EADFD6'])}
+        <h2>La voix</h2>
+        <p>Vouvoiement, phrases pleines, rythme posé. « Un jeu où vous êtes dedans » garde la thèse produit tout en restant du côté de l'attention portée à quelqu'un.</p>
+        <p>C'est aussi la seule des trois qui n'a pas besoin d'être réécrite pour la page « mentions légales ».</p>
       </div>
       <div class="card">
         <h2>Ce que ça coûte</h2>
         <ul>
-          <li class="warn"><b>Conséquence RGPD directe.</b> Les réponses sont des données déposées avant tout contrat. La purge à 24 h des commandes non payées, déjà décidée, devient obligatoire dès la <i>première</i> question, pas au moment du paiement.</li>
-          <li class="warn"><b>Référencement nul par construction.</b> Il faut des pages d'occasion derrière (« cadeau de mariage original ») qui entrent dans le tunnel — donc une deuxième surface, comme pour A.</li>
-          <li class="warn"><b>Le montant offert doit être demandé</b> pour que le cadrage du prix fonctionne. Question intime posée très tôt : c'est le point de rupture le plus probable du parcours.</li>
-          <li><b>Aucune réassurance visible</b> avant plusieurs étapes. À compenser dans le bandeau bas.</li>
-          <li><b>Options grisées</b> (amis, parents) : promettre une variante non produite abîme la confiance ou force la roadmap.</li>
+          <li class="warn"><b>Rupture de registre avec TikTok.</b> Le vouvoiement en sortie d'une vidéo tutoyée peut se lire comme un site d'une autre génération.</li>
+          <li class="warn"><b>Le rosé lit « féminin ».</b> Sur un produit acheté aussi bien par des hommes que par des femmes, à vérifier avant de le verrouiller.</li>
+          <li><b>Le sérif ralentit la lecture.</b> Sur un entonnoir dont l'argument est la vitesse, c'est un choix à assumer.</li>
         </ul>
-      </div>`
-  }
+      </div>` + SOCLE
+  },
 };
 
 /* ---------------------------------------------------------------------- */
@@ -939,12 +551,15 @@ function rendre(){
   const k = courante();
   const v = VARIANTS[k];
   screen.scrollTop = 0;
-  screen.innerHTML = v.html;
+  screen.innerHTML = funnel(v.cls, MOTS[k]);
   label.innerHTML = `${k} — ${v.nom}<span>${v.sous}</span>`;
-  eyebrow.innerHTML = `Ticket #7 · le site public · maquette <b>${k}</b> sur ${cles.length}`;
+  eyebrow.innerHTML = `Ticket #7 · tour 2 · structure tenue constante · identité et voix <b>${k}</b>`;
   caption.textContent = v.legende;
   notes.innerHTML = v.notes;
-  brancher(k);
+  const bar = document.getElementById('bar');
+  bar.style.transform = 'translateY(120%)';
+  bar.style.transition = 'transform .28s ease';
+  screen.onscroll = () => { bar.style.transform = screen.scrollTop > 240 ? 'translateY(0)' : 'translateY(120%)'; };
 }
 
 function aller(pas){
@@ -954,30 +569,6 @@ function aller(pas){
   u.searchParams.set('variant', k);
   history.replaceState(null, '', u);
   rendre();
-}
-
-/* Comportements internes aux maquettes — strictement décoratifs. */
-function brancher(k){
-  if (k === 'A'){
-    const bar = document.getElementById('aBar');
-    bar.style.transform = 'translateY(120%)';
-    bar.style.transition = 'transform .28s ease';
-    screen.onscroll = () => {
-      bar.style.transform = screen.scrollTop > 240 ? 'translateY(0)' : 'translateY(120%)';
-    };
-  } else {
-    screen.onscroll = null;
-  }
-  if (k === 'C'){
-    screen.querySelectorAll('.chip').forEach(el => el.addEventListener('click', () => {
-      screen.querySelectorAll('.chip').forEach(o => o.setAttribute('aria-pressed','false'));
-      el.setAttribute('aria-pressed','true');
-    }));
-    screen.querySelectorAll('.opt').forEach(el => el.addEventListener('click', () => {
-      screen.querySelectorAll('.opt').forEach(o => o.setAttribute('aria-pressed','false'));
-      el.setAttribute('aria-pressed','true');
-    }));
-  }
 }
 
 document.getElementById('prev').addEventListener('click', () => aller(-1));
