@@ -123,10 +123,9 @@
     75%{transform:scaleX(.02)}   83.33%{transform:scaleX(.5)}  91.67%{transform:scaleX(.866)}
     100%{transform:scaleX(1)}
   }
-  /* la face bascule au demi-tour : vert clair face avant, vert sombre et sans croix de dos */
-  @keyframes corps{0%,24.9%{fill:#34C77B} 25%,74.9%{fill:#17724A} 75%,100%{fill:#34C77B}}
+  /* la croix est sur les deux faces ; seule la teinte dit de quel côté on regarde */
+  @keyframes corps{0%,24.9%{fill:#34C77B} 25%,74.9%{fill:#1E9A61} 75%,100%{fill:#34C77B}}
   @keyframes arete{0%,24.9%{opacity:.75} 25%,74.9%{opacity:.30} 75%,100%{opacity:.75}}
-  @keyframes croix{0%,24.9%{opacity:1} 25%,74.9%{opacity:0} 75%,100%{opacity:1}}
   @keyframes flotte{0%,100%{transform:translateY(0)} 50%{transform:translateY(-7px)}}
   @keyframes halo{0%,100%{opacity:.45} 50%{opacity:.85}}
   @keyframes lueur{0%,100%{opacity:.5; transform:scaleX(1)} 50%{opacity:.28; transform:scaleX(.86)}}
@@ -134,7 +133,6 @@
   .faceA{animation:faceA 4.2s linear infinite}
   .corps{animation:corps 4.2s linear infinite}
   .arete{animation:arete 4.2s linear infinite}
-  .croix{animation:croix 4.2s linear infinite}
   .flotte{animation:flotte 3.4s cubic-bezier(.45,0,.55,1) infinite}
   .halo{animation:halo 3.4s ease-in-out infinite}
   .lueur{animation:lueur 3.4s ease-in-out infinite}
@@ -204,7 +202,7 @@ const VARIANTS = {
       "Minicarte sous la vie et l'objectif, transparente : elle situe sans s'imposer.",
       "Barre de vie conservée. Munitions supprimées : on ne compte pas ses balles.",
       "Vie basse : voile rouge battant au pouls, ralenti, coeur et respiration.",
-      "Les soins sont des box vertes qui flottent et tournent dans leur bulle."
+      "Les soins sont des box vertes à croix blanche sur leurs deux faces."
     ],
     tradeoffs:[
       ['plus',"Lisible sans tutoriel pour qui a déjà joué à un FPS."],
