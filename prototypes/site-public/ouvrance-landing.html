@@ -2,7 +2,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!--
   PROTOTYPE — jetable. Ticket #7 « Le site public et son pouvoir de conversion ».
-  TOUR 3. Deux axes sont désormais fermés et tenus constants :
+  TOUR 4. Trois axes sont fermés et tenus constants ; seule la NUANCE D'OR varie.
+  Rappel des axes fermés :
    · la STRUCTURE — entonnoir vertical plein écran, sans en-tête, prix au dernier
      panneau (tour 1, maquette « La bobine ») ;
    · la VOIX — celle d'ouvrance.fr en ligne, reprise telle quelle : vouvoiement,
@@ -10,15 +11,19 @@
      noms de formules Carte Animée / Jeu Premium, offre de lancement à −50 %.
      Seul l'ordre change : la personnalisation passe devant, le virement redescend
      en réassurance de bas de panneau.
-  Reste ouvert, et seul à varier ici : l'IDENTITÉ VISUELLE.
-  A1 L'atelier · A2 La console · A3 L'écrin — commutables via ?variant=A1|A2|A3.
+   · la TYPOGRAPHIE — Cormorant en titrage, Inter en texte : le sérif que réclame
+     « L'art d'offrir », et l'appariement classique du noir et or.
+  Reste ouvert, et seul à varier ici : LA NUANCE D'OR.
+  O1 Or miel · O2 Champagne · O3 Laiton — commutables via ?variant=O1|O2|O3.
+  Le doré est aussi la couleur du musée : la vignette du braquage est posée à côté
+  du châssis dans chaque maquette, précisément pour juger de la confusion.
   Les trois tiennent la même thèse : le produit est un JEU PERSONNALISABLE, le musée
   n'est qu'un décor parmi d'autres, le lien de virement est facultatif.
   Ne pas promouvoir ce code en production : aucune abstraction, aucun test.
 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=IBM+Plex+Mono:wght@400;600&family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Cormorant:ital,wght@0,400;0,500;0,600;1,500&family=IBM+Plex+Mono:wght@400;600&family=Inter:wght@300;400;500;600;700&display=swap">
 <style>
 /* ============================== BANC D'ESSAI ============================== */
 :root{
@@ -75,14 +80,21 @@ body{background:var(--bench-ground); color:var(--bench-ink); font-family:var(--u
 /* ====================================================================== */
 /* SQUELETTE COMMUN — l'entonnoir. Décidé au tour 1, tenu constant ici.    */
 /* ====================================================================== */
-.funnel{font-family:var(--body); color:var(--ink); background:var(--ground)}
+.funnel{
+  font-family:var(--body); color:var(--ink); background:var(--ground);
+  /* typographie tenue constante — seule la couleur varie d'une maquette à l'autre */
+  --display:'Cormorant',Georgia,serif; --body:'Inter',system-ui,-apple-system,sans-serif;
+  --h1-size:50px; --h1-weight:500; --h1-lh:1.02; --h1-track:-.015em; --em-style:italic;
+  --h3-size:27px; --radius:999px; --radius-sm:18px;
+  --mark-size:23px; --mark-weight:500; --mark-track:.02em;
+}
 .funnel .pan{
   position:relative; min-height:calc(var(--sh) - 20px); scroll-snap-align:start;
   display:flex; flex-direction:column; justify-content:flex-end; padding:0 22px 112px; overflow:hidden;
 }
 .funnel .scene{position:absolute; inset:0; z-index:0}
 .funnel .scene svg{width:100%; height:100%; display:block}
-.funnel .veil{position:absolute; inset:0; z-index:1; background:linear-gradient(180deg,var(--ground) 0%,transparent 13%,transparent 26%,var(--ground) 49%,var(--ground) 100%)}
+.funnel .veil{position:absolute; inset:0; z-index:1; background:linear-gradient(180deg,var(--ground) 0%,transparent 13%,transparent 28%,var(--ground) 54%,var(--ground) 100%)}
 .funnel .pan > *:not(.scene):not(.veil):not(.mark):not(.hint){position:relative; z-index:2}
 .funnel .mark{
   position:absolute; top:58px; left:22px; z-index:20; font-family:var(--display);
@@ -128,6 +140,21 @@ body{background:var(--bench-ground); color:var(--bench-ink); font-family:var(--u
 .funnel .offer h3{margin:0; font-family:var(--display); font-size:var(--h3-size,23px); font-weight:var(--h1-weight,700); letter-spacing:var(--h1-track,-.01em); text-transform:var(--h1-case,none)}
 .funnel .offer .price{font-family:var(--display); font-size:var(--h3-size,23px); font-weight:var(--h1-weight,700); color:var(--accent); white-space:nowrap}
 .funnel .offer p{margin:7px 0 0; font-size:13.5px; color:var(--ink-2); line-height:1.5}
+.funnel .scene .plan{position:absolute; inset:0; opacity:0; animation:teaser 13.5s linear infinite}
+.funnel .scene .plan:nth-child(1){animation-delay:0s}
+.funnel .scene .plan:nth-child(2){animation-delay:4.5s}
+.funnel .scene .plan:nth-child(3){animation-delay:9s}
+@keyframes teaser{
+  0%{opacity:0; transform:scale(1.07)}
+  4%{opacity:1}
+  29%{opacity:1; transform:scale(1)}
+  35%{opacity:0; transform:scale(1)}
+  100%{opacity:0; transform:scale(1.07)}
+}
+@media (prefers-reduced-motion:reduce){
+  .funnel .scene .plan{animation:none}
+  .funnel .scene .plan:nth-child(1){opacity:1}
+}
 .funnel .lancement{margin:-5px 0 16px; font-family:var(--mono); font-size:11px; letter-spacing:.05em; color:var(--accent)}
 .funnel .offer .price s{font-family:var(--body); font-size:13px; font-weight:400; color:var(--ink-3); margin-right:7px; text-decoration-thickness:1px}
 .funnel .bar{
@@ -142,42 +169,30 @@ body{background:var(--bench-ground); color:var(--bench-ink); font-family:var(--u
 @media (prefers-reduced-motion:reduce){ *{animation:none !important; transition:none !important} }
 
 /* ====================================================================== */
-/* A1 — L'ATELIER : la marque est une maison qui fabrique                 */
+/* O1 — OR MIEL sur noir chaud : l'or de la lumière                       */
 /* ====================================================================== */
-.vA1{
-  --ground:#14100E; --surface:#1D1815; --line:#2E2622;
-  --ink:#F7F1EA; --ink-2:#A99A8E; --ink-3:#6E625A;
-  --accent:#E4573D; --accent-soft:#2A1712; --on-accent:#1A0703;
-  --display:'Bricolage Grotesque',system-ui,sans-serif; --body:'Inter',system-ui,sans-serif;
-  --h1-size:44px; --h1-weight:800; --h1-lh:1.02; --h1-track:-.03em;
-  --h3-size:23px; --radius:999px; --radius-sm:16px;
-  --mark-size:18px; --mark-weight:800; --mark-track:-.02em;
+.vO1{
+  --ground:#0B0908; --surface:#151110; --line:#282120;
+  --ink:#F6F1E9; --ink-2:#A79E92; --ink-3:#6E675D;
+  --accent:#E8B76A; --accent-soft:#221A0F; --on-accent:#1A1206;
 }
 
 /* ====================================================================== */
-/* A2 — LA CONSOLE : la marque est un label de jeux                       */
+/* O2 — CHAMPAGNE sur noir neutre : l'or du papier                        */
 /* ====================================================================== */
-.vA2{
-  --ground:#08090C; --surface:#101319; --line:#1E2430;
-  --ink:#EDF1F7; --ink-2:#8A93A6; --ink-3:#5A6376;
-  --accent:#B4F461; --accent-soft:#151D0E; --on-accent:#0B1203;
-  --display:'Space Grotesk',system-ui,sans-serif; --body:'Space Grotesk',system-ui,sans-serif;
-  --h1-size:41px; --h1-weight:700; --h1-lh:1.04; --h1-track:-.035em;
-  --h3-size:21px; --radius:12px; --radius-sm:12px;
-  --mark-size:15px; --mark-weight:700; --mark-track:.12em; --mark-case:uppercase;
+.vO2{
+  --ground:#0A0A0C; --surface:#141417; --line:#26262B;
+  --ink:#F4F2EE; --ink-2:#A3A2A0; --ink-3:#6C6B6A;
+  --accent:#E4D2A6; --accent-soft:#1D1B16; --on-accent:#191712;
 }
 
 /* ====================================================================== */
-/* A3 — L'ÉCRIN : la marque est une maison de cadeaux                     */
+/* O3 — LAITON sur encre : l'or du métal                                  */
 /* ====================================================================== */
-.vA3{
-  --ground:#17121A; --surface:#211A25; --line:#332A38;
-  --ink:#F6EFF3; --ink-2:#B0A0AC; --ink-3:#786A76;
-  --accent:#F0C3B8; --accent-soft:#2B1F22; --on-accent:#2A1310;
-  --display:'Instrument Serif',Georgia,serif; --body:'Inter',system-ui,sans-serif;
-  --h1-size:50px; --h1-weight:400; --h1-lh:1.02; --h1-track:-.015em; --em-style:italic;
-  --h3-size:27px; --radius:999px; --radius-sm:18px;
-  --mark-size:22px; --mark-weight:400; --mark-track:.01em;
+.vO3{
+  --ground:#0B0D11; --surface:#14171D; --line:#242932;
+  --ink:#EFF1F4; --ink-2:#9AA1AC; --ink-3:#646C78;
+  --accent:#C9962F; --accent-soft:#1C1810; --on-accent:#120C02;
 }
 </style>
 
@@ -207,59 +222,114 @@ body{background:var(--bench-ground); color:var(--bench-ink); font-family:var(--u
 /* la marque encadre les fictions, elle ne les porte pas.                  */
 /* ---------------------------------------------------------------------- */
 
-const heroScene = `
-<svg viewBox="0 0 390 844" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Un jeu personnalisé ouvert sur un téléphone">
+/* Le fond du premier panneau : un teaser du jeu qui boucle sur trois plans —
+   l'approche du tableau, le gros plan sur la photo encadrée avec son vocal,
+   et un extrait de cinématique. En production ce sera une vidéo muette en
+   boucle ; ici trois SVG qui se fondent, pour juger du montage et du rythme. */
+
+const planApproche = `
+<svg viewBox="0 0 390 844" preserveAspectRatio="xMidYMid slice" role="img" aria-label="On avance vers un tableau éclairé">
   <defs>
-    <radialGradient id="hg" cx=".5" cy=".3" r=".6">
-      <stop offset="0" stop-color="var(--accent)" stop-opacity=".26"/>
-      <stop offset="1" stop-color="var(--accent)" stop-opacity="0"/>
-    </radialGradient>
-    <linearGradient id="hp" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="var(--surface)"/><stop offset="1" stop-color="var(--ground)"/>
-    </linearGradient>
-    <radialGradient id="hh" cx=".5" cy=".5" r=".5">
-      <stop offset="0" stop-color="#FFD9A0" stop-opacity=".42"/><stop offset="1" stop-color="#FFD9A0" stop-opacity="0"/>
-    </radialGradient>
-    <clipPath id="hc"><rect x="9" y="9" width="182" height="402" rx="23"/></clipPath>
+    <linearGradient id="paSol" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4A3B2C"/><stop offset="1" stop-color="#120E0B"/></linearGradient>
+    <linearGradient id="paMur" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0D0B09"/><stop offset=".55" stop-color="#40311F"/><stop offset="1" stop-color="#1A140F"/></linearGradient>
+    <radialGradient id="paHalo" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#FFD9A0" stop-opacity=".62"/><stop offset="1" stop-color="#FFD9A0" stop-opacity="0"/></radialGradient>
+    <linearGradient id="paCone" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4FD6C0" stop-opacity=".32"/><stop offset="1" stop-color="#4FD6C0" stop-opacity="0"/></linearGradient>
   </defs>
-  <rect width="390" height="844" fill="var(--ground)"/>
-  <rect width="390" height="844" fill="url(#hg)"/>
+  <rect width="390" height="844" fill="#08070A"/>
+  <path d="M0 0 H390 V96 L250 168 H140 L0 96 Z" fill="#0F0C0A"/>
+  <path d="M0 96 L140 168 V420 L0 540 Z" fill="url(#paMur)"/>
+  <path d="M390 96 L250 168 V420 L390 540 Z" fill="url(#paMur)"/>
+  <path d="M0 540 L140 420 H250 L390 540 V844 H0 Z" fill="url(#paSol)"/>
+  <path d="M140 168 H250 V420 H140 Z" fill="#181310"/>
+  <ellipse cx="195" cy="286" rx="168" ry="196" fill="url(#paHalo)"/>
+  <g>
+    <path d="M22 196 L104 232 V366 L22 412 Z" fill="#231A14" stroke="#8A6A3C" stroke-width="1.6"/>
+    <path d="M34 216 L92 244 V356 L34 392 Z" fill="#C79A5E" opacity=".5"/>
+  </g>
+  <g>
+    <path d="M368 204 L296 236 V360 L368 402 Z" fill="#231A14" stroke="#8A6A3C" stroke-width="1.6"/>
+    <path d="M356 224 L308 248 V350 L356 384 Z" fill="#8FA9C7" opacity=".36"/>
+  </g>
+  <!-- le tableau personnalisé : au centre, dans la moitié haute, déjà reconnaissable -->
+  <g>
+    <rect x="150" y="222" width="90" height="134" rx="2" fill="#1E1712" stroke="#C09257" stroke-width="2.6"/>
+    <rect x="160" y="234" width="70" height="110" fill="#5E4A52"/>
+    <circle cx="181" cy="272" r="14" fill="#C79A7E"/>
+    <circle cx="207" cy="278" r="12" fill="#A8785E"/>
+    <path d="M160 344 q24 -33 48 -20 q19 10 22 20 Z" fill="#3E2F36"/>
+  </g>
+  <rect x="176" y="378" width="38" height="42" rx="2" fill="#2A2018" stroke="#6E5433"/>
+  <path d="M298 96 L390 96 L390 300 Z" fill="url(#paCone)"/>
+  <circle cx="332" cy="104" r="5" fill="#4FD6C0" opacity=".85"/>
+  <g fill="#FFE7C2" opacity=".3">
+    <circle cx="118" cy="330" r="1.3"/><circle cx="286" cy="300" r="1.2"/><circle cx="96" cy="416" r="1"/><circle cx="262" cy="382" r="1.1"/>
+  </g>
+</svg>`;
 
-  <g transform="translate(96 104) rotate(-4 100 210)">
-    <rect width="200" height="420" rx="30" fill="url(#hp)" stroke="var(--line)" stroke-width="1.5"/>
-    <g clip-path="url(#hc)">
-      <rect x="9" y="9" width="182" height="402" fill="#16110D"/>
-      <path d="M9 168 L82 210 V318 L9 360 Z" fill="#2A2018"/>
-      <path d="M191 168 L118 210 V318 L191 360 Z" fill="#2A2018"/>
-      <path d="M9 360 L82 318 H118 L191 360 V411 H9 Z" fill="#3C2E20"/>
-      <path d="M82 210 H118 V318 H82 Z" fill="#1B1410"/>
-      <ellipse cx="100" cy="248" rx="98" ry="112" fill="url(#hh)"/>
-      <rect x="70" y="186" width="60" height="82" rx="2" fill="#1E1712" stroke="#B08A56" stroke-width="2"/>
-      <rect x="77" y="194" width="46" height="66" fill="#5E4A52"/>
-      <circle cx="92" cy="220" r="10" fill="#C79A7E"/>
-      <circle cx="110" cy="224" r="9" fill="#A8785E"/>
-      <path d="M77 260 q16 -22 32 -14 q13 7 18 14 Z" fill="#3E2F36"/>
-      <g fill="#FFE7C2" opacity=".3">
-        <circle cx="46" cy="290" r="1.4"/><circle cx="152" cy="252" r="1.2"/><circle cx="66" cy="356" r="1"/>
-      </g>
-    </g>
-    <rect x="9" y="9" width="182" height="402" rx="23" fill="none" stroke="#000" stroke-opacity=".5"/>
-
-    <g transform="translate(-46 150)">
-      <rect width="96" height="36" rx="18" fill="var(--surface)" stroke="var(--line)"/>
-      <circle cx="18" cy="18" r="9" fill="var(--accent)"/>
-      <g stroke="var(--accent)" stroke-width="2.2" stroke-linecap="round" opacity=".95">
-        <path d="M38 12v12M46 8v20M54 14v8M62 10v16M70 15v6M78 12v12"/>
-      </g>
-    </g>
-    <g transform="translate(112 40)">
-      <rect width="98" height="34" rx="17" fill="var(--surface)" stroke="var(--line)"/>
-      <rect x="14" y="12" width="48" height="3.6" rx="1.8" fill="var(--ink-2)"/>
-      <rect x="14" y="20" width="30" height="3.6" rx="1.8" fill="var(--ink-3)"/>
-      <circle cx="80" cy="17" r="7" fill="var(--accent)"/>
+const planCadre = `
+<svg viewBox="0 0 390 844" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Gros plan sur la photo encadrée et son message vocal">
+  <defs>
+    <radialGradient id="pcH" cx=".5" cy=".32" r=".56"><stop offset="0" stop-color="#FFD5AE" stop-opacity=".55"/><stop offset="1" stop-color="#FFD5AE" stop-opacity="0"/></radialGradient>
+    <linearGradient id="pcM" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#120D0B"/><stop offset=".4" stop-color="#38291D"/><stop offset="1" stop-color="#15100C"/></linearGradient>
+  </defs>
+  <rect width="390" height="844" fill="url(#pcM)"/>
+  <ellipse cx="195" cy="268" rx="230" ry="250" fill="url(#pcH)"/>
+  <g>
+    <rect x="64" y="94" width="262" height="300" rx="4" fill="#1B1410" stroke="#C09257" stroke-width="7"/>
+    <rect x="82" y="112" width="226" height="264" fill="#5E4A52"/>
+    <circle cx="152" cy="186" r="44" fill="#C79A7E"/>
+    <circle cx="232" cy="200" r="38" fill="#A8785E"/>
+    <path d="M82 376 q74 -110 154 -58 q54 36 72 58 Z" fill="#3E2F36"/>
+    <rect x="82" y="112" width="226" height="264" fill="#FFD9A0" opacity=".09"/>
+    <text x="96" y="306" fill="#F0DCBE" font-family="monospace" font-size="12.5" letter-spacing="1.8">14 JUIN 2019 — LE PREMIER SOIR</text>
+  </g>
+  <!-- le vocal qui se déclenche à l'approche -->
+  <g transform="translate(150 70)">
+    <rect width="184" height="44" rx="22" fill="#1B1410" stroke="#8A6A3C"/>
+    <circle cx="23" cy="22" r="11" fill="#E8B76A"/>
+    <path d="M20 17v10l8-5z" fill="#1A1206"/>
+    <g stroke="#E8B76A" stroke-width="2.4" stroke-linecap="round" opacity=".92">
+      <path d="M50 15v14M60 10v24M70 18v8M80 12v20M90 17v10M100 9v26M110 16v12M120 13v18M130 18v8M140 12v20M150 16v12M160 14v16"/>
     </g>
   </g>
 </svg>`;
+
+const planCinematique = `
+<svg viewBox="0 0 390 844" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Extrait de la cinématique de fuite">
+  <defs>
+    <linearGradient id="pnCiel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0A1220"/><stop offset=".34" stop-color="#1C2A3E"/><stop offset=".5" stop-color="#6A4E70"/><stop offset="1" stop-color="#0B0A10"/>
+    </linearGradient>
+    <radialGradient id="pnLune" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#FFE9C4" stop-opacity=".9"/><stop offset="1" stop-color="#FFE9C4" stop-opacity="0"/></radialGradient>
+    <linearGradient id="pnFaisceau" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFE9C4" stop-opacity=".28"/><stop offset="1" stop-color="#FFE9C4" stop-opacity="0"/></linearGradient>
+  </defs>
+  <rect width="390" height="844" fill="url(#pnCiel)"/>
+  <circle cx="292" cy="150" r="84" fill="url(#pnLune)"/>
+  <circle cx="292" cy="150" r="30" fill="#FFF3DA" opacity=".92"/>
+  <g fill="#0C1018">
+    <rect x="0" y="372" width="62" height="472"/><rect x="54" y="424" width="46" height="420"/>
+    <rect x="96" y="336" width="58" height="508"/><rect x="150" y="408" width="40" height="436"/>
+    <rect x="186" y="368" width="66" height="476"/><rect x="248" y="430" width="44" height="414"/>
+    <rect x="288" y="352" width="54" height="492"/><rect x="338" y="412" width="52" height="432"/>
+  </g>
+  <g fill="#E8B76A" opacity=".6">
+    <rect x="14" y="404" width="6" height="9"/><rect x="30" y="432" width="6" height="9"/><rect x="110" y="378" width="6" height="9"/>
+    <rect x="130" y="422" width="6" height="9"/><rect x="200" y="400" width="6" height="9"/><rect x="302" y="386" width="6" height="9"/>
+  </g>
+  <!-- l'hélicoptère de la fuite -->
+  <g transform="translate(84 200)" fill="#07090E">
+    <ellipse cx="62" cy="34" rx="46" ry="17"/>
+    <path d="M100 30 L158 21 L158 30 L104 41 Z"/>
+    <path d="M152 6 h10 v26 h-10 z"/>
+    <rect x="-8" y="2" width="142" height="4.5" rx="2.2"/>
+    <rect x="44" y="-6" width="6" height="13" rx="3"/>
+    <path d="M28 50 h68 v5 h-68 z"/>
+  </g>
+  <path d="M128 250 L52 430 L216 430 Z" fill="url(#pnFaisceau)"/>
+  <rect width="390" height="60" fill="#000"/>
+</svg>`;
+
+const teaser = `<div class="plan">${planApproche}</div><div class="plan">${planCadre}</div><div class="plan">${planCinematique}</div>`;
 
 const lueur = (o) => `
 <svg viewBox="0 0 390 844" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
@@ -371,7 +441,7 @@ const prix = (o) => `<span class="price">${o.avant ? `<s>${o.avant}</s>` : ''}${
 const funnel = (cls) => `
 <div class="funnel ${cls}">
   <section class="pan">
-    <div class="scene">${heroScene}</div><div class="veil"></div>
+    <div class="scene">${teaser}</div><div class="veil"></div>
     <div class="mark">ouvrance</div>
     <div class="kicker">${T.k1}</div>
     <h1>${T.h1}</h1>
@@ -425,85 +495,68 @@ const funnel = (cls) => `
 
 const nuances = (cs) => '<div class="swatches">' + cs.map(c => `<i class="sw" style="background:${c}" title="${c}"></i>`).join('') + '</div>';
 
-/* Constant aux trois — la voix est tranchée, l'identité ne l'est pas. */
+/* Constant aux trois : la structure, la voix, la typographie, le teaser. */
 const SOCLE = `
   <div class="card flag">
-    <h2>La voix, désormais fixée</h2>
-    <p>Reprise du site en ligne : <b>vouvoiement</b>, phrases pleines, tirets longs. Le lexique de la maison est conservé tel quel — « <b>L'art d'offrir</b> », « faire battre un cœur », « <b>en ligne à vie</b> », « un simple lien à partager », « votre argent ne passe jamais par nous », « <b>Le plus choisi</b> ». Les noms de formules reprennent ceux du catalogue en ligne : <b>Carte Animée</b> et <b>Jeu Premium</b>, avec l'offre de lancement à −50 % et les prix barrés.</p>
-    <h3>Le seul déplacement</h3>
-    <p>L'ordre. L'accroche du site en ligne ouvre sur le virement (« plutôt qu'une enveloppe ou un envoi d'argent sans saveur ») ; ici la <b>personnalisation passe devant</b> et prend le panneau 2 en entier, tandis que le virement redescend en <b>réassurance de bas de panneau</b> — « le lien de virement reste le vôtre, révélé à la fin <b>si vous en joignez un</b> ».</p>
-    <h3>La marque n'habite pas le musée</h3>
-    <p>Le châssis appartient à ouvrance ; les décors gardent <b>leurs</b> couleurs et n'apparaissent qu'<b>encadrés</b> — dans l'écran du téléphone, puis dans les vignettes. Un décor qui arrive demain ne coûte aucun changement de marque.</p>
+    <h2>Le teaser, en fond du premier panneau</h2>
+    <p>Le fond n'est plus une photo de produit mais un <b>teaser du jeu qui boucle sur trois plans</b> : l'approche du tableau éclairé, le gros plan sur la photo encadrée avec son vocal déclenché, l'extrait de cinématique. C'est la personnalisation qui se montre elle-même — la promesse n'est plus écrite, elle est vue.</p>
+    <p>Ici trois SVG qui se fondent, pour juger du montage et du rythme. En production : une <b>vidéo muette en boucle</b>, montée depuis la cinématique maître et une capture de gameplay.</p>
+    <h3 class="warn">Conséquence technique, déjà tranchée ailleurs</h3>
+    <p class="warn">La recherche sur les capacités mobiles a établi que <b>le mode éco et le mode silencieux bloquent la lecture même d'une vidéo muette</b>, sans API pour le détecter. Le teaser de fond doit donc avoir une <b>image d'affiche</b> qui tient seule — le premier plan du montage — et le panneau doit rester lisible si la vidéo ne démarre jamais. Ce n'est pas un cas dégradé, c'est un chemin normal.</p>
+  </div>
+  <div class="card">
+    <h2>Ce qui ne varie plus</h2>
+    <p><b>La structure</b> — entonnoir vertical plein écran, sans en-tête, prix au dernier panneau. <b>La voix</b> — celle d'ouvrance.fr : « L'art d'offrir », « faire battre un cœur », « en ligne à vie », Carte Animée et Jeu Premium, lancement à −50 %. <b>La typographie</b> — Cormorant en titrage, Inter en texte.</p>
+    <p>Seule la nuance d'or change d'une maquette à l'autre. La vignette du braquage est posée au troisième panneau dans les trois, exprès : c'est là que se juge la confusion entre la marque et le décor.</p>
   </div>`;
 
 const VARIANTS = {
-  A1:{
-    nom:"L'atelier", sous:"la marque est une maison qui fabrique", cls:'vA1',
-    legende:"Bricolage Grotesque, vermillon sur charbon chaud. Grotesque compacte, chaleur d'atelier.",
+  O1:{
+    nom:"Or miel", sous:"l'or de la lumière", cls:'vO1',
+    legende:"#E8B76A sur noir chaud. L'or le plus proche de celui des cadres du musée.",
     notes:`
       <div class="card">
-        <h2>La thèse d'identité</h2>
-        <p>ouvrance est un <b>atelier</b> : quelqu'un monte votre cadeau à la main — ce que dit déjà « fait main, pour celles et ceux qui offrent » au pied du site en ligne. L'identité assume la fabrication au lieu de la cacher.</p>
-        <p>Le vermillon n'appartient à aucun décor : ni l'or du musée, ni le turquoise des caméras. Il est disponible pour la marque seule.</p>
-        ${nuances(['#14100E','#E4573D','#F7F1EA','#1D1815','#A99A8E'])}
+        <h2>Ce que fait cet or</h2>
+        <p>Le plus chaud et le plus immédiatement <b>premium</b> des trois. C'est l'or de la lumière — celui d'une vitrine éclairée, d'une flamme, d'une dorure. Il porte l'émotion mieux que les deux autres et c'est celui qui « fait cadeau » au premier coup d'œil.</p>
+        <p>Sur noir chaud, l'ensemble a la densité d'une affiche de cinéma. Le bouton doré sur fond presque noir est le contraste le plus fort du lot.</p>
+        ${nuances(['#0B0908','#E8B76A','#F6F1E9','#151110','#A79E92'])}
       </div>
       <div class="card">
-        <h2>Comment elle tient la voix</h2>
-        <p>Bonne tenue : la grotesque compacte donne du poids aux phrases pleines sans les alourdir, et le vermillon soutient « faire battre un cœur » mieux qu'un accent froid.</p>
-        <p><b>Le meilleur compromis des trois</b> entre la chaleur du texte et la sobriété du châssis.</p>
-      </div>
-      <div class="card">
-        <h2>Ce que ça coûte</h2>
-        <ul>
-          <li><b>« Atelier » plafonne le volume.</b> L'identité promet une main humaine ; le jour où la chaîne d'auteur s'industrialise, la promesse devient un mensonge ou une contrainte.</li>
-          <li><b>Le vermillon est chaud, proche du terracotta.</b> À surveiller face à la pierre chaude des décors : la marque et la fiction peuvent se confondre à l'écran.</li>
-        </ul>
+        <h2>La confusion avec le musée</h2>
+        <p class="warn"><b>Maximale.</b> C'est exactement la teinte des cadres du braquage. Regarde le troisième panneau : la vignette du musée se fond dans le châssis au lieu de s'en détacher. Un deuxième décor, froid ou clair, cassera l'accord.</p>
+        <p>C'est le prix à payer, pas un défaut d'exécution : cet or <b>est</b> l'or du musée. Acceptable si le braquage reste longtemps le produit phare ; coûteux le jour où le catalogue s'élargit.</p>
       </div>` + SOCLE
   },
-  A2:{
-    nom:"La console", sous:"la marque est un label de jeux", cls:'vA2',
-    legende:"Space Grotesk, lime acide sur bleu-noir, angles à 12 px. À lire comme un contre-exemple utile.",
+  O2:{
+    nom:"Champagne", sous:"l'or du papier", cls:'vO2',
+    legende:"#E4D2A6 sur noir neutre. L'or éteint des maisons de luxe — le plus loin du musée.",
     notes:`
       <div class="card">
-        <h2>La thèse d'identité</h2>
-        <p>Si le produit est un jeu, la marque est un <b>label qui sort des jeux</b> : chrome neutre, vignettes colorées, un accent réservé à l'action. C'est la structure qui encaisse le mieux un catalogue qui grandit, et le lime est impossible à confondre avec une fiction.</p>
-        ${nuances(['#08090C','#B4F461','#EDF1F7','#101319','#8A93A6'])}
+        <h2>Ce que fait cet or</h2>
+        <p>Or pâle, presque crème, sur un noir <b>neutre</b> — aucune chaleur dans le fond. C'est l'or du papier gaufré et de la dorure à froid : le registre des maisons, pas des vitrines.</p>
+        <p>Il donne le résultat le plus <b>calme</b> des trois, et le plus crédible pour tenir une Carte Animée à 14,99 € et un Jeu Premium à 69,99 € sous la même enseigne.</p>
+        ${nuances(['#0A0A0C','#E4D2A6','#F4F2EE','#141417','#A3A2A0'])}
       </div>
       <div class="card">
-        <h2>Comment elle tient la voix</h2>
-        <p class="warn"><b>Mal.</b> C'est l'enseignement de cette maquette. Le registre du site en ligne — vouvoiement, « faire battre un cœur », « en ligne à vie » — sonne faux sur un châssis de console. La voix demande de la chaleur ; l'identité en retire.</p>
-        <p>Elle reste dans le lot comme <b>contre-exemple</b> : elle montre exactement ce que la voix retenue interdit.</p>
-      </div>
-      <div class="card">
-        <h2>Ce que ça coûte</h2>
-        <ul>
-          <li class="warn"><b>Le froid contre l'émotion.</b> Mariage, naissance, retraite ne sont pas un public de joueurs.</li>
-          <li class="warn"><b>La Carte Animée détonne.</b> Une enveloppe cachetée à la cire dans une bibliothèque de jeux n'a plus de place naturelle.</li>
-        </ul>
+        <h2>La confusion avec le musée</h2>
+        <p><b>La plus faible.</b> Le noir neutre s'oppose franchement à la pierre chaude du décor, et le champagne est trop éteint pour être pris pour la lumière d'une vitrine. La vignette du braquage se détache nettement au troisième panneau.</p>
+        <p class="warn">Contrepartie : c'est aussi le moins énergique. Sur un entonnoir qui doit tenir un visiteur venu d'une vidéo, ce calme peut se lire comme de la froideur — et le bouton champagne a moins de force d'appel que l'or miel.</p>
       </div>` + SOCLE
   },
-  A3:{
-    nom:"L'écrin", sous:"la marque est une maison de cadeaux", cls:'vA3',
-    legende:"Instrument Serif, rosé pâle sur prune sombre. Le sérif épouse le registre du site en ligne.",
+  O3:{
+    nom:"Laiton", sous:"l'or du métal", cls:'vO3',
+    legende:"#C9962F sur encre bleu-noir. L'or lu comme un objet, pas comme une lumière.",
     notes:`
       <div class="card">
-        <h2>La thèse d'identité</h2>
-        <p>La marque n'est ni le décor ni le jeu : elle est ce qui les <b>présente</b>. Sérif de titrage, rosé sourd, prune profonde — le registre du cadeau, pas du divertissement.</p>
-        <p>Avantage rare : elle rend crédible que la <b>Carte Animée</b> à 14,99 € et le <b>Jeu Premium</b> à 69,99 € viennent de la même maison — ce que le pied du site appelle déjà « <b>La maison</b> ».</p>
-        ${nuances(['#17121A','#F0C3B8','#F6EFF3','#211A25','#B0A0AC'])}
+        <h2>Ce que fait cet or</h2>
+        <p>Or profond et saturé, posé sur une encre <b>bleu-noir</b>. Le fond froid fait basculer la lecture : l'or n'est plus une lumière, c'est un <b>métal</b> — une gravure, un fermoir, un objet.</p>
+        <p>C'est la seule des trois qui reste premium sans convoquer le mariage : elle vieillit bien si le catalogue s'éloigne du romantique.</p>
+        ${nuances(['#0B0D11','#C9962F','#EFF1F4','#14171D','#9AA1AC'])}
       </div>
       <div class="card">
-        <h2>Comment elle tient la voix</h2>
-        <p><b>C'est l'accord le plus direct.</b> « L'art d'offrir » et « donnez vie à vos cadeaux » sont écrits pour un sérif. L'identité ne fait pas d'effort pour porter le texte : elle en est le prolongement.</p>
-        <p>Contrepartie : c'est aussi la plus attendue. Ce que la voix gagne en évidence, la marque le perd en singularité.</p>
-      </div>
-      <div class="card">
-        <h2>Ce que ça coûte</h2>
-        <ul>
-          <li class="warn"><b>Le rosé lit « féminin ».</b> Sur un produit acheté aussi bien par des hommes que par des femmes, à vérifier avant de le verrouiller.</li>
-          <li><b>Le sérif ralentit la lecture.</b> Sur un entonnoir dont l'argument est la vitesse, c'est un choix à assumer.</li>
-          <li><b>Peu différenciant.</b> Sérif clair sur fond sombre est le réflexe de toute marque « premium » : la singularité devra venir d'ailleurs.</li>
-        </ul>
+        <h2>La confusion avec le musée</h2>
+        <p><b>Faible, et pour une raison structurelle</b> : le fond bleu-noir s'oppose activement à la pierre chaude du décor. La marque et la fiction se répondent au lieu de se confondre — exactement ce qui était demandé.</p>
+        <p class="warn">Contrepartie : ce même froid tire vers le corporate. Sur le teaser, le bleu du fond entre en concurrence avec le bleu de la cinématique de nuit ; le troisième plan perd un peu de son relief.</p>
       </div>` + SOCLE
   },
 };
@@ -529,7 +582,7 @@ function rendre(){
   screen.scrollTop = 0;
   screen.innerHTML = funnel(v.cls);
   label.innerHTML = `${k} — ${v.nom}<span>${v.sous}</span>`;
-  eyebrow.innerHTML = `Ticket #7 · tour 3 · structure et voix tenues constantes · identité <b>${k}</b>`;
+  eyebrow.innerHTML = `Ticket #7 · tour 4 · structure, voix et typographie tenues constantes · or <b>${k}</b>`;
   caption.textContent = v.legende;
   notes.innerHTML = v.notes;
   const bar = document.getElementById('bar');
