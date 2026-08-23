@@ -113,11 +113,9 @@ les clients sont assez peu nombreux pour que je les prévienne moi-même.
 
 ## Skills à mobiliser
 
-Quand le sujet touche à l'UI/UX, appelle les skills installés : `impeccable`
-(polish front-end, élimination de l'AI-slop), `ui-ux-pro-max` et `design-system`
-(palettes, typographies, styles cinématographiques), `mobile-app-ui-design`
-(thumb-zone, cibles tactiles de 48 px, safe zones iOS/Android). Pour l'audit des
-enregistrements Playwright, le skill s'appelle `gemini-video-understanding`.
+Le routage complet — quel skill à quelle phase, et lesquels attendent d'être
+appelés par leur nom — vit dans `AGENTS.md`, détaillé dans `docs/agents/skills.md`.
+Cette session relève de la phase **Chart**.
 
 ## Ce que j'attends de cette session
 
