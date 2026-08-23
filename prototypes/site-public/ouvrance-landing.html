@@ -2,14 +2,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!--
   PROTOTYPE — jetable. Ticket #7 « Le site public et son pouvoir de conversion ».
-  TOUR 2. Le tour 1 a tranché la STRUCTURE : entonnoir vertical plein écran, sans
-  en-tête, prix au dernier panneau (maquette « La bobine »). Restaient deux refus :
-  l'identité empruntée au musée, et une écriture centrée sur le virement.
-  Ici la structure est donc TENUE CONSTANTE — c'est l'axe déjà décidé — et on ne fait
-  varier que ce qui reste ouvert : l'identité de marque et la voix.
+  TOUR 3. Deux axes sont désormais fermés et tenus constants :
+   · la STRUCTURE — entonnoir vertical plein écran, sans en-tête, prix au dernier
+     panneau (tour 1, maquette « La bobine ») ;
+   · la VOIX — celle d'ouvrance.fr en ligne, reprise telle quelle : vouvoiement,
+     phrases pleines, « L'art d'offrir », « faire battre un cœur », « en ligne à vie »,
+     noms de formules Carte Animée / Jeu Premium, offre de lancement à −50 %.
+     Seul l'ordre change : la personnalisation passe devant, le virement redescend
+     en réassurance de bas de panneau.
+  Reste ouvert, et seul à varier ici : l'IDENTITÉ VISUELLE.
   A1 L'atelier · A2 La console · A3 L'écrin — commutables via ?variant=A1|A2|A3.
-  Les trois posent la même thèse produit : le produit est un JEU PERSONNALISABLE,
-  le musée n'est qu'un décor parmi d'autres, le lien de virement est une option de fin.
+  Les trois tiennent la même thèse : le produit est un JEU PERSONNALISABLE, le musée
+  n'est qu'un décor parmi d'autres, le lien de virement est facultatif.
   Ne pas promouvoir ce code en production : aucune abstraction, aucun test.
 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -124,6 +128,8 @@ body{background:var(--bench-ground); color:var(--bench-ink); font-family:var(--u
 .funnel .offer h3{margin:0; font-family:var(--display); font-size:var(--h3-size,23px); font-weight:var(--h1-weight,700); letter-spacing:var(--h1-track,-.01em); text-transform:var(--h1-case,none)}
 .funnel .offer .price{font-family:var(--display); font-size:var(--h3-size,23px); font-weight:var(--h1-weight,700); color:var(--accent); white-space:nowrap}
 .funnel .offer p{margin:7px 0 0; font-size:13.5px; color:var(--ink-2); line-height:1.5}
+.funnel .lancement{margin:-5px 0 16px; font-family:var(--mono); font-size:11px; letter-spacing:.05em; color:var(--accent)}
+.funnel .offer .price s{font-family:var(--body); font-size:13px; font-weight:400; color:var(--ink-3); margin-right:7px; text-decoration-thickness:1px}
 .funnel .bar{
   position:sticky; bottom:0; z-index:30; padding:12px 18px calc(12px + env(safe-area-inset-bottom));
   background:color-mix(in srgb, var(--ground) 94%, transparent); backdrop-filter:blur(14px);
@@ -316,164 +322,135 @@ const ic = {
 };
 
 /* ---------------------------------------------------------------------- */
-/* Le squelette, identique pour les trois. Seuls les jetons et les mots    */
-/* changent — c'est exactement l'axe qui reste ouvert.                     */
+/* La voix est désormais CONSTANTE : celle d'ouvrance.fr en ligne, reprise */
+/* telle quelle — vouvoiement, phrases pleines, « L'art d'offrir », « faire */
+/* battre un cœur », « en ligne à vie », « votre argent ne passe jamais par */
+/* nous ». Seul le poids change : la personnalisation passe devant, le     */
+/* virement redescend en réassurance de bas de panneau.                    */
+/* Reste ouvert : l'identité visuelle. C'est le seul axe qui varie ici.    */
 /* ---------------------------------------------------------------------- */
 const CATALOGUE = [
-  {art:artBraquage, nom:'Le braquage du musée', meta:'Jeu · 8 min'},
+  {art:artBraquage, nom:'Le braquage du musée', meta:'Jeu 3D · 8 min'},
   {art:artLettre,   nom:'La lettre cachetée',   meta:'Carte · 3 min'},
   {art:artBientot,  nom:'Le prochain décor',    meta:'En préparation', soon:true},
 ];
 
-const funnel = (cls, t) => `
+const T = {
+  k1:"L'art d'offrir", hint:"continuer",
+  h1:"Donnez vie<em>à vos cadeaux.</em>",
+  l1:"Chaque cadeau se personnalise — vos photos, vos vocaux, vos mots — et se vit sur son téléphone.",
+  cta:"Commander", m1:"Un simple lien à partager · en ligne à vie",
+
+  k2:"La personnalisation",
+  h2:"Vos photos, vos vocaux,<em>vos clins d'œil.</em>",
+  traces:[
+    {i:'photo', b:"Vos photos", s:"Exposées dans le décor, jamais reléguées à un écran de fin : votre destinataire les découvre en s'approchant."},
+    {i:'mic',   b:"Vos vocaux", s:"La voix des proches, posée sur une œuvre — elle se déclenche au moment où il arrive devant."},
+    {i:'quote', b:"Vos mots",   s:"Une phrase écrite à même la toile. Une private joke que lui seul reconnaîtra."},
+  ],
+
+  k3:"Les décors",
+  h3:"Choisissez le décor<em>de son histoire.</em>",
+  l3:"La personnalisation se pose de la même façon dans chaque décor. Seul le monde autour change.",
+
+  k4:"Nos formules",
+  h4:"Deux façons<em>de faire battre un cœur.</em>",
+  lancement:"Offre de lancement : −50 % sur les deux formules",
+  offers:[
+    {tag:"Le plus choisi", nom:"Jeu Premium", avant:"139,99 €", prix:"69,99 €",
+     desc:"Un vrai jeu 3D avec son film d'ouverture et sa cinématique de fin — vos photos, vos vocaux et vos mots posés dans le décor. Prêt en 2-3 jours."},
+    {nom:"Carte Animée", avant:"29,99 €", prix:"14,99 €",
+     desc:"Le geste élégant : une enveloppe cachetée à la cire qui s'ouvre, la lettre qui se déplie devant elle, vos photos en polaroïds. Prête en 24-48 h."},
+  ],
+  virement:"Votre argent ne passe jamais par nous : le lien de virement reste le vôtre, révélé à la fin si vous en joignez un.",
+  barB:"Jeu Premium — 69,99 €", barS:"Prêt en 2-3 jours", barCta:"Commander",
+};
+
+const prix = (o) => `<span class="price">${o.avant ? `<s>${o.avant}</s>` : ''}${o.prix}</span>`;
+
+const funnel = (cls) => `
 <div class="funnel ${cls}">
   <section class="pan">
     <div class="scene">${heroScene}</div><div class="veil"></div>
     <div class="mark">ouvrance</div>
-    <div class="kicker">${t.k1}</div>
-    <h1>${t.h1}</h1>
-    <p class="lede">${t.l1}</p>
-    <a class="cta" href="#">${t.cta} ${ic.arrow}</a>
-    <p class="micro">${ic.clock} ${t.m1}</p>
-    <div class="hint">${ic.chev} ${t.hint}</div>
+    <div class="kicker">${T.k1}</div>
+    <h1>${T.h1}</h1>
+    <p class="lede">${T.l1}</p>
+    <a class="cta" href="#">${T.cta} ${ic.arrow}</a>
+    <p class="micro">${ic.clock} ${T.m1}</p>
+    <div class="hint">${ic.chev} ${T.hint}</div>
   </section>
 
   <section class="pan">
     <div class="scene">${lueur('.22')}</div><div class="veil"></div>
-    <div class="kicker">${t.k2}</div>
-    <h1>${t.h2}</h1>
+    <div class="kicker">${T.k2}</div>
+    <h1>${T.h2}</h1>
     <div class="traces">
-      ${t.traces.map(x => `<div class="trace"><span class="ico">${ic[x.i]}</span><div><b>${x.b}</b><span>${x.s}</span></div></div>`).join('')}
+      ${T.traces.map(x => `<div class="trace"><span class="ico">${ic[x.i]}</span><div><b>${x.b}</b><span>${x.s}</span></div></div>`).join('')}
     </div>
   </section>
 
   <section class="pan">
     <div class="scene">${lueur('.78')}</div><div class="veil"></div>
-    <div class="kicker">${t.k3}</div>
-    <h1>${t.h3}</h1>
+    <div class="kicker">${T.k3}</div>
+    <h1>${T.h3}</h1>
     <div class="deck">
       ${CATALOGUE.map(c => `<div class="tile${c.soon ? ' soon' : ''}"><div class="art">${c.art}</div><b>${c.nom}</b><span>${c.meta}</span></div>`).join('')}
     </div>
-    <p class="lede">${t.l3}</p>
+    <p class="lede">${T.l3}</p>
   </section>
 
   <section class="pan">
     <div class="scene">${lueur('.5')}</div><div class="veil"></div>
-    <div class="kicker">${t.k4}</div>
-    <h1>${t.h4}</h1>
+    <div class="kicker">${T.k4}</div>
+    <h1>${T.h4}</h1>
+    <p class="lancement">${T.lancement}</p>
     <div class="offer lead">
-      <span class="tag">${t.offers[0].tag}</span>
-      <div class="row"><h3>${t.offers[0].nom}</h3><span class="price">${t.offers[0].prix}</span></div>
-      <p>${t.offers[0].desc}</p>
+      <span class="tag">${T.offers[0].tag}</span>
+      <div class="row"><h3>${T.offers[0].nom}</h3>${prix(T.offers[0])}</div>
+      <p>${T.offers[0].desc}</p>
     </div>
     <div class="offer">
-      <div class="row"><h3>${t.offers[1].nom}</h3><span class="price">${t.offers[1].prix}</span></div>
-      <p>${t.offers[1].desc}</p>
+      <div class="row"><h3>${T.offers[1].nom}</h3>${prix(T.offers[1])}</div>
+      <p>${T.offers[1].desc}</p>
     </div>
-    <p class="micro">${t.virement}</p>
+    <p class="micro">${T.virement}</p>
   </section>
 
   <div class="bar" id="bar">
-    <div class="txt"><b>${t.barB}</b><span>${t.barS}</span></div>
-    <a href="#">${t.barCta}</a>
+    <div class="txt"><b>${T.barB}</b><span>${T.barS}</span></div>
+    <a href="#">${T.barCta}</a>
   </div>
 </div>`;
 
-const MOTS = {
-  A1:{
-    k1:"Tu viens de le voir sur TikTok", hint:"continuer",
-    h1:"Tes photos.<br>Ta voix.<em>Son jeu.</em>",
-    l1:"Un jeu fabriqué avec vos souvenirs. Il y joue sur son téléphone — et il te retrouve dedans.",
-    cta:"Fabriquer le sien", m1:"Prêt en 2 à 3 jours · sans appli, sans compte",
-    k2:"Ce que tu mets dedans", h2:"Trois traces de toi.<em>Rien de plus.</em>",
-    traces:[
-      {i:'photo', b:"Tes photos", s:"Elles ne sont pas collées sur un écran de fin. Elles sont accrochées dans le décor, et il les découvre en s'approchant."},
-      {i:'mic',   b:"Ta voix",    s:"Un mémo vocal posé sur une œuvre. Il l'entend au moment où il arrive devant."},
-      {i:'quote', b:"Tes mots",   s:"Une phrase écrite à même la toile. Une anecdote que lui seul peut comprendre."},
-    ],
-    k3:"Ce qu'il vit", h3:"Le décor,<em>c'est toi qui choisis.</em>",
-    l3:"Les trois traces se posent de la même façon dans chaque décor. C'est le monde autour qui change.",
-    k4:"Combien", h4:"Deux façons<em>de fabriquer.</em>",
-    offers:[
-      {tag:"Le plus offert", nom:"Un jeu", prix:"69,99 €", desc:"Un film d'ouverture, une partie à jouer, une fin. Tes photos, ta voix et tes mots posés dans le décor. Prêt en 2 à 3 jours."},
-      {nom:"Une carte", prix:"14,99 €", desc:"Une enveloppe cachetée, une lettre qui se déplie, tes photos et ton message. Prête en 24 à 48 h."},
-    ],
-    virement:"Tu peux glisser ton lien de virement à la fin. Ou pas — c'est ton cadeau.",
-    barB:"Un jeu — 69,99 €", barS:"Prêt en 2 à 3 jours", barCta:"Fabriquer",
-  },
-  A2:{
-    k1:"Vu sur TikTok", hint:"suite",
-    h1:"Un jeu.<em>Fait avec vous deux.</em>",
-    l1:"Tes photos dedans. Ta voix dedans. Il joue, il te trouve.",
-    cta:"Créer le jeu", m1:"2 à 3 jours · rien à installer",
-    k2:"Tu remplis", h2:"Trois trucs.<em>On monte le reste.</em>",
-    traces:[
-      {i:'photo', b:"Des photos", s:"Accrochées dans le décor. Il tombe dessus en jouant."},
-      {i:'mic',   b:"Un vocal",   s:"Il se déclenche quand il s'approche."},
-      {i:'quote', b:"Une phrase", s:"Écrite dans le jeu. Que lui seul comprend."},
-    ],
-    k3:"Le terrain", h3:"Choisis le décor.",
-    l3:"Même personnalisation partout. Seul le monde change.",
-    k4:"Le prix", h4:"Deux tarifs.",
-    offers:[
-      {tag:"Le plus pris", nom:"Un jeu", prix:"69,99 €", desc:"Film d'intro, partie, fin. Tes photos, ta voix, tes mots dedans. 2 à 3 jours."},
-      {nom:"Une carte", prix:"14,99 €", desc:"Enveloppe, lettre, photos, message. 24 à 48 h."},
-    ],
-    virement:"Ton lien de virement à la fin, si tu veux.",
-    barB:"Un jeu — 69,99 €", barS:"2 à 3 jours", barCta:"Créer",
-  },
-  A3:{
-    k1:"Vous venez de le voir sur TikTok", hint:"continuer",
-    h1:"Un jeu où<em>vous êtes dedans.</em>",
-    l1:"Vos photos accrochées aux murs, votre voix dans la pièce, vos mots sur la toile. Elle joue — et elle vous trouve.",
-    cta:"Composer le cadeau", m1:"Prêt en 2 à 3 jours · sans application",
-    k2:"Ce que vous y déposez", h2:"Trois traces<em>de vous.</em>",
-    traces:[
-      {i:'photo', b:"Vos photos", s:"Elles ne sont pas reléguées à un écran de fin : elles sont exposées dans le décor et se découvrent en s'approchant."},
-      {i:'mic',   b:"Votre voix", s:"Un message vocal déposé sur une œuvre, qui se déclenche au moment où elle arrive devant."},
-      {i:'quote', b:"Vos mots",   s:"Une phrase écrite à même la toile. Une anecdote qu'elle seule peut reconnaître."},
-    ],
-    k3:"Ce qu'elle traverse", h3:"Le décor<em>vous appartient.</em>",
-    l3:"Les trois traces se déposent de la même façon dans chaque décor. Seul le monde autour change.",
-    k4:"Les formules", h4:"Deux façons<em>d'offrir.</em>",
-    offers:[
-      {tag:"La plus offerte", nom:"Un jeu", prix:"69,99 €", desc:"Un film d'ouverture, une partie à jouer, une fin. Vos photos, votre voix et vos mots déposés dans le décor. Prêt en 2 à 3 jours."},
-      {nom:"Une carte", prix:"14,99 €", desc:"Une enveloppe cachetée, une lettre qui se déplie, vos photos et votre message. Prête en 24 à 48 h."},
-    ],
-    virement:"Vous pouvez y joindre votre lien de virement, révélé à la toute fin. C'est facultatif.",
-    barB:"Un jeu — 69,99 €", barS:"Prêt en 2 à 3 jours", barCta:"Offrir",
-  },
-};
-
 const nuances = (cs) => '<div class="swatches">' + cs.map(c => `<i class="sw" style="background:${c}" title="${c}"></i>`).join('') + '</div>';
 
-/* Constante aux trois — c'est le déplacement demandé, pas une option. */
+/* Constant aux trois — la voix est tranchée, l'identité ne l'est pas. */
 const SOCLE = `
   <div class="card flag">
-    <h2>Ce qui change par rapport au tour 1</h2>
-    <h3>La marque n'habite plus le musée</h3>
-    <p>Le châssis — fond, accent, typographie, boutons — appartient à <b>ouvrance</b>. Les décors gardent <b>leurs</b> couleurs et n'apparaissent qu'<b>encadrés</b> : dans l'écran du téléphone au premier panneau, dans les vignettes du catalogue au troisième. Un décor qui arrive demain ne demande aucun changement de marque.</p>
-    <h3>Le produit est le jeu personnalisable</h3>
-    <p>Le panneau 2 n'est plus « un lien, rien d'autre » mais <b>les trois traces</b> — photo, voix, mots — qui sont le vrai produit. Le mot « virement » a disparu du titre, de l'accroche et du bouton ; il ne survit qu'en une ligne de bas de page, <b>explicitement facultative</b>.</p>
-    <h3>Le catalogue est affirmé dès le tour 1 de lecture</h3>
-    <p>Trois vignettes, dont une « en préparation ». Le braquage est <b>un décor parmi d'autres</b>, y compris pour un visiteur qui ne verra jamais le second.</p>
+    <h2>La voix, désormais fixée</h2>
+    <p>Reprise du site en ligne : <b>vouvoiement</b>, phrases pleines, tirets longs. Le lexique de la maison est conservé tel quel — « <b>L'art d'offrir</b> », « faire battre un cœur », « <b>en ligne à vie</b> », « un simple lien à partager », « votre argent ne passe jamais par nous », « <b>Le plus choisi</b> ». Les noms de formules reprennent ceux du catalogue en ligne : <b>Carte Animée</b> et <b>Jeu Premium</b>, avec l'offre de lancement à −50 % et les prix barrés.</p>
+    <h3>Le seul déplacement</h3>
+    <p>L'ordre. L'accroche du site en ligne ouvre sur le virement (« plutôt qu'une enveloppe ou un envoi d'argent sans saveur ») ; ici la <b>personnalisation passe devant</b> et prend le panneau 2 en entier, tandis que le virement redescend en <b>réassurance de bas de panneau</b> — « le lien de virement reste le vôtre, révélé à la fin <b>si vous en joignez un</b> ».</p>
+    <h3>La marque n'habite pas le musée</h3>
+    <p>Le châssis appartient à ouvrance ; les décors gardent <b>leurs</b> couleurs et n'apparaissent qu'<b>encadrés</b> — dans l'écran du téléphone, puis dans les vignettes. Un décor qui arrive demain ne coûte aucun changement de marque.</p>
   </div>`;
 
 const VARIANTS = {
   A1:{
     nom:"L'atelier", sous:"la marque est une maison qui fabrique", cls:'vA1',
-    legende:"Bricolage Grotesque, vermillon sur charbon chaud. Tutoiement, phrases courtes et tendres. Le verbe est « fabriquer ».",
+    legende:"Bricolage Grotesque, vermillon sur charbon chaud. Grotesque compacte, chaleur d'atelier.",
     notes:`
       <div class="card">
         <h2>La thèse d'identité</h2>
-        <p>ouvrance est un <b>atelier</b> : quelqu'un monte ton cadeau à la main. C'est ce que dit la promesse de délai (2 à 3 jours) et c'est vrai — un humain valide chaque livraison. L'identité assume la fabrication au lieu de la cacher.</p>
+        <p>ouvrance est un <b>atelier</b> : quelqu'un monte votre cadeau à la main — ce que dit déjà « fait main, pour celles et ceux qui offrent » au pied du site en ligne. L'identité assume la fabrication au lieu de la cacher.</p>
         <p>Le vermillon n'appartient à aucun décor : ni l'or du musée, ni le turquoise des caméras. Il est disponible pour la marque seule.</p>
         ${nuances(['#14100E','#E4573D','#F7F1EA','#1D1815','#A99A8E'])}
       </div>
       <div class="card">
-        <h2>La voix</h2>
-        <p>Tutoiement, phrases courtes, verbes concrets. « Fabriquer le sien » place l'offrant en <b>auteur</b>, pas en acheteur — cohérent avec un produit dont la valeur est ce qu'il y met.</p>
-        <p>Registre le plus proche de TikTok des trois sans tomber dans le jargon de plateforme.</p>
+        <h2>Comment elle tient la voix</h2>
+        <p>Bonne tenue : la grotesque compacte donne du poids aux phrases pleines sans les alourdir, et le vermillon soutient « faire battre un cœur » mieux qu'un accent froid.</p>
+        <p><b>Le meilleur compromis des trois</b> entre la chaleur du texte et la sobriété du châssis.</p>
       </div>
       <div class="card">
         <h2>Ce que ça coûte</h2>
@@ -485,48 +462,47 @@ const VARIANTS = {
   },
   A2:{
     nom:"La console", sous:"la marque est un label de jeux", cls:'vA2',
-    legende:"Space Grotesk, lime acide sur bleu-noir, angles à 12 px. Phrases très courtes, presque des cartons. Le verbe est « créer ».",
+    legende:"Space Grotesk, lime acide sur bleu-noir, angles à 12 px. À lire comme un contre-exemple utile.",
     notes:`
       <div class="card">
         <h2>La thèse d'identité</h2>
-        <p>Si le produit est un jeu, la marque est un <b>label qui sort des jeux</b>. Le châssis ressemble à une bibliothèque : chrome neutre, vignettes colorées, un accent qui ne sert qu'à l'action. C'est la structure qui encaisse le mieux un catalogue qui grandit.</p>
-        <p>Le lime acide est le plus éloigné de toute palette de décor possible — il ne peut pas être confondu avec une fiction.</p>
+        <p>Si le produit est un jeu, la marque est un <b>label qui sort des jeux</b> : chrome neutre, vignettes colorées, un accent réservé à l'action. C'est la structure qui encaisse le mieux un catalogue qui grandit, et le lime est impossible à confondre avec une fiction.</p>
         ${nuances(['#08090C','#B4F461','#EDF1F7','#101319','#8A93A6'])}
       </div>
       <div class="card">
-        <h2>La voix</h2>
-        <p>Trois à six mots par phrase. « Un jeu. Fait avec vous deux. » Aucun adjectif. C'est le registre qui se lit le plus vite en sortie de vidéo, et le seul des trois qui tienne dans un carton de TikTok sans être réécrit.</p>
+        <h2>Comment elle tient la voix</h2>
+        <p class="warn"><b>Mal.</b> C'est l'enseignement de cette maquette. Le registre du site en ligne — vouvoiement, « faire battre un cœur », « en ligne à vie » — sonne faux sur un châssis de console. La voix demande de la chaleur ; l'identité en retire.</p>
+        <p>Elle reste dans le lot comme <b>contre-exemple</b> : elle montre exactement ce que la voix retenue interdit.</p>
       </div>
       <div class="card">
         <h2>Ce que ça coûte</h2>
         <ul>
-          <li class="warn"><b>Le froid contre l'émotion.</b> C'est un cadeau qui parle d'amour, de mariage, de naissance. Un langage de console peut assécher exactement ce qui fait vendre.</li>
-          <li class="warn"><b>La carte animée détonne.</b> Une enveloppe cachetée dans une bibliothèque de jeux : la formule à 14,99 € n'a plus de place naturelle dans l'identité.</li>
-          <li><b>Le lime plaît peu au-delà d'un certain âge.</b> Or les occasions visées — mariage, retraite, naissance — ne sont pas un public de joueurs.</li>
+          <li class="warn"><b>Le froid contre l'émotion.</b> Mariage, naissance, retraite ne sont pas un public de joueurs.</li>
+          <li class="warn"><b>La Carte Animée détonne.</b> Une enveloppe cachetée à la cire dans une bibliothèque de jeux n'a plus de place naturelle.</li>
         </ul>
       </div>` + SOCLE
   },
   A3:{
     nom:"L'écrin", sous:"la marque est une maison de cadeaux", cls:'vA3',
-    legende:"Instrument Serif, rosé pâle sur prune sombre. Vouvoiement, phrases pleines. Le verbe est « composer ».",
+    legende:"Instrument Serif, rosé pâle sur prune sombre. Le sérif épouse le registre du site en ligne.",
     notes:`
       <div class="card">
         <h2>La thèse d'identité</h2>
-        <p>La marque n'est ni le décor ni le jeu : elle est ce qui les <b>présente</b>. Sérif de titrage, rosé sourd, prune profonde — le registre du cadeau, pas du divertissement. C'est l'identité qui vieillit le mieux si le catalogue s'éloigne du jeu.</p>
-        <p>Elle a un avantage rare : elle rend crédible qu'une carte à 14,99 € et un jeu à 69,99 € <b>viennent de la même maison</b>.</p>
+        <p>La marque n'est ni le décor ni le jeu : elle est ce qui les <b>présente</b>. Sérif de titrage, rosé sourd, prune profonde — le registre du cadeau, pas du divertissement.</p>
+        <p>Avantage rare : elle rend crédible que la <b>Carte Animée</b> à 14,99 € et le <b>Jeu Premium</b> à 69,99 € viennent de la même maison — ce que le pied du site appelle déjà « <b>La maison</b> ».</p>
         ${nuances(['#17121A','#F0C3B8','#F6EFF3','#211A25','#B0A0AC'])}
       </div>
       <div class="card">
-        <h2>La voix</h2>
-        <p>Vouvoiement, phrases pleines, rythme posé. « Un jeu où vous êtes dedans » garde la thèse produit tout en restant du côté de l'attention portée à quelqu'un.</p>
-        <p>C'est aussi la seule des trois qui n'a pas besoin d'être réécrite pour la page « mentions légales ».</p>
+        <h2>Comment elle tient la voix</h2>
+        <p><b>C'est l'accord le plus direct.</b> « L'art d'offrir » et « donnez vie à vos cadeaux » sont écrits pour un sérif. L'identité ne fait pas d'effort pour porter le texte : elle en est le prolongement.</p>
+        <p>Contrepartie : c'est aussi la plus attendue. Ce que la voix gagne en évidence, la marque le perd en singularité.</p>
       </div>
       <div class="card">
         <h2>Ce que ça coûte</h2>
         <ul>
-          <li class="warn"><b>Rupture de registre avec TikTok.</b> Le vouvoiement en sortie d'une vidéo tutoyée peut se lire comme un site d'une autre génération.</li>
           <li class="warn"><b>Le rosé lit « féminin ».</b> Sur un produit acheté aussi bien par des hommes que par des femmes, à vérifier avant de le verrouiller.</li>
           <li><b>Le sérif ralentit la lecture.</b> Sur un entonnoir dont l'argument est la vitesse, c'est un choix à assumer.</li>
+          <li><b>Peu différenciant.</b> Sérif clair sur fond sombre est le réflexe de toute marque « premium » : la singularité devra venir d'ailleurs.</li>
         </ul>
       </div>` + SOCLE
   },
@@ -551,9 +527,9 @@ function rendre(){
   const k = courante();
   const v = VARIANTS[k];
   screen.scrollTop = 0;
-  screen.innerHTML = funnel(v.cls, MOTS[k]);
+  screen.innerHTML = funnel(v.cls);
   label.innerHTML = `${k} — ${v.nom}<span>${v.sous}</span>`;
-  eyebrow.innerHTML = `Ticket #7 · tour 2 · structure tenue constante · identité et voix <b>${k}</b>`;
+  eyebrow.innerHTML = `Ticket #7 · tour 3 · structure et voix tenues constantes · identité <b>${k}</b>`;
   caption.textContent = v.legende;
   notes.innerHTML = v.notes;
   const bar = document.getElementById('bar');
