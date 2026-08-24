@@ -9,7 +9,7 @@ Ce fichier est un glossaire et rien d'autre : aucun détail d'implémentation, a
 ### Le catalogue
 
 **Formule** :
-Un palier tarifaire du catalogue. Elle fixe le prix d'entrée, le quota de médias et le prix du supplément, et ouvre l'accès à une ou plusieurs expériences.
+Un palier tarifaire du catalogue. Elle fixe le prix d'entrée, le quota de Souvenirs et le prix du supplément, et ouvre l'accès à une ou plusieurs expériences.
 _Avoid_ : produit, offre, pack, forfait
 
 **Expérience** :
@@ -25,19 +25,19 @@ La déclinaison d'une cinématique maître selon la relation représentée. Le s
 _Avoid_ : version, déclinaison, variante (employé seul)
 
 **Emplacement** :
-Une place, prévue par la mise en scène d'une expérience, où un média de l'offrant peut apparaître — un mur du musée, un cadre sur une table. Un emplacement est toujours occupé : il porte un contenu par défaut, qu'un média de la personnalisation vient remplacer. C'est une capacité de mise en scène, à ne pas confondre avec le quota.
+Une place, prévue par la mise en scène d'une expérience, où un Souvenir de l'offrant peut apparaître — un mur du musée, un cadre sur une table. Un emplacement est toujours occupé : il porte un contenu par défaut, qu'un Souvenir de la personnalisation vient remplacer. C'est une capacité de mise en scène, à ne pas confondre avec le quota.
 _Avoid_ : slot, champ, zone
 
 **Contenu par défaut** :
-Ce qu'un emplacement montre quand aucun média ne le remplace — une œuvre du musée, une réplique neutre. Il n'est pas un repli de secours : c'est l'état normal de l'expérience, et la personnalisation est ce qui s'y substitue.
+Ce qu'un emplacement montre quand aucun Souvenir ne le remplace — une œuvre du musée, une réplique neutre. Il n'est pas un repli de secours : c'est l'état normal de l'expérience, et la personnalisation est ce qui s'y substitue.
 _Avoid_ : fallback, placeholder, remplissage
 
 **Quota** :
-Le nombre de médias qu'une formule inclut, et le plafond qu'elle autorise contre supplément. C'est une promesse commerciale, portée par la formule et par elle seule.
+Le nombre de Souvenirs qu'une formule inclut, et le plafond qu'elle autorise contre supplément. C'est une promesse commerciale, portée par la formule et par elle seule.
 _Avoid_ : limite, capacité
 
 **Supplément** :
-Un média au-delà du quota inclus, facturé au moment de la commande.
+Un Souvenir au-delà du quota inclus, facturé au moment de la commande.
 _Avoid_ : option, extra, devis
 
 **Occasion** :
@@ -69,8 +69,12 @@ L'achat, côté offrant : une formule, une expérience, une personnalisation, un
 _Avoid_ : achat, panier, instance, gift
 
 **Personnalisation** :
-La couche de textes, de photos et d'audios que l'offrant pose par-dessus une cinématique maître. Elle ne modifie jamais le maître. Sa forme est propre à chaque expérience.
+La liste ordonnée de Souvenirs que l'offrant pose par-dessus une cinématique maître, et l'ordre est celui de la rencontre. Elle ne modifie jamais le maître. Sa forme est propre à chaque expérience.
 _Avoid_ : config, options, contenu
+
+**Souvenir** :
+L'unité de personnalisation : un support — une photo **ou** une phrase, jamais les deux — et, facultativement, un vocal qui s'y greffe. Un vocal n'existe jamais seul. C'est ce que l'offrant dépose, ce que le destinataire rencontre, et ce que la personnalisation ordonne.
+_Avoid_ : média, souvenir (employé seul pour désigner un fichier), item
 
 **Paiement** :
 L'achat d'une commande par l'offrant à ouvrance. Rien d'autre ne s'appelle un paiement.
