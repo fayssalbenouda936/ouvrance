@@ -25,7 +25,7 @@ La déclinaison d'une cinématique maître selon la relation représentée. Le s
 _Avoid_ : version, déclinaison, variante (employé seul)
 
 **Emplacement** :
-Une place, prévue par la mise en scène d'une expérience, où un Souvenir de l'offrant peut apparaître — un mur du musée, un cadre sur une table. Un emplacement est toujours occupé : il porte un contenu par défaut, qu'un Souvenir de la personnalisation vient remplacer. C'est une capacité de mise en scène, à ne pas confondre avec le quota.
+Une place, prévue par la mise en scène d'une expérience, où un Souvenir de l'offrant peut apparaître — un mur du musée, un polaroïd sur la feuille. Là où la mise en scène est fixe, un emplacement est toujours occupé : il porte un contenu par défaut qu'un Souvenir vient remplacer. Là où elle s'adapte, un emplacement sans Souvenir n'apparaît pas. Jamais de trou dans les deux cas. C'est une capacité de mise en scène, à ne pas confondre avec le quota.
 _Avoid_ : slot, champ, zone
 
 **Contenu par défaut** :
@@ -73,8 +73,12 @@ La liste ordonnée de Souvenirs que l'offrant pose par-dessus une cinématique m
 _Avoid_ : config, options, contenu
 
 **Souvenir** :
-L'unité de personnalisation : un support — une photo **ou** une phrase, jamais les deux — et, facultativement, un vocal qui s'y greffe. Un vocal n'existe jamais seul. C'est ce que l'offrant dépose, ce que le destinataire rencontre, et ce que la personnalisation ordonne.
+L'unité de personnalisation, la même pour toute expérience : un support — une photo **ou** une phrase, jamais les deux — et, facultativement, une greffe. C'est ce que l'offrant dépose, ce que le destinataire rencontre, et ce que la personnalisation ordonne.
 _Avoid_ : média, souvenir (employé seul pour désigner un fichier), item
+
+**Greffe** :
+Ce qui s'attache à un support sans le remplacer ni devenir un Souvenir à part. Sa forme appartient à l'expérience : un vocal entendu à l'approche dans le braquage, une légende manuscrite sous le polaroïd dans la carte animée. Une greffe n'existe jamais seule.
+_Avoid_ : annotation, légende (comme terme générique), vocal (comme terme générique)
 
 **Paiement** :
 L'achat d'une commande par l'offrant à ouvrance. Rien d'autre ne s'appelle un paiement.
