@@ -122,7 +122,9 @@
   <div id="resume">—</div>
   <label for="notes">Ce que tu as vu et que la page ne peut pas mesurer</label>
   <textarea id="notes" rows="3" placeholder="l'onglet a rechargé tout seul, la vidéo est partie en plein écran natif, …"></textarea>
-  <button class="primaire" id="btnCopier">Copier le rapport</button>
+  <button class="primaire" id="btnEnvoyer">Envoyer le rapport au poste
+    <small>il est écrit directement dans docs/recherche/releves/</small></button>
+  <button id="btnCopier">Copier le rapport</button>
   <button id="btnPartager">Partager le rapport (message, mail, notes)</button>
   <label for="json">Rapport brut</label>
   <textarea id="json" rows="10" readonly></textarea>
@@ -660,6 +662,16 @@ $('cLimite').addEventListener('click', function(){ verdictCouleur('à la limite'
 $('cNon').addEventListener('click', function(){ verdictCouleur('indistinguables'); });
 
 /* ================= 7 · rapport ================= */
+$('btnEnvoyer').addEventListener('click', function(){
+  maj();
+  var b = $('btnEnvoyer');
+  b.textContent = 'Envoi…';
+  fetch('releve', { method:'POST', headers:{'Content-Type':'application/json'}, body:$('json').value })
+    .then(function(r){ return r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status)); })
+    .then(function(j){ b.textContent = 'Reçu par le poste ✓ ' + j.ecrit; })
+    .catch(function(e){ b.textContent = 'Envoi impossible (' + e.message + ') — utilise Copier'; });
+});
+
 $('btnCopier').addEventListener('click', function(){
   maj();
   var texte = $('json').value;
