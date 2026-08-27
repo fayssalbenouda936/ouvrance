@@ -1,0 +1,814 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<title>Le tracé du musée</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--
+  PROTOTYPE — jetable. Ticket #29 « Le tracé du musée et la jouabilité en portrait ».
+
+  CE QU'IL CHERCHE À DÉPARTAGER
+  Trois tracés des cinq salles qui répondent différemment à la question posée par
+  le ticket #6 : « comment on force le regard à tourner », sachant que le champ
+  instantané du 9:16 ne fait que 49° de large.
+    A — L'ENFILADE   : ce sont les murs qui tournent la tête (serpentin, œuvres le
+                       long des murs latéraux, comme dans un vrai musée).
+    B — LA ROTONDE   : c'est l'appât qui tourne la tête (volumes ouverts, blocs
+                       centraux contournés, lumière et box de soin en aimants).
+    C — LES CINQ PIVOTS : c'est le seuil et la menace qui tournent la tête
+                       (chaque Emplacement est posé sur une ligne de visée que le
+                       tracé oblige à emprunter).
+
+  CE QUI EST TENU CONSTANT ENTRE LES TROIS
+  — Cinq salles dans le même ordre (hall sans garde, galerie A, galerie B,
+    couloir des vitrines, salle principale) et la même emprise au sol, 60 × 44 m.
+  — Dix Emplacements, deux par salle (#8). Le premier rencontré dans chaque salle
+    est le « primaire » : c'est lui qui est garni au quota de cinq inclus.
+  — Point de reprise au seuil de chaque salle (#8).
+  — Champ instantané : FOV vertical 78°, donc 49,0° horizontaux en 9:16.
+  — Déclenchement d'un Souvenir : proximité ≤ 3,5 m ET Emplacement dans les 12,5°
+    centraux du cadre. Pas de bouton d'interaction (#8).
+  — Vitesse de déplacement 2,0 m/s. Occlusion par les murs prise en compte.
+
+  Ne pas promouvoir ce code en production : aucune abstraction, aucun test.
+-->
+<style>
+  :root{
+    --ground:#0B0908; --panel:#141110; --panel-2:#1B1715; --line:#2E2724;
+    --ink:#F0EAE2; --ink-2:#B0A69A; --ink-3:#6E655D;
+    --or:#E8B76A; --or-dim:#8A6A32;
+    --turquoise:#4FD6C0; --turquoise-dim:#1E5B52;
+    --rouge:#E0614A; --vert:#5FBF7A;
+    --display:'Barlow Condensed','Oswald','Haettenschweiler',system-ui,sans-serif;
+    --body:system-ui,-apple-system,'Segoe UI',sans-serif;
+    --mono:ui-monospace,'SF Mono','Cascadia Mono',Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);
+       font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+  a{color:var(--or)}
+
+  header{padding:22px 26px 0;display:flex;flex-wrap:wrap;gap:18px;align-items:flex-end;justify-content:space-between}
+  h1{font-family:var(--display);font-weight:700;font-size:34px;line-height:1;margin:0;letter-spacing:.01em;text-transform:uppercase}
+  .sub{font-family:var(--mono);font-size:11.5px;color:var(--ink-3);letter-spacing:.04em;margin-top:6px}
+  .tabs{display:flex;gap:8px}
+  .tab{font-family:var(--display);text-transform:uppercase;letter-spacing:.11em;font-size:13px;font-weight:600;
+       padding:9px 15px;border:1px solid var(--line);border-radius:9px;background:var(--panel);
+       color:var(--ink-3);cursor:pointer;text-decoration:none;display:block;white-space:nowrap}
+  .tab.on{color:var(--ground);background:var(--or);border-color:var(--or)}
+
+  .bench{display:grid;grid-template-columns:minmax(0,1fr) 390px;gap:24px;padding:20px 26px 60px;align-items:start}
+  @media (max-width:1140px){.bench{grid-template-columns:minmax(0,1fr)}}
+
+  .plaque{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px 18px}
+  .plaque + .plaque{margin-top:14px}
+  .plaque h2{font-family:var(--display);font-weight:700;font-size:26px;line-height:1.05;margin:0 0 2px;text-transform:uppercase}
+  .plaque h3{font-family:var(--display);text-transform:uppercase;letter-spacing:.13em;font-size:11.5px;
+             font-weight:600;color:var(--ink-3);margin:0 0 9px}
+  .vkey{font-family:var(--mono);font-size:10.5px;color:var(--or);letter-spacing:.18em;text-transform:uppercase;display:block;margin-bottom:7px}
+  .these{margin:6px 0 0;color:var(--ink-2);font-size:14.5px}
+
+  svg{display:block;width:100%;height:auto}
+  .planwrap{background:#080706;border:1px solid var(--line);border-radius:16px;padding:10px;overflow:auto}
+
+  ul.tr{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+  ul.tr li{display:grid;grid-template-columns:18px minmax(0,1fr);gap:9px;font-size:13.8px;color:var(--ink-2)}
+  .sg{font-family:var(--mono);font-weight:700;font-size:13px;line-height:1.5}
+  .sg.p{color:var(--turquoise)} .sg.m{color:var(--or)}
+
+  table.sc{width:100%;border-collapse:collapse;font-size:13px}
+  table.sc td{padding:7px 0;border-top:1px solid var(--line);color:var(--ink-2)}
+  table.sc td:last-child{text-align:right;font-family:var(--mono);color:var(--ink);font-size:14px}
+  table.sc tr:first-child td{border-top:none}
+  .big{font-family:var(--mono);font-size:19px!important;font-weight:600}
+  .ok{color:var(--vert)!important} .bad{color:var(--rouge)!important} .mid{color:var(--or)!important}
+
+  .ctrls{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin:12px 0 0;
+         background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 16px}
+  .ctrls label{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--ink-3);
+               text-transform:uppercase;display:flex;align-items:center;gap:7px;cursor:pointer;user-select:none}
+  input[type=range]{flex:1;min-width:200px;accent-color:var(--or)}
+  input[type=checkbox]{accent-color:var(--or);width:15px;height:15px}
+  .readout{font-family:var(--mono);font-size:11.5px;color:var(--ink-2);letter-spacing:.02em}
+  .readout b{color:var(--or);font-weight:600}
+
+  .fpwrap{display:flex;gap:14px;align-items:flex-start}
+  .fp{position:relative;aspect-ratio:9/16;width:190px;flex:none;border-radius:12px;overflow:hidden;
+      border:1px solid var(--line);background:#050404}
+  .fpnote{font-size:12.5px;color:var(--ink-2);line-height:1.5}
+  .fpnote b{color:var(--ink)}
+
+  .legend{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 14px;font-size:12px;color:var(--ink-2)}
+  .legend span{display:flex;align-items:center;gap:7px}
+  .chip{width:14px;height:9px;border-radius:2px;flex:none}
+
+  .verdict{border-color:var(--or-dim);background:linear-gradient(180deg,#1A1310,#141110)}
+  .verdict p{margin:0 0 10px;font-size:14px;color:var(--ink-2)}
+  .verdict p:last-child{margin-bottom:0}
+  .verdict strong{color:var(--ink)}
+  footer{padding:0 26px 50px;color:var(--ink-3);font-size:12.5px;max-width:900px}
+  code{font-family:var(--mono);font-size:12px;color:var(--or)}
+</style>
+
+<header>
+  <div>
+    <h1>Le tracé du musée</h1>
+    <div class="sub">Prototype jetable · ticket #29 · trois tracés des cinq salles, vus de dessus, avec le champ du 9:16 superposé</div>
+  </div>
+  <div class="tabs" id="tabs"></div>
+</header>
+
+<div class="bench">
+  <div>
+    <div class="planwrap"><svg id="plan" viewBox="0 0 780 572"></svg></div>
+
+    <div class="ctrls">
+      <label style="width:100%;gap:12px">
+        <span style="flex:none">Position sur le trajet</span>
+        <input type="range" id="scrub" min="0" max="1000" value="0">
+        <span class="readout" id="ro" style="flex:none;min-width:210px"></span>
+      </label>
+      <label><input type="checkbox" id="tZones" checked> Zones de déclenchement</label>
+      <label><input type="checkbox" id="tCones" checked> Cônes caméras &amp; gardes</label>
+      <label><input type="checkbox" id="tSoins" checked> Box de soin</label>
+      <label><input type="checkbox" id="tPaysage"> Comparer au champ 16:9</label>
+      <label><input type="checkbox" id="tTrail"> Traînée du champ</label>
+    </div>
+
+    <div class="plaque">
+      <h3>Légende</h3>
+      <div class="legend">
+        <span><i class="chip" style="background:var(--or)"></i>Emplacement primaire (garni au quota 5)</span>
+        <span><i class="chip" style="background:var(--or-dim)"></i>Emplacement secondaire (garni de 6 à 10)</span>
+        <span><i class="chip" style="background:var(--turquoise)"></i>Cône de caméra — zone rouge</span>
+        <span><i class="chip" style="background:#C94F3D"></i>Arc d'engagement d'un garde</span>
+        <span><i class="chip" style="background:var(--vert)"></i>Box de soin</span>
+        <span><i class="chip" style="background:#F0EAE2"></i>Point de reprise (seuil de salle)</span>
+        <span><i class="chip" style="background:#5A4E44"></i>Vitrine au sol (jamais substituée)</span>
+        <span><i class="chip" style="background:rgba(232,183,106,.28)"></i>Champ instantané 9:16 — 49,0°</span>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="plaque" id="card"></div>
+
+    <div class="plaque">
+      <h3>Ce que voit le destinataire, ici, maintenant</h3>
+      <div class="fpwrap">
+        <div class="fp"><svg id="fp" viewBox="0 0 180 320"></svg></div>
+        <div class="fpnote" id="fpnote"></div>
+      </div>
+    </div>
+
+    <div class="plaque">
+      <h3>Le départage, en chiffres</h3>
+      <table class="sc" id="scores"></table>
+    </div>
+
+    <div class="plaque verdict">
+      <h3>Ce que le plan prouve</h3>
+      <p><strong>Le champ instantané du 9:16 fait 49,0°</strong> à FOV vertical 78°, contre 110,4° pour le même FOV en 16:9. Le portrait coupe <strong>55 % du champ latéral</strong>. Un tableau à 4 m sur le côté d'un couloir parcouru tout droit n'entre dans le cadre que lorsqu'il est à plus de 8,8 m devant — et il en sort avant qu'on l'atteigne.</p>
+      <p><strong>Le rayon de déclenchement est 3,5 m.</strong> Longer un mur à 4 m ne déclenche donc jamais rien, quel que soit l'éclairage. C'est ce qui tue le tracé A : la disposition la plus muséale est celle qui perd le plus de Souvenirs.</p>
+      <p><strong>Un appât ne fonctionne que sur ce qui est déjà dans le cadre.</strong> C'est ce qui borne le tracé B : la lumière convertit un « aperçu » en « déclenché », elle ne convertit rien en « aperçu ». La géométrie passe avant l'appât.</p>
+    </div>
+  </div>
+</div>
+
+<footer>
+  Hypothèses du simulateur, à charge : occlusion par les murs prise en compte, occlusion par le mobilier non ; le modèle <b>regard rivé</b> fixe le regard sur la direction de marche, sans aucun balayage volontaire — c'est le comportement par défaut d'un destinataire qui n'a jamais tenu un FPS ; le modèle <b>joueur attiré</b> détourne le trajet vers tout Emplacement entré dans le cadre à moins de 12 m et l'approche à 2,5 m. Aucun des deux ne remplace un pouce sur un écran : la calibration des contrôles et des temps de réaction reste à éprouver en main.
+</footer>
+
+<script>
+(function(){
+"use strict";
+
+/* ─────────────────────────  constantes  ───────────────────────── */
+const S = 13;                 // px par mètre
+const FOV_V = 78;             // FOV vertical, degrés
+const HALF = 24.5;            // demi-champ horizontal 9:16
+const HALF_L = 55.2;          // demi-champ horizontal 16:9, même FOV vertical
+const R_DECL = 3.5;           // rayon de déclenchement d'un Souvenir, m
+const A_DECL = 12.5;          // demi-angle de déclenchement, degrés
+const R_VU = 25;              // portée au-delà de laquelle on ne « voit » plus une œuvre
+const VITESSE = 2.0;          // m/s
+
+const rad = d => d*Math.PI/180, deg = r => r*180/Math.PI;
+const px = m => m*S;
+const norm = a => {a=(a+180)%360; if(a<0)a+=360; return a-180;};
+const bearing = (a,b) => deg(Math.atan2(b[1]-a[1], b[0]-a[0]));
+const dist = (a,b) => Math.hypot(b[0]-a[0], b[1]-a[1]);
+
+/* ─────────────────────────  murs  ───────────────────────── */
+function rectSegs(r){
+  const {x,y,w,h}=r;
+  return [[x,y,x+w,y],[x+w,y,x+w,y+h],[x+w,y+h,x,y+h],[x,y+h,x,y]];
+}
+// soustrait des rectangles de porte à un segment aligné sur les axes
+function punch(seg, portes){
+  const [x1,y1,x2,y2]=seg;
+  const horiz = Math.abs(y1-y2)<1e-6;
+  let iv=[[horiz?Math.min(x1,x2):Math.min(y1,y2), horiz?Math.max(x1,x2):Math.max(y1,y2)]];
+  const fixed = horiz? y1 : x1;
+  for(const p of portes){
+    const a = horiz? p.x : p.y, b = horiz? p.x+p.w : p.y+p.h;
+    const lo = horiz? p.y : p.x, hi = horiz? p.y+p.h : p.x+p.w;
+    if(fixed < lo-1e-6 || fixed > hi+1e-6) continue;
+    const out=[];
+    for(const [s,e] of iv){
+      if(b<=s || a>=e){ out.push([s,e]); continue; }
+      if(a>s) out.push([s,a]);
+      if(b<e) out.push([b,e]);
+    }
+    iv=out;
+  }
+  return iv.filter(([s,e])=>e-s>0.05).map(([s,e]) => horiz? [s,fixed,e,fixed] : [fixed,s,fixed,e]);
+}
+function buildWalls(v){
+  const out=[];
+  for(const r of v.rects) for(const s of rectSegs(r)) out.push(...punch(s, v.portes));
+  for(const c of (v.cloisons||[])) out.push(c);
+  return out;
+}
+function segInter(p,q,seg){
+  const [x1,y1,x2,y2]=seg;
+  const r=[q[0]-p[0],q[1]-p[1]], s=[x2-x1,y2-y1];
+  const den = r[0]*s[1]-r[1]*s[0];
+  if(Math.abs(den)<1e-9) return null;
+  const t = ((x1-p[0])*s[1]-(y1-p[1])*s[0])/den;
+  const u = ((x1-p[0])*r[1]-(y1-p[1])*r[0])/den;
+  if(t>=0 && t<=1 && u>=0 && u<=1) return t;
+  return null;
+}
+function visible(walls,p,q){
+  for(const w of walls){ const t=segInter(p,q,w); if(t!==null && t<0.985) return false; }
+  return true;
+}
+
+/* ─────────────────────────  les trois tracés  ───────────────────────── */
+const SALLES_COURT = ["1 · Hall","2 · Galerie A","3 · Galerie B","4 · Couloir des vitrines","5 · Salle principale"];
+const SALLES = ["Hall (sans garde)","Galerie A (première caméra)","Galerie B (premier garde)","Couloir des vitrines (gardes multiples)","Salle principale (affrontement)"];
+
+const A = {
+  key:"A", nom:"L'enfilade",
+  sous:"Ce sont les murs qui tournent la tête",
+  these:"Cinq galeries longues et étroites enchaînées en serpentin, portes toujours décalées : impossible de voir la sortie d'une salle en y entrant. Les œuvres sont accrochées le long des murs latéraux, comme dans un musée réel. Le pari : le zigzag du tracé suffit à faire tourner la tête, et la curiosité fait le reste.",
+  rects:[
+    {id:0,x:3,y:3,w:23,h:8},
+    {id:1,x:26,y:3,w:29,h:9,lx:26,ly:7.4},
+    {id:2,x:24,y:12,w:31,h:9,lx:24,ly:17.4},
+    {id:3,x:8,y:12,w:16,h:12,lx:8,ly:19.4},
+    {id:4,x:3,y:24,w:21,h:16},
+  ],
+  portes:[{x:25.6,y:5.6,w:.8,h:2.8},{x:48.6,y:11.6,w:2.8,h:.8},
+          {x:23.6,y:15.6,w:.8,h:2.8},{x:11.6,y:23.6,w:2.8,h:.8}],
+  path:[[6,7],[25.5,7],[31,7.5],[44,7.5],[49.5,9],[50,15],[46,17],[33,17],[25,17],[21.5,17],[16,18],[13,19.5],[13,23.5],[13,28],[10,33],[13,32]],
+  seuils:[[26,7],[50,12],[24,17],[13,24]],
+  emps:[
+    {x:12,y:3,   n:[0,1], s:0, t:"photo"},
+    {x:20,y:11,  n:[0,-1],s:0, t:"phrase"},
+    {x:33,y:3,   n:[0,1], s:1, t:"photo+vocal"},
+    {x:41,y:12,  n:[0,-1],s:1, t:"phrase"},
+    {x:43,y:21,  n:[0,-1],s:2, t:"photo"},
+    {x:35,y:12,  n:[0,1], s:2, t:"photo+vocal"},
+    {x:18,y:12,  n:[0,1], s:3, t:"phrase+vocal"},
+    {x:8,y:15,   n:[1,0], s:3, t:"photo"},
+    {x:3,y:29,   n:[1,0], s:4, t:"photo+vocal"},
+    {x:18,y:40,  n:[0,-1],s:4, t:"phrase"},
+  ],
+  cams:[{x:54.4,y:4,a:160,h:20,l:17},{x:23.6,y:13.5,a:20,h:18,l:13}],
+  gardes:[{x:38,y:8,a:270,h:32,l:12,pat:[[38,10],[38,4.5]]},
+          {x:16,y:20,a:275,h:32,l:11,pat:[[16,20],[16,14]]},
+          {x:30,y:19.5,a:180,h:30,l:12,pat:[[30,19.5],[42,19.5]]},
+          {x:7,y:28,a:20,h:34,l:12},{x:8,y:36,a:-25,h:34,l:12},{x:19,y:37,a:200,h:34,l:12,hc:1}],
+  soins:[[28,9],[46,19],[10,20],[17,35]],
+  vitrines:[[11,15],[11,19],[15,15],[20,20],[20,15]],
+  oeuvre:[13,32],
+  depart:"Chute par la verrière du hall, à l'ouest.",
+  plus:["Le musée ressemble à un musée : de longues galeries, des cimaises continues, des œuvres alignées. C'est la seule des trois qui tienne debout comme décor sans explication.",
+        "Portes décalées : on ne voit jamais la sortie en entrant. Le tracé se découvre salle par salle, ce qui sert l'infiltration."],
+  moins:["Le serpentin tourne le corps, pas le regard. On pivote pour marcher, et on regarde la porte suivante.",
+         "Une œuvre accrochée à 4 m sur le côté n'entre jamais dans le rayon de déclenchement de 3,5 m. Sur un trajet parcouru tout droit, la moitié du mur est hors d'atteinte par construction.",
+         "Le champ à 49° passe son temps à balayer des murs nus : le musée se lit comme un couloir, ce qui contredit « Le musée éclairé » tranché en #6."]
+};
+
+const B = {
+  key:"B", nom:"La rotonde",
+  sous:"C'est l'appât qui tourne la tête",
+  these:"Volumes ouverts, presque sans portes, chacun organisé autour d'un bloc central qu'on contourne. Le trajet est un arc continu, et les œuvres sont sur l'anneau extérieur, éclairées, avec des box de soin posées en aimants latéraux. Le pari : la lumière et la récompense suffisent à décrocher le regard de la marche.",
+  rects:[
+    {id:0,x:4,y:4,w:16,h:11},
+    {id:1,x:20,y:4,w:20,h:14},
+    {id:2,x:40,y:4,w:17,h:16},
+    {id:3,x:22,y:20,w:35,h:11,lx:22,ly:26.4},
+    {id:4,x:4,y:18,w:18,h:21},
+  ],
+  portes:[{x:19.6,y:7,w:.8,h:6},{x:39.6,y:7,w:.8,h:8},
+          {x:48,y:19.6,w:7,h:.8},{x:21.6,y:23,w:.8,h:6}],
+  cloisons:[[27,8,34,8],[34,8,34,14],[34,14,27,14],[27,14,27,8],
+            [45,9,52,9],[52,9,52,15],[52,15,45,15],[45,15,45,9]],
+  path:[[7,6],[12,7.5],[19.6,9.5],[24,6.5],[31,6],[37,7],[38.8,11],[39.6,12.5],
+        [44,7],[50,6.5],[55,9],[55.5,15],[53,19],[52,20.6],
+        [50,23],[44,23],[36,23],[28,23],[23.5,24],[21.7,25],
+        [19,27],[15,33],[11,35],[13,29]],
+  seuils:[[20,9.5],[40,12.5],[52,20.6],[21.7,25]],
+  emps:[
+    {x:12,y:4,  n:[0,1], s:0, t:"photo"},
+    {x:4,y:11,  n:[1,0], s:0, t:"phrase"},
+    {x:26,y:4,  n:[0,1], s:1, t:"photo+vocal"},
+    {x:40,y:16.5,n:[-1,0],s:1, t:"phrase"},
+    {x:48,y:4,  n:[0,1], s:2, t:"photo"},
+    {x:57,y:13, n:[-1,0],s:2, t:"photo+vocal"},
+    {x:32,y:20, n:[0,1], s:3, t:"phrase+vocal"},
+    {x:40,y:31, n:[0,-1],s:3, t:"photo"},
+    {x:4,y:26,  n:[1,0], s:4, t:"photo+vocal"},
+    {x:13,y:39, n:[0,-1],s:4, t:"phrase"},
+  ],
+  cams:[{x:39.6,y:4.4,a:135,h:20,l:17},{x:56.6,y:20.4,a:200,h:20,l:16}],
+  gardes:[{x:47,y:11,a:180,h:32,l:13,pat:[[47,11],[47,17]]},
+          {x:33,y:28,a:0,h:30,l:13,pat:[[33,28],[46,28]]},
+          {x:27,y:27,a:180,h:30,l:12,pat:[[27,27],[27,21]]},
+          {x:8,y:22,a:60,h:34,l:12},{x:7,y:34,a:0,h:34,l:12},{x:19,y:35,a:200,h:34,l:12,hc:1}],
+  soins:[[24,10],[43,14],[34,27],[9,31]],
+  vitrines:[[26,25.5],[31,25.5],[36,25.5],[41,25.5],[46,25.5],[51,25.5]],
+  oeuvre:[13,29],
+  depart:"Chute par la coupole du hall, à l'ouest.",
+  plus:["Volumes ouverts et lignes de vue longues : la lumière porte, l'espace se lit comme une galerie et non comme un couloir.",
+        "Les blocs centraux font des couvertures naturelles et des angles morts : l'infiltration s'y joue sans mobilier ajouté.",
+        "Les box de soin posées en dehors de l'arc donnent une vraie raison d'aller voir ailleurs que tout droit."],
+  moins:["Un arc est tangent à l'anneau extérieur : le trajet reste parallèle aux œuvres, et la distance latérale ne descend jamais sous 4 m.",
+         "L'appât n'agit que sur ce qui est déjà dans le cadre. Une œuvre à 70° de la marche n'est pas éclairée aux yeux du joueur : elle est absente.",
+         "Sans portes, le point de reprise au seuil de salle n'a pas de seuil où se poser — il devient une ligne invisible, donc arbitraire."]
+};
+
+const C = {
+  key:"C", nom:"Les cinq pivots",
+  sous:"C'est le seuil et la menace qui tournent la tête",
+  these:"Chaque salle se traverse par un pivot : on entre face à un mur, l'unique chose éclairée y est accrochée, on la rejoint, et la sortie ne se révèle qu'une fois tourné. L'Emplacement n'est pas posé sur un mur, il est posé sur la ligne de visée que le tracé oblige à emprunter. Le secondaire est logé dans l'abri — alcôve, angle mort, couverture — que la caméra ou le garde obligent déjà à rejoindre.",
+  rects:[
+    {id:0,x:3,y:3,w:16,h:12},
+    {id:1,x:19,y:3,w:18,h:14},
+    {id:11,x:30,y:17,w:6,h:4},
+    {id:2,x:37,y:3,w:17,h:16,lx:37,ly:14.6},
+    {id:3,x:46,y:19,w:8,h:14,lx:21.5,ly:27.4},
+    {id:31,x:21,y:27,w:25,h:6},
+    {id:4,x:3,y:22,w:18,h:16,lx:3,ly:25.6},
+  ],
+  portes:[{x:18.6,y:10.6,w:.8,h:2.8},{x:36.6,y:6.6,w:.8,h:2.8},
+          {x:48.6,y:18.6,w:2.8,h:.8},{x:20.6,y:28.6,w:.8,h:2.8},
+          {x:30,y:16.6,w:6,h:.8},{x:45.6,y:27,w:.8,h:6}],
+  cloisons:[[33,27,33,30.4]],
+  path:[[7,5],[11,9],[11,12.6],[9.5,10.2],[6.4,10.2],[12,11.5],[18.6,12],
+        [26,12.5],[26,14.5],[33,17.5],[33,18.6],[35,14],[36.8,8.5],
+        [43,7.5],[43,5.5],[45.5,15],[45.5,16.6],[50,18.6],[50,30.5],
+        [44,29],[36.4,29],[34,31.6],[28,31],[21.5,30.5],
+        [16,33.5],[16,35.6],[9,28],[9,24.5],[11,30]],
+  seuils:[[19,12],[37,8],[50,19],[21,30]],
+  emps:[
+    {x:11,y:15,  n:[0,-1],s:0, t:"photo"},
+    {x:3,y:10.2, n:[1,0], s:0, t:"phrase"},
+    {x:26,y:17,  n:[0,-1],s:1, t:"photo+vocal"},
+    {x:33,y:21,  n:[0,-1],s:1, t:"phrase"},
+    {x:43,y:3,   n:[0,1], s:2, t:"photo"},
+    {x:45.5,y:19,n:[0,-1],s:2, t:"photo+vocal"},
+    {x:50,y:33,  n:[0,-1],s:3, t:"phrase+vocal"},
+    {x:33,y:29,  n:[1,0], s:3, t:"photo"},
+    {x:16,y:38,  n:[0,-1],s:4, t:"photo+vocal"},
+    {x:9,y:22,   n:[0,1], s:4, t:"phrase"},
+  ],
+  cams:[{x:35,y:3.4,a:155,h:20,l:17},{x:46.5,y:19.6,a:70,h:19,l:13}],
+  gardes:[{x:49,y:11,a:180,h:32,l:13,pat:[[49,5],[49,17]]},
+          {x:52,y:27,a:190,h:30,l:11},
+          {x:36,y:30,a:0,h:30,l:13,pat:[[40,30],[27,30]]},
+          {x:7,y:25,a:20,h:34,l:12},{x:8,y:35,a:-20,h:34,l:12},{x:10,y:23,a:60,h:34,l:12,hc:1}],
+  soins:[[34.5,19.5],[47,16.5],[52,31],[18,36]],
+  vitrines:[[48,22],[52,22],[48,26],[52,26],[48,30],[42,29],[38,31],[30,28],[26,31]],
+  oeuvre:[11,30],
+  depart:"Chute par la verrière du hall. L'orientation d'arrivée est écrite : on tombe face au sud, donc face au premier Emplacement.",
+  plus:["Les dix Emplacements sont sur la ligne de marche, pas à côté d'elle. Le regard n'a rien à chercher.",
+        "L'abri est l'Emplacement : l'alcôve de la galerie A est à la fois le seul angle mort de la caméra et le logement du Souvenir n° 4. La menace fait le guidage, gratuitement.",
+        "Chaque pivot est un seuil : le point de reprise a un endroit évident où se poser, et l'échec renvoie à un lieu identifiable.",
+        "Le couloir des vitrines porte son Emplacement sur une cloison-chicane perpendiculaire, pas sur le mur longé — la seule façon qu'un couloir a de donner une œuvre."],
+  moins:["Le musée cesse d'être une enfilade de cimaises pour devenir une suite d'alcôves et de chicanes. C'est moins muséal, et il faudra que la direction artistique rattrape en décor ce que la géométrie perd en crédibilité.",
+         "Le trajet fait 151 m pour cinq salles : c'est court. La durée de six à huit minutes n'est pas portée par la marche mais par les cycles de patrouille, ce qui déplace le réglage de la durée hors du tracé.",
+         "Un joueur qui court tout droit sans jamais s'arrêter traverse le musée en trois minutes. Le tracé garantit qu'il voit tout ; il ne garantit pas qu'il prend le temps."],
+};
+
+const VARIANTS = {A,B,C};
+for(const k in VARIANTS){ VARIANTS[k].walls = buildWalls(VARIANTS[k]); }
+
+/* ─────────────────────────  simulation  ───────────────────────── */
+function densify(path, pas){
+  const out=[];
+  for(let i=0;i<path.length-1;i++){
+    const a=path[i], b=path[i+1], d=dist(a,b), n=Math.max(1,Math.ceil(d/pas));
+    const hd = bearing(a,b);
+    for(let j=0;j<n;j++) out.push({p:[a[0]+(b[0]-a[0])*j/n, a[1]+(b[1]-a[1])*j/n], h:hd});
+  }
+  out.push({p:path[path.length-1].slice(), h:bearing(path[path.length-2],path[path.length-1])});
+  return out;
+}
+function empPoint(e){ return [e.x+e.n[0]*0.16, e.y+e.n[1]*0.16]; }
+
+// modèle « regard rivé » : le regard suit la marche, aucun balayage
+function simRive(v){
+  const pts = densify(v.path, 0.25);
+  const decl = new Array(v.emps.length).fill(false);
+  const vus  = new Array(v.emps.length).fill(false);
+  for(const st of pts){
+    v.emps.forEach((e,i)=>{
+      const q = empPoint(e);
+      const d = dist(st.p,q); if(d>R_VU) return;
+      const da = Math.abs(norm(bearing(st.p,q)-st.h));
+      if(da>HALF) return;
+      if(!visible(v.walls, st.p, q)) return;
+      // l'œuvre doit être vue de face, pas par la tranche
+      const cosn = -( (q[0]-st.p[0])*e.n[0] + (q[1]-st.p[1])*e.n[1] )/d;
+      if(cosn < 0.18) return;
+      vus[i]=true;
+      if(d<=R_DECL && da<=A_DECL) decl[i]=true;
+    });
+  }
+  return {decl, vus, longueur: longueurPath(v.path)};
+}
+// modèle « joueur attiré » : tout Emplacement entré dans le cadre à moins de 12 m
+// provoque un détour jusqu'à 2,5 m devant lui
+function simAttire(v, dejaVu){
+  const base = densify(v.path, 0.4);
+  const decl = dejaVu.slice();          // ce que le trajet nominal donne déjà, sans détour
+  let total = longueurPath(v.path);
+  for(const st of base){
+    v.emps.forEach((e,i)=>{
+      if(decl[i]) return;
+      const q = empPoint(e);
+      const d = dist(st.p,q); if(d>12) return;
+      const da = Math.abs(norm(bearing(st.p,q)-st.h));
+      if(da>HALF) return;
+      if(!visible(v.walls, st.p, q)) return;
+      const cosn = -((q[0]-st.p[0])*e.n[0] + (q[1]-st.p[1])*e.n[1])/d;
+      if(cosn < 0.18) return;
+      const cible = [e.x+e.n[0]*2.5, e.y+e.n[1]*2.5];
+      if(!visible(v.walls, st.p, cible)) return;
+      decl[i]=true;
+      total += 2*dist(st.p,cible);   // aller + retour
+    });
+  }
+  return {decl, longueur: total};
+}
+function longueurPath(p){ let l=0; for(let i=0;i<p.length-1;i++) l+=dist(p[i],p[i+1]); return l; }
+
+const SIM = {};
+for(const k in VARIANTS){
+  const v = VARIANTS[k];
+  const r = simRive(v);
+  SIM[k] = {rive: r, attire: simAttire(v, r.decl)};
+}
+
+/* ─────────────────────────  rendu du plan  ───────────────────────── */
+const $ = id => document.getElementById(id);
+let cur = (new URLSearchParams(location.search).get("variant")||"C").toUpperCase();
+if(!VARIANTS[cur]) cur = "C";
+let t = 0;   // 0..1 le long du trajet
+
+function el(n,attrs,txt){
+  const e = document.createElementNS("http://www.w3.org/2000/svg",n);
+  for(const k in attrs) e.setAttribute(k,attrs[k]);
+  if(txt!=null) e.textContent = txt;
+  return e;
+}
+function coneD(cx,cy,a,half,len){
+  const p=[[px(cx),px(cy)]];
+  for(let i=-half;i<=half;i+=2){ p.push([px(cx+Math.cos(rad(a+i))*len), px(cy+Math.sin(rad(a+i))*len)]); }
+  return "M"+p.map(q=>q[0].toFixed(1)+","+q[1].toFixed(1)).join("L")+"Z";
+}
+function posAt(v,tt){
+  const L = longueurPath(v.path)*tt;
+  let acc=0;
+  for(let i=0;i<v.path.length-1;i++){
+    const a=v.path[i], b=v.path[i+1], d=dist(a,b);
+    if(acc+d>=L || i===v.path.length-2){
+      const u = d<1e-6?0:Math.min(1,(L-acc)/d);
+      return {p:[a[0]+(b[0]-a[0])*u, a[1]+(b[1]-a[1])*u], h:bearing(a,b), seg:i, L};
+    }
+    acc+=d;
+  }
+}
+function salleDe(v,p){
+  for(const r of v.rects) if(p[0]>=r.x-.2&&p[0]<=r.x+r.w+.2&&p[1]>=r.y-.2&&p[1]<=r.y+r.h+.2) return r.id>10?Math.floor(r.id/10):r.id;
+  return null;
+}
+
+function drawPlan(){
+  const v = VARIANTS[cur], svg = $("plan");
+  svg.innerHTML = "";
+  const g = el("g",{});
+  svg.appendChild(g);
+
+  // sols
+  for(const r of v.rects){
+    g.appendChild(el("rect",{x:px(r.x),y:px(r.y),width:px(r.w),height:px(r.h),
+      fill:"#1D1815",stroke:"none"}));
+  }
+  // grille métrique
+  const gg = el("g",{stroke:"#221D19","stroke-width":.5});
+  for(let x=0;x<=60;x+=5) gg.appendChild(el("line",{x1:px(x),y1:0,x2:px(x),y2:px(44)}));
+  for(let y=0;y<=44;y+=5) gg.appendChild(el("line",{x1:0,y1:px(y),x2:px(60),y2:px(y)}));
+  g.appendChild(gg);
+
+  // noms de salle
+  v.rects.forEach(r=>{
+    if(r.id>10) return;
+    g.appendChild(el("text",{x:px(r.lx!=null?r.lx:r.x)+8,y:px(r.ly!=null?r.ly:r.y)+16,fill:"#6E635A","font-size":10.5,
+      "font-family":"ui-monospace,monospace","letter-spacing":".09em",
+      stroke:"#0B0908","stroke-width":2.5,"paint-order":"stroke"}, SALLES_COURT[r.id].toUpperCase()));
+  });
+
+  // cônes
+  if($("tCones").checked){
+    for(const c of v.cams){
+      g.appendChild(el("path",{d:coneD(c.x,c.y,c.a,c.h,c.l),fill:"rgba(79,214,192,.09)",stroke:"rgba(79,214,192,.5)","stroke-width":1}));
+      g.appendChild(el("circle",{cx:px(c.x),cy:px(c.y),r:3.5,fill:"#4FD6C0"}));
+    }
+    for(const gd of v.gardes){
+      g.appendChild(el("path",{d:coneD(gd.x,gd.y,gd.a,gd.h,gd.l),fill:"rgba(201,79,61,.07)",stroke:"rgba(201,79,61,.38)","stroke-width":1}));
+      if(gd.pat) g.appendChild(el("line",{x1:px(gd.pat[0][0]),y1:px(gd.pat[0][1]),x2:px(gd.pat[1][0]),y2:px(gd.pat[1][1]),
+        stroke:"rgba(201,79,61,.55)","stroke-width":1.4,"stroke-dasharray":"3 4"}));
+      g.appendChild(el("circle",{cx:px(gd.x),cy:px(gd.y),r:4,fill:"#C94F3D"}));
+      if(gd.hc) g.appendChild(el("text",{x:px(gd.x)+7,y:px(gd.y)+14,fill:"#C94F3D","font-size":8.5,
+        "font-family":"ui-monospace,monospace",stroke:"#0B0908","stroke-width":2.4,"paint-order":"stroke"},"annonce"));
+    }
+  }
+
+  // murs
+  for(const w of v.walls){
+    g.appendChild(el("line",{x1:px(w[0]),y1:px(w[1]),x2:px(w[2]),y2:px(w[3]),
+      stroke:"#9C8C7E","stroke-width":3,"stroke-linecap":"square"}));
+  }
+
+  // vitrines au sol
+  for(const s of (v.vitrines||[]))
+    g.appendChild(el("rect",{x:px(s[0])-6,y:px(s[1])-6,width:12,height:12,rx:2,fill:"#3B332C",stroke:"#5A4E44","stroke-width":1}));
+
+  // box de soin
+  if($("tSoins").checked) for(const s of v.soins){
+    g.appendChild(el("rect",{x:px(s[0])-5,y:px(s[1])-5,width:10,height:10,rx:2,
+      fill:"rgba(95,191,122,.2)",stroke:"#5FBF7A","stroke-width":1.3}));
+    g.appendChild(el("path",{d:"M"+(px(s[0])-3)+","+px(s[1])+"h6M"+px(s[0])+","+(px(s[1])-3)+"v6",fill:"none",stroke:"#5FBF7A","stroke-width":1.2}));
+  }
+
+  // œuvre à 20 M$
+  g.appendChild(el("circle",{cx:px(v.oeuvre[0]),cy:px(v.oeuvre[1]),r:16,fill:"rgba(232,183,106,.10)"}));
+  g.appendChild(el("circle",{cx:px(v.oeuvre[0]),cy:px(v.oeuvre[1]),r:7,fill:"none",stroke:"#E8B76A","stroke-width":1.6}));
+  g.appendChild(el("text",{x:px(v.oeuvre[0])+12,y:px(v.oeuvre[1])+4,fill:"#E8B76A","font-size":9.5,
+    "font-family":"ui-monospace,monospace",stroke:"#0B0908","stroke-width":2.4,"paint-order":"stroke"},"20 M$"));
+
+  // zones de déclenchement
+  const sim = SIM[cur].rive;
+  if($("tZones").checked){
+    v.emps.forEach((e,i)=>{
+      g.appendChild(el("path",{d:coneD(e.x+e.n[0]*0.1, e.y+e.n[1]*0.1, bearing([0,0],e.n), 70, R_DECL),
+        fill: sim.decl[i]? "rgba(232,183,106,.20)" : "rgba(224,97,74,.16)", stroke: sim.decl[i]? "rgba(232,183,106,.35)":"rgba(224,97,74,.35)", "stroke-width":.8, "stroke-dasharray":"2 2"}));
+    });
+  }
+
+  // trajet
+  const dpath = "M"+v.path.map(p=>px(p[0]).toFixed(1)+","+px(p[1]).toFixed(1)).join("L");
+  g.appendChild(el("path",{d:dpath,fill:"none",stroke:"rgba(240,234,226,.30)","stroke-width":2.4,"stroke-linejoin":"round"}));
+
+  // traînée du champ
+  if($("tTrail").checked){
+    const tr = el("g",{});
+    for(let k=0;k<=40;k++){
+      const st = posAt(v,k/40);
+      tr.appendChild(el("path",{d:coneD(st.p[0],st.p[1],st.h,HALF,5.5),fill:"rgba(232,183,106,.05)",stroke:"none"}));
+    }
+    g.appendChild(tr);
+  }
+
+  // emplacements
+  v.emps.forEach((e,i)=>{
+    const rang = v.emps.filter(x=>x.s===e.s).indexOf(e)===0;
+    const a = bearing([0,0],e.n);
+    const w = 12, len = 5;
+    const gg2 = el("g",{transform:"translate("+px(e.x)+","+px(e.y)+") rotate("+a+")"});
+    gg2.appendChild(el("rect",{x:-2,y:-w/2,width:len,height:w,rx:1.5,
+      fill: rang? "#E8B76A":"#8A6A32", stroke:"#0B0908","stroke-width":1}));
+    g.appendChild(gg2);
+    const ordre = ordreGarnissage(v).indexOf(i)+1;
+    g.appendChild(el("text",{x:px(e.x)+e.n[0]*13-3.5,y:px(e.y)+e.n[1]*13+4,
+      fill: sim.decl[i]? "#E8B76A":"#E0614A","font-size":11,"font-weight":700,
+      "font-family":"ui-monospace,monospace",stroke:"#0B0908","stroke-width":2.6,"paint-order":"stroke"}, String(ordre)));
+  });
+
+  // seuils / points de reprise
+  v.seuils.forEach((s,i)=>{
+    g.appendChild(el("circle",{cx:px(s[0]),cy:px(s[1]),r:5.5,fill:"none",stroke:"#F0EAE2","stroke-width":1.6}));
+    g.appendChild(el("circle",{cx:px(s[0]),cy:px(s[1]),r:1.8,fill:"#F0EAE2"}));
+  });
+  // départ
+  g.appendChild(el("circle",{cx:px(v.path[0][0]),cy:px(v.path[0][1]),r:6,fill:"none",stroke:"#4FD6C0","stroke-width":1.6}));
+  g.appendChild(el("text",{x:px(v.path[0][0])+10,y:px(v.path[0][1])-6,fill:"#4FD6C0","font-size":9,
+    "font-family":"ui-monospace,monospace",stroke:"#0B0908","stroke-width":2.4,"paint-order":"stroke"},"TOIT"));
+
+  // joueur + champ
+  const st = posAt(v,t);
+  if($("tPaysage").checked)
+    g.appendChild(el("path",{d:coneD(st.p[0],st.p[1],st.h,HALF_L,16),fill:"rgba(79,214,192,.09)",stroke:"rgba(79,214,192,.30)","stroke-width":1,"stroke-dasharray":"4 3"}));
+  g.appendChild(el("path",{d:coneD(st.p[0],st.p[1],st.h,HALF,16),fill:"rgba(232,183,106,.17)",stroke:"rgba(232,183,106,.6)","stroke-width":1}));
+  g.appendChild(el("circle",{cx:px(st.p[0]),cy:px(st.p[1]),r:5,fill:"#F0EAE2",stroke:"#0B0908","stroke-width":1.5}));
+
+  drawFP(v,st);
+  readout(v,st);
+}
+
+// l'ordre de garnissage : les primaires de la salle 1 à 5, puis les secondaires
+function ordreGarnissage(v){
+  const prim=[], sec=[];
+  for(let s=0;s<5;s++){
+    const idx = v.emps.map((e,i)=>({e,i})).filter(o=>o.e.s===s).map(o=>o.i);
+    if(idx[0]!=null) prim.push(idx[0]);
+    if(idx[1]!=null) sec.push(idx[1]);
+  }
+  return prim.concat(sec);
+}
+
+/* ─────────────────────────  vue subjective 9:16  ───────────────────────── */
+function drawFP(v,st){
+  const svg = $("fp"); svg.innerHTML="";
+  const W=180,H=320;
+  const halfDeg = HALF;
+  const tanH = Math.tan(rad(halfDeg));
+  const tanV = Math.tan(rad(FOV_V/2));
+  const EYE = 1.6, CEIL = 3.4;
+  const proj = q => {
+    const dx=q[0]-st.p[0], dy=q[1]-st.p[1];
+    const c=Math.cos(rad(st.h)), s=Math.sin(rad(st.h));
+    const f = dx*c+dy*s, r = -dx*s+dy*c;
+    return {f, x: W*(0.5 + (r/f)/(2*tanH))};
+  };
+  const yAt = (h,d) => H*(0.5 - (h-EYE)/(2*d*tanV));
+
+  svg.appendChild(el("rect",{x:0,y:0,width:W,height:H,fill:"#0A0807"}));
+  svg.appendChild(el("rect",{x:0,y:H/2,width:W,height:H/2,fill:"#131010"}));
+
+  // murs, du plus loin au plus proche
+  const murs = v.walls.map(w=>{
+    const mid=[(w[0]+w[2])/2,(w[1]+w[3])/2];
+    return {w, d: dist(st.p,mid)};
+  }).sort((a,b)=>b.d-a.d);
+  for(const {w} of murs){
+    const N=30, autres = v.walls.filter(o=>o!==w);
+    let run=[];
+    const flush = ()=>{
+      if(run.length<2){ run=[]; return; }
+      const top = run.map(o=>[o.x, yAt(CEIL,o.f)]);
+      const bot = run.map(o=>[o.x, yAt(0,o.f)]).reverse();
+      const dmid = run.reduce((a,o)=>a+o.f,0)/run.length;
+      const lum = Math.max(.05, Math.min(.40, 1.6/Math.max(1,dmid)));
+      svg.appendChild(el("polygon",{points:top.concat(bot).map(p=>p[0].toFixed(1)+","+p[1].toFixed(1)).join(" "),
+        fill:"rgba(150,120,92,"+lum.toFixed(3)+")", stroke:"rgba(120,100,80,.30)","stroke-width":.6}));
+      run=[];
+    };
+    for(let i=0;i<=N;i++){
+      const q=[w[0]+(w[2]-w[0])*i/N, w[1]+(w[3]-w[1])*i/N];
+      const pr=proj(q);
+      const bon = pr.f>=0.35 && pr.x>-300 && pr.x<W+300 && visible(autres, st.p, q);
+      if(bon) run.push({x:pr.x,f:pr.f}); else flush();
+    }
+    flush();
+  }
+
+  // emplacements
+  const inframe=[];
+  v.emps.forEach((e,i)=>{
+    const q=empPoint(e), d=dist(st.p,q);
+    if(d>R_VU) return;
+    const da = norm(bearing(st.p,q)-st.h);
+    if(Math.abs(da)>halfDeg+6) return;
+    if(!visible(v.walls,st.p,q)) return;
+    const cosn = -((q[0]-st.p[0])*e.n[0]+(q[1]-st.p[1])*e.n[1])/d;
+    if(cosn<0.10) return;
+    const pr=proj(q); if(pr.f<0.4) return;
+    const hgt = 1.9, wid = 2.2*cosn;
+    const y0=yAt(EYE+hgt/2,pr.f), y1=yAt(EYE-hgt/2,pr.f);
+    const wpx = W*(wid/(2*pr.f*tanH));
+    const rang = v.emps.filter(x=>x.s===e.s).indexOf(e)===0;
+    svg.appendChild(el("rect",{x:pr.x-wpx/2,y:y0,width:Math.max(1.5,wpx),height:Math.max(2,y1-y0),
+      fill: rang?"rgba(232,183,106,.85)":"rgba(138,106,50,.85)", stroke:"#F4D9A8","stroke-width":.7}));
+    const decl = d<=R_DECL && Math.abs(da)<=A_DECL;
+    inframe.push({i,d,da,decl,ordre:ordreGarnissage(v).indexOf(i)+1});
+    svg.appendChild(el("text",{x:pr.x,y:y0-4,fill:decl?"#5FBF7A":"#B0A69A","font-size":8,
+      "text-anchor":"middle","font-family":"ui-monospace,monospace"}, "n°"+(ordreGarnissage(v).indexOf(i)+1)+(decl?" ✓":"")));
+  });
+
+  // gardes
+  v.gardes.forEach(gd=>{
+    const q=[gd.x,gd.y], d=dist(st.p,q);
+    if(d>R_VU) return;
+    const da = norm(bearing(st.p,q)-st.h);
+    if(Math.abs(da)>halfDeg+4) return;
+    if(!visible(v.walls,st.p,q)) return;
+    const pr=proj(q); if(pr.f<0.4) return;
+    const y0=yAt(1.8,pr.f), y1=yAt(0,pr.f);
+    const wpx=Math.max(2, W*(0.6/(2*pr.f*tanH)));
+    svg.appendChild(el("rect",{x:pr.x-wpx/2,y:y0,width:wpx,height:Math.max(3,y1-y0),rx:wpx/3,fill:"rgba(201,79,61,.9)"}));
+  });
+  // box de soin
+  v.soins.forEach(s=>{
+    const q=s, d=dist(st.p,q); if(d>R_VU) return;
+    const da=norm(bearing(st.p,q)-st.h); if(Math.abs(da)>halfDeg+4) return;
+    if(!visible(v.walls,st.p,q)) return;
+    const pr=proj(q); if(pr.f<0.4) return;
+    const sz=Math.max(2, W*(0.5/(2*pr.f*tanH)));
+    svg.appendChild(el("rect",{x:pr.x-sz/2,y:yAt(1.1,pr.f)-sz/2,width:sz,height:sz,rx:1.5,fill:"rgba(95,191,122,.85)"}));
+  });
+  // œuvre
+  (function(){
+    const q=v.oeuvre, d=dist(st.p,q); if(d>R_VU) return;
+    const da=norm(bearing(st.p,q)-st.h); if(Math.abs(da)>halfDeg+4) return;
+    if(!visible(v.walls,st.p,q)) return;
+    const pr=proj(q); if(pr.f<0.4) return;
+    const sz=Math.max(3, W*(1.0/(2*pr.f*tanH)));
+    svg.appendChild(el("rect",{x:pr.x-sz/2,y:yAt(1.9,pr.f),width:sz,height:sz*1.4,fill:"rgba(244,217,168,.95)"}));
+  })();
+
+  // cadre HUD minimal (rappel #6 : arme abaissée hors visée, pas de réticule)
+  svg.appendChild(el("rect",{x:.5,y:.5,width:W-1,height:H-1,fill:"none",stroke:"rgba(240,234,226,.12)"}));
+  svg.appendChild(el("text",{x:8,y:16,fill:"rgba(240,234,226,.45)","font-size":7.5,
+    "font-family":"ui-monospace,monospace"},"VIE · OBJECTIF · MINICARTE"));
+
+  // note
+  const salle = salleDe(v,st.p);
+  let txt = "<b>"+(salle!=null? SALLES[salle] : "entre deux salles")+"</b><br>";
+  if(inframe.length===0) txt += "Aucun Emplacement dans le cadre. Le champ balaye du mur nu.";
+  else txt += inframe.map(o=>"Souvenir n°"+o.ordre+" — "+o.d.toFixed(1)+" m, "+Math.abs(o.da).toFixed(0)+"° "+
+      (o.decl? "<b style='color:#5FBF7A'>déclenché</b>" : "hors seuil")).join("<br>");
+  $("fpnote").innerHTML = txt;
+}
+
+function readout(v,st){
+  const L = longueurPath(v.path);
+  const parcouru = (L*t);
+  $("ro").innerHTML = "<b>"+parcouru.toFixed(0)+" m</b> / "+L.toFixed(0)+" m · cap "+
+    (((st.h+90)%360+360)%360).toFixed(0)+"° · "+(parcouru/VITESSE).toFixed(0)+" s de marche";
+}
+
+/* ─────────────────────────  panneaux  ───────────────────────── */
+function drawCard(){
+  const v = VARIANTS[cur], s = SIM[cur];
+  const nR = s.rive.decl.filter(Boolean).length;
+  const nV = s.rive.vus.filter(Boolean).length;
+  const nA = s.attire.decl.filter(Boolean).length;
+  const ordre = ordreGarnissage(v);
+  const q5 = ordre.slice(0,5);
+  const q5ok = q5.filter(i=>s.rive.decl[i]).length;
+
+  $("card").innerHTML =
+    '<span class="vkey">Tracé '+v.key+'</span>'+
+    '<h2>'+v.nom+'</h2>'+
+    '<div style="font-family:var(--mono);font-size:11px;color:var(--turquoise);letter-spacing:.08em;text-transform:uppercase;margin:2px 0 8px">'+v.sous+'</div>'+
+    '<p class="these">'+v.these+'</p>'+
+    '<h3 style="margin-top:18px">Ce que ça achète</h3><ul class="tr">'+
+      v.plus.map(x=>'<li><span class="sg p">+</span><span>'+x+'</span></li>').join('')+'</ul>'+
+    '<h3 style="margin-top:18px">Ce que ça coûte</h3><ul class="tr">'+
+      v.moins.map(x=>'<li><span class="sg m">−</span><span>'+x+'</span></li>').join('')+'</ul>'+
+    '<h3 style="margin-top:18px">Verdict du simulateur</h3>'+
+    '<table class="sc">'+
+      '<tr><td>Souvenirs déclenchés — regard rivé</td><td class="big '+(nR>=9?'ok':nR>=5?'mid':'bad')+'">'+nR+'/10</td></tr>'+
+      '<tr><td>dont le quota inclus (5 primaires)</td><td class="'+(q5ok===5?'ok':'bad')+'">'+q5ok+'/5</td></tr>'+
+      '<tr><td>Simplement aperçus dans le cadre</td><td>'+nV+'/10</td></tr>'+
+      '<tr><td>Souvenirs déclenchés — joueur attiré</td><td class="'+(nA>=9?'ok':nA>=6?'mid':'bad')+'">'+nA+'/10</td></tr>'+
+      '<tr><td>Longueur du trajet nominal</td><td>'+s.rive.longueur.toFixed(0)+' m</td></tr>'+
+      '<tr><td>… avec les détours du joueur attiré</td><td>'+s.attire.longueur.toFixed(0)+' m</td></tr>'+
+      '<tr><td>Marche pure à 2,0 m/s</td><td>'+(s.rive.longueur/VITESSE).toFixed(0)+' s</td></tr>'+
+    '</table>'+
+    '<p style="font-size:12.5px;color:var(--ink-3);margin:14px 0 0">Départ : '+v.depart+'</p>';
+}
+
+function drawScores(){
+  let h = '<tr><td style="color:var(--ink-3)">Regard rivé — le test dur</td><td style="color:var(--ink-3)">déclenchés</td></tr>';
+  for(const k of ["A","B","C"]){
+    const n = SIM[k].rive.decl.filter(Boolean).length;
+    h += '<tr><td>'+k+' · '+VARIANTS[k].nom+'</td><td class="'+(n>=9?'ok':n>=5?'mid':'bad')+'">'+n+'/10</td></tr>';
+  }
+  h += '<tr><td style="color:var(--ink-3);padding-top:16px">Joueur attiré — le test doux</td><td style="color:var(--ink-3);padding-top:16px">déclenchés</td></tr>';
+  for(const k of ["A","B","C"]){
+    const n = SIM[k].attire.decl.filter(Boolean).length;
+    h += '<tr><td>'+k+' · '+VARIANTS[k].nom+'</td><td class="'+(n>=9?'ok':n>=6?'mid':'bad')+'">'+n+'/10</td></tr>';
+  }
+  $("scores").innerHTML = h;
+}
+
+function drawTabs(){
+  $("tabs").innerHTML = ["A","B","C"].map(k=>
+    '<a class="tab'+(k===cur?' on':'')+'" href="?variant='+k+'">'+k+' · '+VARIANTS[k].nom+'</a>').join('');
+}
+
+/* ─────────────────────────  init  ───────────────────────── */
+$("scrub").addEventListener("input", e=>{ t = +e.target.value/1000; drawPlan(); });
+for(const id of ["tZones","tCones","tSoins","tPaysage","tTrail"])
+  $(id).addEventListener("change", drawPlan);
+
+drawTabs(); drawCard(); drawScores(); drawPlan();
+})();
+</script>
+</html>
