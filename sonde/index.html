@@ -105,6 +105,7 @@
 <div class="carte">
   <h2>5 · Plafonds — peut faire planter l'onglet</h2>
   <p class="avert">Le plantage <b>est</b> la mesure. Le dernier palier est écrit dans l'adresse de la page : il survit au rechargement. Si l'onglet meurt, rouvre simplement la page et le relevé reprendra le chiffre.</p>
+  <div id="verrou"></div>
   <button class="danger" id="btnMemoire">Rampe mémoire — par blocs de 32 Mo</button>
   <button class="danger" id="btnTextures">Rampe textures WebGL — par 1024×1024 (4 Mo)</button>
   <table id="tablePlafonds"><tbody></tbody></table>
@@ -161,12 +162,12 @@ var jalons = {};
   if(!h) return;
   h.split(',').forEach(function(p){
     var kv = p.split(':');
-    if(kv.length === 2) jalons[kv[0]] = kv[1];
+    if(kv.length === 2) jalons[kv[0]] = decodeURIComponent(kv[1]);
   });
 })();
 function jalon(cle, valeur){
   jalons[cle] = String(valeur);
-  var s = Object.keys(jalons).map(function(k){ return k + ':' + jalons[k]; }).join(',');
+  var s = Object.keys(jalons).map(function(k){ return k + ':' + encodeURIComponent(jalons[k]); }).join(',');
   try { history.replaceState(null, '', '#' + s); } catch(e) { location.hash = s; }
 }
 
@@ -263,6 +264,7 @@ function sondeApis(){
   a.wakeLock = !!navigator.wakeLock;
   a.webAudio = !!(window.AudioContext || window.webkitAudioContext);
   a.mediaSource = !!window.MediaSource;
+  a.managedMediaSource = !!window.ManagedMediaSource;   /* le seul MSE de l'iPhone depuis iOS 17.1 */
   a.mediaCapabilities = !!(navigator.mediaCapabilities && navigator.mediaCapabilities.decodingInfo);
   a.coeurs = navigator.hardwareConcurrency || null;
   a.deviceMemoryGo = navigator.deviceMemory || null;
@@ -279,7 +281,7 @@ function sondeApis(){
   if (!window.isSecureContext) {
     var brides = 'non mesurable en HTTP (contexte non sécurisé)';
     a.serviceWorker = brides; a.caches = brides; a.pressePapier = brides;
-    a.partage = brides; a.crossOriginIsolated = brides;
+    a.partage = brides; a.crossOriginIsolated = brides; a.wakeLock = brides;
   }
   if (navigator.storage && navigator.storage.estimate) {
     navigator.storage.estimate().then(function(e){
@@ -386,7 +388,9 @@ function apercu(){
     'user agent': R.moteur.ua,
     'jeton wv': R.moteur.jetonWv, 'Version/4.0': R.moteur.version40, 'suffixe Safari/': R.moteur.suffixeSafari,
     'localStorage': R.apis.localStorage, 'API Permissions': R.apis.permissionsApi,
-    'fullscreenEnabled': R.apis.fullscreenEnabled,
+    'requestFullscreen': R.apis.requestFullscreen,
+    'MSE / ManagedMSE': String(R.apis.mediaSource) + ' / ' + String(R.apis.managedMediaSource),
+    'verrou orientation': R.apis.verrouOrientation,
     'coeurs': R.apis.coeurs, 'deviceMemory': R.apis.deviceMemoryGo, 'tas JS max': R.apis.tasJsMo ? R.apis.tasJsMo + ' Mo' : null,
     'quota stockage': R.apis.quotaMo ? R.apis.quotaMo + ' Mo' : null,
     'réseau': R.apis.reseau,
@@ -533,6 +537,9 @@ function mesurerDecodeurs(){
     jalon('dec', joue);
     $('btnPause').disabled = false;
     $('btnPlus').disabled = d.plafondAtteint;
+    $('btnMemoire').disabled = true; $('btnTextures').disabled = true;
+    $('verrou').innerHTML = '<p class="avert">Les rampes sont bloquées tant que ' + videosDecodeurs.length
+      + ' vidéos tiennent la mémoire. <b>Envoie le rapport, puis recharge la page</b> pour les lancer sur page neuve.</p>';
     remplir('tableDecodeurs', {
       'demandées': d.demandes,
       'en lecture': joue,
@@ -593,19 +600,39 @@ $('btnPause').addEventListener('click', function(){
 });
 
 /* ================= 5 · plafonds ================= */
+/* Une rampe lancée par-dessus quarante vidéos vivantes ne mesure pas le même
+   plafond qu'une rampe sur page neuve. On refuse de mélanger, et on note ce
+   qui était encore alloué. */
+function contexteCourant(){
+  return { videosVivantes: videosDecodeurs.length,
+           rampePrecedente: R.memoire.atteintMo ? 'mémoire' : (R.textures.atteintMo ? 'textures' : null) };
+}
+function verrouiller(message){
+  ['btnDecodeurs','btnPlus','btnPause','btnMemoire','btnTextures'].forEach(function(id){ $(id).disabled = true; });
+  $('verrou').innerHTML = '<p class="avert">' + message + '</p>';
+}
+function pageSale(){
+  return videosDecodeurs.length > 0 || R.memoire.atteintMo !== undefined || R.textures.atteintMo !== undefined;
+}
+
 $('btnMemoire').addEventListener('click', function(){
-  var m = R.memoire = { pasMo:32, plafondViseMo:2048 };
+  var m = R.memoire = { pasMo:32, plafondViseMo:2048, contexte:contexteCourant() };
   var blocs = [], mo = 0;
   if (window.performance && performance.memory) m.tasJsMaxMo = Math.round(performance.memory.jsHeapSizeLimit / 1048576);
   (function pas(){
-    if (mo >= m.plafondViseMo) { m.atteintMo = mo; m.plafond = true; blocs.length = 0; remplir('tablePlafonds', m); maj(); return; }
+    if (mo >= m.plafondViseMo) { m.atteintMo = mo; m.plafond = true; blocs.length = 0;
+      remplir('tablePlafonds', m); maj();
+      verrouiller('Rampe mémoire terminée. <b>Envoie le rapport, puis recharge la page</b> avant la rampe suivante — sinon elle mesurerait ce qu’il reste, pas le plafond.');
+      return; }
     try {
       var a = new Uint8Array(m.pasMo * 1048576);
       for (var i = 0; i < a.length; i += 4096) a[i] = (i >> 12) & 255;
       blocs.push(a); mo += m.pasMo;
     } catch(e) {
       m.atteintMo = mo; m.arret = 'ERREUR ' + e.name + ' : ' + e.message;
-      blocs.length = 0; remplir('tablePlafonds', m); maj(); return;
+      blocs.length = 0; remplir('tablePlafonds', m); maj();
+      verrouiller('Allocation refusée à ' + mo + ' Mo. <b>Envoie le rapport, puis recharge la page.</b>');
+      return;
     }
     jalon('mem', mo);
     remplir('tablePlafonds', { 'mémoire allouée': mo + ' Mo', 'tas JS max': m.tasJsMaxMo ? m.tasJsMaxMo + ' Mo' : '(inconnu)' });
@@ -614,7 +641,7 @@ $('btnMemoire').addEventListener('click', function(){
 });
 
 $('btnTextures').addEventListener('click', function(){
-  var t = R.textures = { taille:'1024×1024 RGBA', pasMo:4, plafondViseMo:2048 };
+  var t = R.textures = { taille:'1024×1024 RGBA', pasMo:4, plafondViseMo:2048, contexte:contexteCourant() };
   var cv = document.createElement('canvas'); cv.width = cv.height = 128;
   var gl = cv.getContext('webgl2') || cv.getContext('webgl');
   if (!gl) { t.erreur = 'pas de contexte WebGL'; remplir('tablePlafonds', t); return; }
@@ -626,13 +653,16 @@ $('btnTextures').addEventListener('click', function(){
   (function pas(){
     if (perdu || mo >= t.plafondViseMo) {
       t.atteintMo = mo; t.contextePerdu = perdu; t.plafond = !perdu;
-      remplir('tablePlafonds', t); maj(); return;
+      remplir('tablePlafonds', t); maj();
+      verrouiller('Rampe textures terminée. <b>Envoie le rapport, puis recharge la page.</b>');
+      return;
     }
     var tex = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, tex);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1024, 1024, 0, gl.RGBA, gl.UNSIGNED_BYTE, px);
     var err = gl.getError();
-    if (err) { t.atteintMo = mo; t.erreurGl = err; t.contextePerdu = perdu; remplir('tablePlafonds', t); maj(); return; }
+    if (err) { t.atteintMo = mo; t.erreurGl = err; t.contextePerdu = perdu; remplir('tablePlafonds', t); maj();
+      verrouiller('Erreur GL à ' + mo + ' Mo. <b>Envoie le rapport, puis recharge la page.</b>'); return; }
     gl.finish();
     texs.push(tex); mo += t.pasMo;
     jalon('tex', mo);
@@ -665,6 +695,11 @@ $('cNon').addEventListener('click', function(){ verdictCouleur('indistinguables'
 $('btnEnvoyer').addEventListener('click', function(){
   maj();
   var b = $('btnEnvoyer');
+  if (!$('app').value || !$('appareil').value) {
+    b.textContent = 'Renseigne l’application ET l’appareil d’abord — sinon le relevé est illisible';
+    $( $('app').value ? 'appareil' : 'app' ).focus();
+    return;
+  }
   b.textContent = 'Envoi…';
   fetch('releve', { method:'POST', headers:{'Content-Type':'application/json'}, body:$('json').value })
     .then(function(r){ return r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status)); })
@@ -694,12 +729,16 @@ $('btnPartager').addEventListener('click', function(){
   else $('btnPartager').textContent = 'Partage indisponible ici — utilise Copier';
 });
 ['app','appareil','notes'].forEach(function(id){ $(id).addEventListener('input', maj); });
+$('app').addEventListener('change', function(){ jalon('app', this.value); });
+$('appareil').addEventListener('input', function(){ jalon('dev', this.value); });
 
 /* ================= amorçage ================= */
 (function(){
   var p = new URLSearchParams(location.search);
-  if (p.get('app')) $('app').value = p.get('app');
-  if (p.get('dev')) $('appareil').value = p.get('dev');
+  if (p.get('app') || jalons.app) $('app').value = p.get('app') || jalons.app;
+  if (p.get('dev') || jalons.dev) $('appareil').value = p.get('dev') || jalons.dev;
+  if ($('app').value) jalon('app', $('app').value);
+  if ($('appareil').value) jalon('dev', $('appareil').value);
   sondeMoteur(); sondeApis(); sondeEcran(); sondeCodecs(); sondeWebGL(); sondeWebGPU();
   remplir('tableStatique', apercu());
   if (jalons.dec || jalons.mem || jalons.tex) {

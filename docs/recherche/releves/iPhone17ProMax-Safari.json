@@ -1,0 +1,176 @@
+{
+ "meta": {
+  "sonde": 2,
+  "ouvertLe": "2026-08-27T20:05:24.840Z",
+  "app": "",
+  "appareil": "iPhone 17 pro Max - iOS ",
+  "url": "http://192.168.1.37:8765/#dec:42,mem:1920,tex:48",
+  "reprise": {
+   "dec": "42",
+   "mem": "1920",
+   "tex": "48"
+  }
+ },
+ "moteur": {
+  "ua": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.6 Mobile/15E148 Safari/604.1",
+  "jetonWv": false,
+  "version40": false,
+  "chrome": null,
+  "suffixeSafari": true,
+  "jetonMobile": "15E148",
+  "versionWebkit": "26.6",
+  "plateforme": "iPhone",
+  "pointsTactiles": 5,
+  "uaData": null,
+  "os": "iOS",
+  "verdict": "WebKit avec suffixe Safari/ — Safari ou SFSafariViewController",
+  "note": "verdict décisif : le test vidéo inline du bloc 3"
+ },
+ "apis": {
+  "contexteSecurise": false,
+  "localStorage": true,
+  "sessionStorage": true,
+  "indexedDB": true,
+  "caches": "non mesurable en HTTP (contexte non sécurisé)",
+  "serviceWorker": "non mesurable en HTTP (contexte non sécurisé)",
+  "permissionsApi": true,
+  "partage": "non mesurable en HTTP (contexte non sécurisé)",
+  "pressePapier": "non mesurable en HTTP (contexte non sécurisé)",
+  "fullscreenEnabled": null,
+  "requestFullscreen": false,
+  "videoEnterFullscreen": true,
+  "verrouOrientation": false,
+  "wakeLock": false,
+  "webAudio": true,
+  "mediaSource": false,
+  "mediaCapabilities": true,
+  "coeurs": 4,
+  "deviceMemoryGo": null,
+  "tasJsMo": null,
+  "reseau": null,
+  "crossOriginIsolated": "non mesurable en HTTP (contexte non sécurisé)",
+  "webWorker": true,
+  "sharedWorker": true,
+  "offscreenCanvas": true
+ },
+ "ecran": {
+  "ecran": "414×896",
+  "dispo": "414×896",
+  "fenetre": "440×764",
+  "dpr": 3,
+  "pixelsReels": "1320×2292",
+  "zonesSures": "0px 0px 0px 0px",
+  "viewportVisuel": "440×764",
+  "orientation": "portrait-primary",
+  "gamut": "p3",
+  "hdr": true,
+  "mouvementReduit": false
+ },
+ "codecs": {
+  "h264": {
+   "canPlayType": "probably",
+   "mse": null,
+   "materiel": {
+    "supporte": true,
+    "fluide": true,
+    "econome": true
+   }
+  },
+  "hevc": {
+   "canPlayType": "probably",
+   "mse": null,
+   "materiel": {
+    "supporte": true,
+    "fluide": false,
+    "econome": true
+   }
+  },
+  "av1": {
+   "canPlayType": "probably",
+   "mse": null,
+   "materiel": {
+    "supporte": true,
+    "fluide": true,
+    "econome": true
+   }
+  },
+  "vp9": {
+   "canPlayType": "probably",
+   "mse": null,
+   "materiel": {
+    "supporte": true,
+    "fluide": true,
+    "econome": true
+   }
+  },
+  "aac": {
+   "canPlayType": "probably",
+   "mse": null
+  },
+  "opus": {
+   "canPlayType": "probably",
+   "mse": null
+  }
+ },
+ "webgl": {
+  "disponible": true,
+  "version": "WebGL 2.0",
+  "glsl": "WebGL GLSL ES 3.00",
+  "textureMax": 16384,
+  "cubeMax": 16384,
+  "renderbufferMax": 16384,
+  "viewportMax": "16384×16384",
+  "unitesTexture": 16,
+  "unitesCombinees": 32,
+  "attributsSommet": 16,
+  "highpFragment": 23,
+  "rendu": "Apple GPU",
+  "fabricant": "Apple Inc.",
+  "nbExtensions": 36,
+  "texturesCompressees": [
+   "astc",
+   "etc",
+   "etc1",
+   "pvrtc",
+   "pvrtc",
+   "s3tc",
+   "s3tc_srgb"
+  ],
+  "floatLineaire": true,
+  "contexte": "webgl2"
+ },
+ "webgpu": {
+  "disponible": "non mesurable en HTTP (contexte non sécurisé)"
+ },
+ "geste": {
+  "hauteurAvant": 796,
+  "pleinEcranRejet": "aucune API requestFullscreen",
+  "audioEtatInitial": "suspended",
+  "audioSampleRate": 48000,
+  "codecs": {
+   "hevc": "décodé 360×640",
+   "av1": "décodé 360×640",
+   "vp9": "décodé 360×640"
+  },
+  "pleinEcranElement": false,
+  "hauteurApres": 796,
+  "pleinEcranReel": false,
+  "sonEntendu": true,
+  "audioEtatApres": "running",
+  "inlineJoue": true,
+  "inlineVideoWidth": 720,
+  "inlinePleinEcranForce": false,
+  "inlineModePresentation": "inline",
+  "sonJoue": true,
+  "sonMuted": false,
+  "videoInlineVerdict": "lecture inline autorisée"
+ },
+ "decodeurs": {},
+ "memoire": {},
+ "textures": {},
+ "couleurs": {
+  "verdict": "distincts",
+  "luminanceRelative": "#34C77B L*≈70 · #4FD6C0 L*≈78"
+ },
+ "notes": ""
+}

@@ -72,13 +72,46 @@ Un fichier JSON par passage dans `docs/recherche/releves/`, nommé `APPAREIL-APP
 
 | Appareil | Application | Moteur | Plein écran | Vidéo inline | Décodeurs | Mémoire | Textures |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| _à remplir_ | | | | | | | |
+| iPhone 17 Pro Max, Safari 26.6 | Safari (référence) | WebKit, suffixe `Safari/604.1` | **API absente** | inline, `webkitPresentationMode: inline` | **≥ 42** (relevé par jalon, détail perdu au plantage) | arrêt à **1920 Mo** | 48 Mo — *contaminé* |
+| _TikTok_ | | | | | | | |
+| _Instagram_ | | | | | | | |
+| _WhatsApp_ | | | | | | | |
+| _Snapchat_ | | | | | | | |
+
+Le relevé complet : `releves/iPhone17ProMax-Safari.json`.
+
+**Contaminé** : ce passage a enchaîné décodeurs → rampe mémoire → rampe textures sans recharger. Les 48 Mo de textures ont donc été alloués par-dessus 42 vidéos vivantes, et c'est là que l'onglet est mort. Ce chiffre ne dit pas le plafond de textures, il dit qu'à ce niveau d'occupation il ne restait presque plus rien. La sonde interdit désormais ce mélange et exige un rechargement entre deux rampes.
 
 ### Les deux verts
 
 | Appareil | Conditions | Verdict |
 | --- | --- | --- |
-| _à remplir_ | | |
+| iPhone 17 Pro Max | à confirmer — plein soleil et mode économie ? | distincts |
+
+---
+
+## Ce que le passage de référence établit déjà
+
+**Il n'y a pas de plein écran sur iPhone. Pas « refusé » : absent.** `requestFullscreen` n'existe sur aucun élément, `fullscreenEnabled` vaut `null`, et seul `video.webkitEnterFullscreen` répond — c'est-à-dire le lecteur natif, celui qui détruit toute composition. Ce n'est donc pas une restriction de navigateur in-app à contourner : **le jeu se joue dans la fenêtre du navigateur, barre d'adresse comprise**, et la mise en page doit être dessinée pour cette hauteur-là. Mesuré : `440×764` CSS, soit `1320×2292` pixels réels à dpr 3.
+
+**Pas de verrou d'orientation non plus** (`screen.orientation.lock` absent). Le portrait imposé de [Le tracé du musée et la jouabilité en portrait](https://github.com/fayssalbenouda936/ouvrance/issues/29) ne peut pas être garanti par l'API : il doit être tenu par la mise en scène et par un écran de rappel si l'appareil bascule.
+
+**Pas de MSE sur iPhone** : `window.MediaSource` est absent. Le plafond de 105 Mo par `SourceBuffer` du § 10.3 de la recherche #3 ne s'applique donc à rien ici — seul `ManagedMediaSource` existe depuis iOS 17.1, et il est désormais sondé.
+
+**Le « 32 décodeurs » du bug WebKit de 2019 est trop bas.** Sur cet appareil, 42 vidéos 720×1280 ont atteint l'état `playing` — les 40 du premier lot, plus deux du second. Le chiffre reste à confirmer proprement : le détail des rejets a disparu avec l'onglet.
+
+**AV1 est décodé en matériel.** `decodingInfo` donne `powerEfficient: true` pour h264, hevc, **av1** et vp9. Le piège AV1 du § 12.3 ne vaut pas pour cet appareil — ce qui rouvre, à la baisse, le poids des cinématiques maîtres. À confirmer sur un appareil plus ancien avant d'en faire un choix d'encodage.
+
+**Textures : `MAX_TEXTURE_SIZE` 16384, WebGL 2, ASTC / PVRTC / ETC / S3TC tous présents**, GPU rapporté « Apple GPU ». Écran P3 et HDR.
+
+**La mémoire tient loin.** L'allocation JS s'est arrêtée à 1920 Mo — bien au-delà du repli de 840 Mo codé en dur dans WebKit. C'est la mesure d'un haut de gamme de 2026 : elle ne dit rien du plancher, et c'est le plancher qui fixe le budget.
+
+## Ce qui reste à mesurer
+
+- **Les quatre applications.** C'est le cœur du ticket et il est intact : aucun passage in-app n'a encore eu lieu. Sans eux, on ne sait pas si TikTok laisse la vidéo jouer dans la page.
+- **Un appareil d'entrée de gamme**, pour le vrai plancher mémoire et textures.
+- **Tout le volet Android** : l'hypothèse « WebView système » reste non validée.
+- **WebGPU, Wake Lock, Service Worker** : non mesurables en HTTP. Le Wake Lock compte — une partie dure six à huit minutes et l'écran ne doit pas s'éteindre.
 
 ---
 
