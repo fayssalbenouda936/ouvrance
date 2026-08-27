@@ -86,7 +86,7 @@ Le relevé complet : `releves/iPhone17ProMax-Safari.json`.
 
 | Appareil | Conditions | Verdict |
 | --- | --- | --- |
-| iPhone 17 Pro Max | à confirmer — plein soleil et mode économie ? | distincts |
+| iPhone 17 Pro Max | **non contrôlées** — jugement rendu à l'écran, pas au soleil | distincts (à refaire dehors) |
 
 ---
 
@@ -106,12 +106,21 @@ Le relevé complet : `releves/iPhone17ProMax-Safari.json`.
 
 **La mémoire tient loin.** L'allocation JS s'est arrêtée à 1920 Mo — bien au-delà du repli de 840 Mo codé en dur dans WebKit. C'est la mesure d'un haut de gamme de 2026 : elle ne dit rien du plancher, et c'est le plancher qui fixe le budget.
 
-## Ce qui reste à mesurer
+## Le renversement : ce n'est pas le décodeur qui contraint
 
-- **Les quatre applications.** C'est le cœur du ticket et il est intact : aucun passage in-app n'a encore eu lieu. Sans eux, on ne sait pas si TikTok laisse la vidéo jouer dans la page.
-- **Un appareil d'entrée de gamme**, pour le vrai plancher mémoire et textures.
-- **Tout le volet Android** : l'hypothèse « WebView système » reste non validée.
-- **WebGPU, Wake Lock, Service Worker** : non mesurables en HTTP. Le Wake Lock compte — une partie dure six à huit minutes et l'écran ne doit pas s'éteindre.
+Le ticket supposait que le nombre de décodeurs déciderait de la stratégie de préchargement. **Il ne décide de rien.** Le parcours d'un cadeau tient en trois vidéos — ouverture, gameplay, fuite — et l'appareil en a joué **quarante-deux ensemble**. Le budget n'est pas là.
+
+Ce qui contraint, c'est la mémoire, et surtout la règle qu'aucun compteur ne montre : `preferredBufferingPolicy()` rend **purgeable** tout `<video>` en pause **et caché**. La vidéo de fuite préchargée en `display:none` pendant le gameplay n'est pas préchargée — elle est marquée récupérable. Le montage qui échappe à cette règle (élément visible, fût-ce à un pixel derrière un calque) reste une déduction de code, et la sonde ne l'a pas testé : c'est la mesure qui manque le plus, et elle est bon marché.
+
+## Ce qui n'a pas été mesuré, et le risque que ça laisse
+
+Décision prise le 27/08/2026 : **on s'arrête au navigateur**, les passages in-app ne sont pas faits.
+
+- **Les quatre navigateurs in-app.** Le risque n'est pas théorique : si `allowsInlineMediaPlayback` est à `false` dans la WebView de TikTok, la vidéo part dans le lecteur natif et **aucune composition ne survit** — ni overlay, ni 3D par-dessus. TikTok étant le canal qui apporte le trafic, c'est le seul angle mort qui puisse invalider une décision d'architecture plutôt que de l'ajuster.
+- **Un appareil d'entrée de gamme.** 1920 Mo est le chiffre d'un haut de gamme de 2026. Tant qu'aucun plancher n'est mesuré, **le budget se fixe sur le repli WebKit de 840 Mo**, seuil `Conservative` compris — soit environ 400 Mo d'empreinte totale.
+- **Le volet Android entier.** L'hypothèse « WebView système » reste non validée.
+- **WebGPU, Wake Lock, Service Worker** : coupés par le contexte non sécurisé du HTTP, donc non mesurés. Le Wake Lock compte pour de vrai — une partie dure six à huit minutes et l'écran ne doit pas s'éteindre.
+- **Le jugement des deux verts** a été rendu devant l'écran, pas dehors. Il ne vaut pas.
 
 ---
 
