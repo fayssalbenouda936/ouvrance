@@ -1,0 +1,1062 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fiches personnages — cinématiques du braquage</title>
+<!--
+  ═══════════════════════════════════════════════════════════════════════════
+  PLANCHE DE VALIDATION — ticket #23
+  « Les fiches personnages et la direction artistique des cinématiques »
+
+  ─ CE QUE CETTE PLANCHE CHERCHE À DÉPARTAGER ────────────────────────────────
+
+  Une seule question, posée trois fois : COMMENT FAIT-ON CROIRE QUE LA
+  CINÉMATIQUE SEMI-RÉALISTE ET LE JEU LOW-POLY SE PASSENT DANS LE MÊME MUSÉE ?
+  La rupture de style est acquise (#1, #6) et ne se rouvre pas. Ce qui se
+  décide ici, c'est OÙ on la dépense.
+
+    A — LE RACCORD PHOTOMÉTRIQUE.  Même palette, même source de lumière, même
+        noir de plafond. La cinématique est le jeu filmé avec une meilleure
+        caméra. Rien ne signale le changement de média.
+    B — LE FILM DANS LE FILM.      Bandes noires, grain, focale longue, faible
+        profondeur de champ. La cinématique assume d'être un autre média ; le
+        jeu commence quand les bandes s'écartent. La coupure est signée.
+    C — LE RACCORD DE REGARD.      La cinématique finit en vue subjective sur
+        exactement la composition de la première image du jeu — mêmes mains
+        gantées, même rebord. La rupture se joue sur UNE image, sur un objet
+        identique.
+
+  ─ CE QUI EST TENU CONSTANT DANS LES TROIS ──────────────────────────────────
+
+    · 9:16 portrait, figé (#6, amendement 2). Aucun changement de cadre.
+    · Palette chaude : or miel #E8B76A sur noir chaud #0B0908 (#7).
+    · Le turquoise #4FD6C0 n'existe que sur les cônes de caméras (#6) —
+      et sur la mer du dernier plan.
+    · Les trois rôles de casting, leur tenue, leurs proportions.
+    · AUCUNE ARME DANS AUCUNE CINÉMATIQUE. Elle n'existe que dans le jeu,
+      abaissée hors visée (#6).
+    · Aucun texte généré par un modèle. Aucun prénom prononcé.
+
+  ─ DEUX BASCULES SUPPLÉMENTAIRES, POUR JUGER SUR PIÈCE ──────────────────────
+
+    · CASTING couple | amis  — la tenue ne bouge pas, les corps oui. C'est la
+      démonstration que la variante de casting coûte 30–51 € (#5) et pas un
+      film entier.
+    · BANDEAU front | yeux   — le même objet à deux moments du film.
+
+  Commutable par ?variant=A|B|C, les flèches du clavier, ou la barre du bas.
+  Aucun asset externe, aucun CDN, aucune image générée : c'est une planche de
+  références et de prompts, pas un rendu.
+  ═══════════════════════════════════════════════════════════════════════════
+-->
+<style>
+:root{
+  --noir:#0B0908; --noir2:#141010; --noir3:#1E1815;
+  --pierre:#C89A5B; --or:#E8B76A; --or-pale:#F5D9A8;
+  --turquoise:#4FD6C0; --fauve:#A9713C; --fauve-clair:#D69A5C;
+  --craie:#EFE3D2; --gris:#8A8078; --gris2:#5A524C;
+  --sang:#C0392B;
+  --serif:"Cormorant Garamond",Cormorant,Georgia,"Times New Roman",serif;
+  --sans:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,system-ui,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--noir); color:var(--craie); font-family:var(--sans);
+  font-size:15px; line-height:1.6; -webkit-font-smoothing:antialiased;
+  padding-bottom:calc(70px + env(safe-area-inset-bottom));
+}
+a{color:var(--or)}
+code{font-family:var(--mono);font-size:.9em;color:var(--or-pale)}
+.wrap{max-width:1120px;margin:0 auto;padding:0 18px}
+
+/* ── En-tête ─────────────────────────────────────────────────── */
+header{padding:38px 0 26px;border-bottom:1px solid #241d19}
+h1{font-family:var(--serif);font-weight:400;font-size:clamp(30px,7vw,50px);
+   line-height:1.05;margin:0 0 12px;letter-spacing:-.01em}
+h1 em{color:var(--or);font-style:italic}
+.chapo{max-width:62ch;color:#C6B9A8;font-size:15.5px;margin:0 0 12px}
+.chapo b{color:#FFF6E8}
+.meta{font-family:var(--mono);font-size:11.5px;color:var(--gris);letter-spacing:.06em;
+      text-transform:uppercase;margin-bottom:16px}
+
+section{padding:44px 0;border-bottom:1px solid #241d19}
+h2{font-family:var(--serif);font-weight:400;font-size:clamp(23px,4.6vw,34px);
+   margin:0 0 10px;letter-spacing:-.01em}
+h2 .n{font-family:var(--mono);font-size:12px;color:var(--or);letter-spacing:.14em;
+      display:block;margin-bottom:8px;text-transform:uppercase}
+h3{font-family:var(--sans);font-weight:600;font-size:13px;letter-spacing:.09em;
+   text-transform:uppercase;color:var(--or);margin:28px 0 10px}
+p{margin:0 0 14px;max-width:72ch}
+.dim{color:#A2968A}
+strong,b{color:#FFF6E8;font-weight:600}
+em{color:#C6B9A8}
+
+/* ── Barre de commutation ────────────────────────────────────── */
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:50;background:rgba(11,9,8,.94);
+  backdrop-filter:blur(14px);border-top:1px solid #2C2320;
+  padding:9px 12px calc(9px + env(safe-area-inset-bottom));
+  display:flex;gap:7px;align-items:center;justify-content:center;flex-wrap:wrap}
+.bar button{
+  font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+  background:transparent;color:#9C9086;border:1px solid #352C27;border-radius:99px;
+  padding:9px 13px;min-height:38px;cursor:pointer;transition:.15s}
+.bar button[aria-pressed="true"]{background:var(--or);color:#120E0B;border-color:var(--or);font-weight:600}
+.bar .sep{width:1px;height:24px;background:#2C2320;margin:0 3px}
+.bar .lbl{font-family:var(--mono);font-size:10px;color:var(--gris2);letter-spacing:.1em;
+  text-transform:uppercase;margin-right:2px}
+
+/* ── Cartes de variante ──────────────────────────────────────── */
+.variantes{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin:22px 0 8px}
+.vcard{border:1px solid #2C2320;border-radius:10px;padding:15px 16px;background:#0F0C0A;
+  transition:.18s;cursor:pointer}
+.vcard[data-on="1"]{border-color:var(--or);background:#151009}
+.vcard .k{font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--or);text-transform:uppercase}
+.vcard .t{font-family:var(--serif);font-size:21px;margin:4px 0 6px;color:var(--craie)}
+.vcard .d{font-size:13.5px;color:#A2968A;line-height:1.5;margin:0;max-width:none}
+
+/* ── Cadres 9:16 ─────────────────────────────────────────────── */
+.frames{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;margin-top:22px}
+.frame{flex:1 1 220px;max-width:290px}
+.frame .cap{font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;
+  color:var(--gris);margin:9px 0 0;line-height:1.6;text-transform:none;max-width:none}
+.frame .cap b{color:var(--or-pale);font-weight:600}
+.shot{position:relative;aspect-ratio:9/16;border-radius:8px;overflow:hidden;
+  background:var(--noir);border:1px solid #2C2320}
+.shot svg{display:block;width:100%;height:100%}
+.badge{position:absolute;top:8px;left:8px;font-family:var(--mono);font-size:9.5px;
+  letter-spacing:.1em;text-transform:uppercase;background:rgba(11,9,8,.8);
+  border:1px solid #3A2F28;color:var(--or);padding:4px 7px;border-radius:4px;z-index:5}
+
+/* Traitements par variante, appliqués aux cadres cinématiques */
+.shot.cine .lb{display:none}
+body[data-variant="B"] .shot.cine .lb{display:block}
+body[data-variant="B"] .shot.cine .grain{opacity:.55}
+.grain{position:absolute;inset:0;opacity:0;pointer-events:none;z-index:2;
+  background-image:repeating-conic-gradient(rgba(255,255,255,.06) 0% 25%, rgba(0,0,0,.06) 0% 50%);
+  background-size:3px 3px;mix-blend-mode:overlay}
+.lb{position:absolute;left:0;right:0;height:9%;background:#000;z-index:4}
+.lb.t{top:0}.lb.b{bottom:0}
+
+/* ── Fiches ──────────────────────────────────────────────────── */
+.fiches{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px;margin-top:24px}
+.fiche{border:1px solid #2C2320;border-radius:12px;background:#0F0C0A;overflow:hidden}
+.fiche .plate{background:#231F1B;border-bottom:1px solid #2C2320;position:relative}
+.fiche .plate svg{display:block;width:100%;height:auto}
+.fiche .role{position:absolute;left:13px;top:12px}
+.fiche .role .k{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--or);text-transform:uppercase}
+.fiche .role .n{font-family:var(--serif);font-size:27px;line-height:1.1;color:var(--craie)}
+.fiche .role .f{font-size:11.5px;color:#9C9086;max-width:17ch;line-height:1.35;margin-top:3px}
+.fiche .body{padding:16px 17px 18px}
+.fiche dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:13.5px}
+.fiche dt{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--gris2);padding-top:3px;white-space:nowrap}
+.fiche dd{margin:0;color:#C6B9A8}
+.const{margin-top:15px;border-top:1px solid #241d19;padding-top:13px}
+.const .h{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--or);margin-bottom:8px}
+.const ul{margin:0;padding-left:16px;font-size:13px;color:#B4A796}
+.const li{margin-bottom:6px;line-height:1.5}
+
+/* ── Palette ─────────────────────────────────────────────────── */
+.pal{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-top:20px}
+.sw{border:1px solid #2C2320;border-radius:9px;overflow:hidden;background:#0F0C0A}
+.sw .c{height:64px}
+.sw .i{padding:9px 11px 12px}
+.sw .hx{font-family:var(--mono);font-size:11px;color:var(--or)}
+.sw .nm{font-family:var(--serif);font-size:18px;margin:1px 0 4px;color:var(--craie)}
+.sw .wh{font-size:12px;color:#9C9086;line-height:1.45}
+
+/* ── Blocs de prompt ─────────────────────────────────────────── */
+.blk{border:1px solid #2C2320;border-radius:10px;background:#0C0A09;margin:14px 0}
+.blk .hd{display:flex;justify-content:space-between;align-items:center;gap:10px;
+  padding:10px 13px;border-bottom:1px solid #241d19;flex-wrap:wrap}
+.blk .hd .nm{font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--or)}
+.blk .hd .tag{font-family:var(--mono);font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--gris2);border:1px solid #2C2320;border-radius:99px;padding:3px 9px}
+.blk pre{margin:0;padding:13px;overflow-x:auto;font-family:var(--mono);font-size:12px;
+  line-height:1.7;color:#CBBFAF;white-space:pre-wrap;word-break:break-word}
+
+table{width:100%;border-collapse:collapse;margin:18px 0;font-size:13.5px}
+th,td{text-align:left;padding:9px 11px;border-bottom:1px solid #241d19;vertical-align:top}
+th{font-family:var(--mono);font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--or);font-weight:400}
+.tw{overflow-x:auto}
+
+.note{border-left:2px solid var(--or);padding:2px 0 2px 15px;margin:18px 0;color:#C6B9A8;
+  font-size:14px;max-width:74ch;line-height:1.6}
+.warn{border-left-color:var(--sang)}
+ul.plain{max-width:72ch;color:#B4A796;padding-left:18px}
+ul.plain li{margin-bottom:9px;line-height:1.6}
+footer{padding:34px 0 60px;color:var(--gris2);font-size:12.5px;font-family:var(--mono);line-height:1.8}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body data-variant="C" data-casting="couple" data-bandeau="front">
+
+<div class="wrap">
+
+<header>
+  <div class="meta">Ticket #23 · planche de validation · aucun rendu lancé</div>
+  <h1>L'Œil, la Main, <em>l'Aile</em></h1>
+  <p class="chapo">Trois rôles de casting, une seule tenue, et trois manières de faire croire qu'une cinématique semi-réaliste et un jeu low-poly se passent dans le même musée. Rien ici n'est généré : ce sont les fiches et les prompts à valider <b>avant</b> le premier appel à Seedance.</p>
+  <p class="chapo" style="font-size:14px">Bascule par les flèches du clavier, <code>?variant=A|B|C</code>, ou la barre du bas.</p>
+</header>
+
+<!-- ═══════════ 1. LE RACCORD ═══════════ -->
+<section id="raccord">
+  <h2><span class="n">01 — la question du ticket</span>Où dépense-t-on la rupture de style&nbsp;?</h2>
+  <p>Le musée du jeu est acquis : pierre chaude, plafond noir, lumière venant des vitrines, cônes turquoise (#6). Les cinématiques sont semi-réalistes. Les images ci-dessous sont <b>le dernier plan de la cinématique d'ouverture</b> et <b>la première image du jeu</b> — c'est là, et nulle part ailleurs, que le destinataire peut cesser de croire au musée.</p>
+
+  <div class="variantes">
+    <div class="vcard" data-v="A"><div class="k">A</div><div class="t">Le raccord photométrique</div><p class="d">Même palette, même source, même noir. Rien ne signale qu'on change de média. La continuité est dans la lumière.</p></div>
+    <div class="vcard" data-v="B"><div class="k">B</div><div class="t">Le film dans le film</div><p class="d">Bandes noires, grain, focale longue. La cinématique revendique d'être un autre média ; le jeu s'ouvre quand les bandes s'écartent.</p></div>
+    <div class="vcard" data-v="C"><div class="k">C</div><div class="t">Le raccord de regard</div><p class="d">La cinématique finit sur exactement la composition de la première image du jeu. La rupture se joue sur une image, sur un objet identique.</p></div>
+  </div>
+
+  <div class="frames">
+    <div class="frame">
+      <div class="shot cine" id="shotCine"><div class="grain"></div><div class="lb t"></div><div class="lb b"></div><span class="badge" id="badgeCine">cinématique</span></div>
+      <p class="cap"><b>Dernier plan de l'ouverture.</b> <span id="capCine"></span></p>
+    </div>
+    <div class="frame">
+      <div class="shot" id="shotJeu"><span class="badge">jeu · low-poly</span></div>
+      <p class="cap"><b>Première image du jeu.</b> Vue subjective, arme abaissée hors visée, HUD à quatre éléments — vie, objectif, minicarte à gauche, alerte à droite (#6, amendements 3 et 4).</p>
+    </div>
+    <div class="frame">
+      <div class="shot cine" id="shotFuite"><div class="grain"></div><div class="lb t"></div><div class="lb b"></div><span class="badge">bascule 2</span></div>
+      <p class="cap"><b>La bascule de sortie, en miroir.</b> Le contact avec l'œuvre déclenche l'alarme (#20) : les mêmes mains gantées se referment sur le cadre, et l'alarme est un stroboscope <b>blanc</b> — le rouge est déjà la couleur de la mort dans le jeu.</p>
+    </div>
+  </div>
+
+  <div class="note" id="verdictBox"></div>
+</section>
+
+<!-- ═══════════ 2. LES TROIS FICHES ═══════════ -->
+<section id="fiches">
+  <h2><span class="n">02 — le casting</span>Trois rôles, pas trois personnes</h2>
+  <p>Une <b>variante de casting</b> ne change que les personnages à l'écran (glossaire). Les rôles doivent donc être définis par leur <b>fonction dans le braquage</b>, jamais par la relation — sinon <code>amis</code> impose de tout réécrire. Les trois noms sont ceux d'une équipe de casse, et ils tombent exactement sur les rôles du cadeau.</p>
+
+  <div class="tw"><table>
+    <tr><th>Rôle</th><th>Dans le braquage</th><th>Dans le cadeau</th><th>Se re-caste en <code>amis</code> ?</th></tr>
+    <tr><td><b>L'Œil</b></td><td>Trouve le journal, lit la salle, ne rentre jamais dans le champ du jeu.</td><td>L'<b>Offrant</b> — celui qui a tout préparé.</td><td>Oui — visage plein cadre, c'est la fiche la plus chère.</td></tr>
+    <tr><td><b>La Main</b></td><td>Entre, avance, prend l'œuvre. Filmé de dos ou en vue subjective.</td><td>Le <b>Destinataire</b> — c'est sa place qu'on prend manette en main.</td><td>Oui, mais presque gratuitement : jamais de gros plan de face.</td></tr>
+    <tr><td><b>L'Aile</b></td><td>N'entre jamais. Attend dehors, arrive à l'hélicoptère.</td><td>Personne. C'est le seul rôle sans contrepartie.</td><td><b>Non.</b> L'ami reste l'ami dans les deux relations.</td></tr>
+  </table></div>
+
+  <div class="note"><b>Conséquence sur le chiffrage, et elle contredit #20.</b> La carte note que le troisième personnage « alourdit le chiffrage des 30 – 51 € ». C'est faux dès lors que le rôle est défini par sa fonction : dans <code>couple</code> comme dans <code>amis</code>, l'Aile est l'ami qui vient les chercher. Sa fiche se génère <b>une fois, pour toutes les variantes</b>. Une variante re-caste deux rôles sur trois, dont un qu'on ne voit presque jamais de face — la borne basse des 30 € est la bonne, pas la haute.</div>
+
+  <div class="fiches" id="fichesGrid"></div>
+</section>
+
+<!-- ═══════════ 3. LA TENUE ═══════════ -->
+<section id="tenue">
+  <h2><span class="n">03 — l'actif</span>Le costume, pas le visage</h2>
+  <p>Le legacy l'a payé et écrit noir sur blanc dans sa bible de direction artistique : <em>« la combinaison de pompier fait tout le travail — c'est elle qui rend le personnage reconnaissable d'un plan à l'autre, et c'est elle qui permet de changer de casting sans regénérer 24 plans »</em>. C'est la seule raison pour laquelle une variante coûte 30 – 51 € et pas un film entier.</p>
+
+  <p><b>La tenue est donc l'actif qu'on écrit une fois et qu'on ne rouvre plus.</b> Basculez le casting dans la barre du bas : les corps changent, la tenue ne bouge pas d'un point.</p>
+
+  <h3>Ce qui la compose, et pourquoi chaque pièce</h3>
+  <div class="tw"><table>
+    <tr><th>Pièce</th><th>Décision</th><th>Ce qu'elle écarte</th></tr>
+    <tr><td>Combinaison</td><td><b>Une pièce, noir mat, col montant, fermeture asymétrique hanche gauche → épaule droite.</b> Aucune poche.</td><td>Le noir brillant lit « latex » — mauvais registre pour un cadeau ouvert sans prévenir. Les poches lisent « militaire ».</td></tr>
+    <tr><td>Harnais</td><td><b>Exactement deux sangles</b> en travers du buste, boucles or miel <code>#E8B76A</code>.</td><td>Trois sangles et plus, c'est un gilet tactique. La différence entre agent secret et soldat se compte en poches.</td></tr>
+    <tr><td>Gants</td><td>Cuir noir court, <b>s'arrêtant à l'os du poignet</b>.</td><td>La manchette longue cache le poignet — or c'est là que se noue le bandeau au dernier plan.</td></tr>
+    <tr><td>Bandeau</td><td>Bande de 6 cm, <b>noir mat bordé d'un demi-centimètre d'or miel</b>. Un seul objet, trois positions.</td><td>Un bandeau entièrement doré lit « Venise, carnaval ». Ici l'or cerne les yeux au lieu de les remplacer.</td></tr>
+    <tr><td>Bottes</td><td>Basses, semelle souple, lacets invisibles.</td><td>Le rangers monte le registre militaire d'un cran pour rien.</td></tr>
+  </table></div>
+
+  <h3>Le bandeau est une horloge</h3>
+  <p>L'auteur a demandé « des bandeaux pour se cacher les yeux ». On le garde <b>littéralement</b>, mais comme un objet qui se déplace — parce que la trame s'ouvre sur « les deux amoureux se regardent dans les yeux », et qu'un visage masqué n'a pas de regard.</p>
+  <div class="tw"><table>
+    <tr><th>Position</th><th>Quand</th><th>Ce qu'elle dit sans un mot</th></tr>
+    <tr><td><b>Relevé sur le front</b></td><td>Le journal, le regard, la décision, l'habillage.</td><td>On est encore deux personnes. Les yeux portent la scène.</td></tr>
+    <tr><td><b>Sur les yeux</b>, en loup</td><td>Du toit jusqu'à la fuite. Toute la durée du jeu.</td><td>On est devenus deux rôles. C'est l'instant où le film cède la main.</td></tr>
+    <tr><td><b>Noué au poignet</b></td><td>La plage, le dernier plan.</td><td>C'est fini, et c'était bien eux. La continuité coûte un nœud.</td></tr>
+  </table></div>
+  <div class="note warn"><b>Piège à écrire dans le prompt, sinon il est payé deux fois.</b> « Bandeau sur les yeux » fait dessiner un bandeau <em>opaque</em> à Nano Banana : le visage meurt, et il meurt sur tous les plans du film d'un coup. Le prompt doit dire <b>loup étroit, ouvertures assez larges pour que l'iris et le blanc de l'œil se lisent</b>, et le bloc négatif doit porter <code>blindfold, opaque eye covering, balaclava</code>. Basculez « bandeau : yeux » en bas d'écran pour voir ce qu'il reste du visage.</div>
+</section>
+
+<!-- ═══════════ 4. PALETTE ═══════════ -->
+<section id="palette">
+  <h2><span class="n">04 — la couleur</span>Cinq valeurs, et une règle</h2>
+  <p>La palette n'est pas un choix libre : #7 a arrêté <b>or miel <code>#E8B76A</code> sur noir chaud <code>#0B0908</code></b> pour la marque <em>en connaissance du coût</em>, précisément parce que c'est la teinte des cadres du braquage — et la résolution prévient qu'« un deuxième décor froid cassera l'accord ». Le teaser de fond du site est un extrait de ce film : une cinématique en nuit bleue repeindrait le premier panneau de vente en froid.</p>
+
+  <div class="pal" id="palGrid"></div>
+
+  <h3>La règle du turquoise</h3>
+  <p>Le legacy avait déjà trouvé la méthode sur une autre couleur : <em>« s'il est partout, il ne raconte plus rien »</em>. Ici une seule discipline tient tout le film :</p>
+  <div class="note"><b>Le turquoise est la couleur de la machine qui vous cherche — jusqu'à ce qu'il devienne la mer.</b> Rien d'autre n'est turquoise dans les deux cinématiques : ni un néon, ni un écran, ni un reflet. Sa seule apparition non hostile est la bande de mer du dernier plan, et c'est ce qui fait de la plage une résolution plutôt qu'une carte postale.</div>
+  <p>Deux conséquences remontent des décors, et ce sont des décisions, pas des goûts :</p>
+  <ul class="plain">
+    <li><b>L'égout n'est pas vert.</b> Un égout de cinéma est cyan-vert ; ici il est noir, éclairé par des <b>barres verticales d'or miel tombant des grilles de la rue</b>. C'est du même coup la meilleure composition 9:16 disponible — des barres de lumière qui s'empilent.</li>
+    <li><b>L'alarme n'est pas rouge, elle est blanche.</b> Le rouge est déjà le voile de vie basse du jeu (#6, amendement 4) : une alarme rouge dirait au destinataire qu'il est en train de mourir à l'instant exact où il vient de gagner. Le stroboscope blanc sur la pierre miel se lit <b>sans le son</b> — et #3 a établi que le mode silencieux d'iPhone coupe même une vidéo muette, donc la lisibilité muette n'est pas une élégance mais une contrainte.</li>
+  </ul>
+</section>
+
+<!-- ═══════════ 5. LE PLAN DE FIN ═══════════ -->
+<section id="plage">
+  <h2><span class="n">05 — la dernière image</span>La plage se compose en trois bandes</h2>
+  <p>C'est la dernière image du cadeau avant la Récompense, et le second moment filmable. Un plan large de plage en 9:16 est le pire plan qu'on puisse commander : sept dixièmes de ciel et de sable, et c'est exactement le cadre où un modèle vidéo invente un bateau, une silhouette, un horizon qui dérive. La règle de composition du film le règle d'avance.</p>
+
+  <div class="frames">
+    <div class="frame">
+      <div class="shot cine" id="shotPlage"><div class="grain"></div><div class="lb t"></div><div class="lb b"></div><span class="badge">plan final</span></div>
+      <p class="cap"><b>Trois bandes empilées.</b> Les verres qui trinquent en bas, les deux visages en flou léger au milieu, la mer turquoise en bande étroite tout en haut. Le cadre doré de l'œuvre dérobée, dos au spectateur, contre le transat. Le bandeau miel noué au poignet qui tient le verre.</p>
+    </div>
+    <div class="frame" style="flex:2 1 420px;max-width:540px">
+      <h3 style="margin-top:0">La règle des trois bandes</h3>
+      <p>En 9:16, <b>tout plan large se compose en trois bandes horizontales empilées, et l'une d'elles porte un visage ou une main à taille lisible</b>. Jamais d'horizon au milieu du cadre. C'est une contrainte d'écriture, pas de montage : elle entre dans le prompt de chaque plan.</p>
+      <div class="tw"><table>
+        <tr><th>Plan large</th><th>Haut</th><th>Milieu</th><th>Bas</th></tr>
+        <tr><td>Le toit</td><td>Ciel noir, la ville en points</td><td>La verrière éclairée par en dessous</td><td>Les deux, accroupis au bord</td></tr>
+        <tr><td>L'égout</td><td>La grille et sa barre de lumière</td><td>Le tunnel noir</td><td>L'eau qui réfléchit</td></tr>
+        <tr><td>L'extraction</td><td>L'hélicoptère</td><td colspan="2"><b>La corde traverse tout le cadre</b> — les deux en bas</td></tr>
+        <tr><td>La plage</td><td>La mer, bande étroite</td><td>Les deux visages</td><td>Les verres qui trinquent</td></tr>
+      </table></div>
+      <div class="note"><b>La corde de l'hélicoptère est le meilleur plan 9:16 du film.</b> Un objet vertical dans un cadre vertical : c'est le seul plan où le portrait est un avantage et non une contrainte. C'est donc lui qui part sur TikTok pour la cinématique de fuite, et non la plage.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 6. LES BLOCS ═══════════ -->
+<section id="prompts">
+  <h2><span class="n">06 — les prompts</span>Des blocs recollés, jamais réécrits</h2>
+  <p>Le legacy a mesuré la méthode sur 285 appels : on ne rédige pas un prompt par plan, on <b>recolle des blocs constants</b> — <code>STYLE</code>, <code>NEGATIF</code>, un <code>QUI_&lt;RÔLE&gt;</code> par personnage présent, <code>TAILLES</code> dès que deux partagent le cadre, un bloc par décor. C'est ce qui isole le casting du reste : un plan sans personnage est partagé par toutes les variantes, et c'est ce qui fait qu'une variante ne coûte pas un film.</p>
+  <div class="note warn"><b>La règle du saut unique, déjà payée.</b> Toute image clé se génère <b>en un seul saut depuis la fiche validée</b>, jamais depuis une autre image clé. Mesuré sur le legacy : à un saut la ressemblance tient, à trois sauts le personnage n'est plus le même. Et son corollaire, qui débloque les proportions : <b>quand un attribut refuse de changer, on retire de la référence ce qui le porte</b> — donner la tête seule prive le modèle de toute information sur le corps et le force à obéir au texte.</div>
+
+  <div id="promptBlocks"></div>
+</section>
+
+<!-- ═══════════ 7. LA CHAÎNE ═══════════ -->
+<section id="chaine">
+  <h2><span class="n">07 — ce qu'on tire, et dans quel ordre</span>La porte de validation est ici</h2>
+  <p>Les Notes de la carte l'imposent : <b>rien ne part en rendu vidéo tant que cette planche n'est pas validée</b>. L'ordre qui suit est celui que #5 a chiffré — 1,4 % des appels du journal legacy ont produit les rendus réellement servis, soit 4,7 € dépensés pour 1 € servi. Les essais jetés <em>sont</em> le coût.</p>
+  <div class="tw"><table>
+    <tr><th>#</th><th>Étape</th><th>Modèle</th><th>Coût</th><th>Porte</th></tr>
+    <tr><td>1</td><td>Les sept planches de fiches</td><td><code>fal-ai/nano-banana-pro</code></td><td><b>≈ 4,50 $</b></td><td><b>Validation humaine.</b> C'est cet écran.</td></tr>
+    <tr><td>2</td><td>Deux plans pilotes, et deux seulement</td><td><code>…/seedance/v1/lite/image-to-video</code></td><td>0,0371 $/s</td><td>Le raccord tient-il en mouvement ? Le vertical tient-il un plan large ?</td></tr>
+    <tr><td>3</td><td>Les images clés de tous les plans</td><td><code>fal-ai/nano-banana-pro/edit</code></td><td>0,15 $/image</td><td>Un saut depuis la fiche. Toujours.</td></tr>
+    <tr><td>4</td><td>Le film, en passe unique</td><td><code>bytedance/seedance-2.5/…</code></td><td>0,4622 $/s · ≈ 14 $ le film</td><td>Un plan retenu ne se regénère jamais « pour voir ».</td></tr>
+  </table></div>
+
+  <h3>Les deux plans pilotes sont désignés par la direction artistique, pas par le découpage</h3>
+  <p>On ne tire pas vingt plans avant d'avoir prouvé ceux qui portent le risque, et Seedance 2.5 coûte <b>12,5 fois le prix de la version lite à la seconde</b>. Ici le risque a deux noms, et ce sont les deux seules choses que cette planche décide qu'un dessin ne peut pas prouver : <b>le raccord de la bascule</b> — la variante C tient-elle quand ça bouge ? — et <b>la corde de l'extraction</b> — un cadre vertical tient-il un plan large ? Le choix des plans eux-mêmes appartient au découpage.</p>
+
+  <div class="note warn"><b>Le choix de l'endpoint est une décision de raccord, et elle est mesurée.</b> Le legacy a chiffré l'écart au raccord : <b>48,6/255 en <code>reference-to-video</code> contre 4,2/255 en <code>image-to-video</code></b> — les références de <code>reference-to-video</code> sont un jeu <em>sans ordre</em>, et la consigne écrite « ceci est la première image » y est ignorée. Donc : <b>les deux plans de bascule se tirent en <code>image-to-video</code></b>, sans exception, parce que ce sont les deux seuls plans du film dont la première image doit être exacte au pixel. Tout le reste passe en <code>reference-to-video</code>, qui accepte les trois fiches à la fois.</div>
+
+  <h3>Ce que la chaîne ne génère jamais</h3>
+  <div class="tw"><table>
+    <tr><th>Élément</th><th>Comment il se fait</th><th>Pourquoi</th></tr>
+    <tr><td><b>La une du journal</b> — le pivot de l'histoire</td><td>HTML capturé en headless. L'outil existe déjà dans le legacy.</td><td>Aucun modèle ne sait écrire, et le film doit se comprendre <b>son coupé</b> (#3).</td></tr>
+    <tr><td><b>Tout texte à l'écran</b></td><td>Calque DOM au-dessus de la vidéo.</td><td>Un texte gravé obligerait à réencoder le film pour chaque commande — l'invariant économique tombe.</td></tr>
+    <tr><td><b>Le moindre prénom prononcé</b></td><td>Il n'y en a aucun.</td><td>Une voix générée est gravée dans le MP4. C'est ce qui rend le maître revendable à l'infini.</td></tr>
+    <tr><td><b>Une voix off</b></td><td>Il n'y en a aucune. Toute réplique est à l'image et lip-syncée.</td><td>La seule voix désincarnée de l'expérience doit rester <b>la greffe vocale de l'Offrant</b>, entendue à l'approche d'un Souvenir. Deux voix hors-champ, et le destinataire ne sait plus qui lui parle.</td></tr>
+    <tr><td><b>Une arme, dans quelque plan que ce soit</b></td><td>Le bloc négatif l'interdit mécaniquement.</td><td>Voir ci-dessous.</td></tr>
+  </table></div>
+
+  <h3>L'arme n'entre pas dans les cinématiques</h3>
+  <p>La carte reporte ici la vigilance TikTok, et #6 l'avait déjà levée côté jeu — réticule à la visée seulement, arme abaissée hors visée. La réponse côté film est plus simple et plus tranchée : <b>aucune arme n'apparaît dans aucune cinématique</b>, ni à l'infiltration, ni à la fuite. Le couple s'infiltre, il n'assaille pas ; à l'alarme il court, il ne tire pas — c'est ce que dit la trame, mot pour mot. <code>firearm, gun, pistol, holster, muzzle</code> entrent au bloc négatif, donc la règle est tenue par l'outil et non par la vigilance de celui qui écrit le prompt.</p>
+  <p><b>La contrepartie, nommée :</b> la fuite perd une fusillade, qui est spectaculaire, et le film s'en remet à la corde pour son pic. Le bénéfice est net et il se compte : <b>l'intégralité des deux cinématiques devient postable sans arbitrage</b>, ce qui compte parce que la seule vente réalisée à ce jour vient d'un TikTok.</p>
+</section>
+
+<footer class="wrap" style="padding-left:0;padding-right:0">
+  prototypes/fiches-personnages/ — jetable, à ne pas promouvoir en production.<br>
+  Aucune clé cherchée, aucun rendu lancé, aucune image générée.<br>
+  Chiffres tirés de #5 et du journal legacy <code>.fal-journal.jsonl</code> (285 appels, 06→16/08/2026).
+</footer>
+
+</div>
+
+<nav class="bar" aria-label="Commutation">
+  <span class="lbl">Raccord</span>
+  <button data-set="variant" data-val="A">A</button>
+  <button data-set="variant" data-val="B">B</button>
+  <button data-set="variant" data-val="C">C</button>
+  <span class="sep"></span>
+  <span class="lbl">Casting</span>
+  <button data-set="casting" data-val="couple">couple</button>
+  <button data-set="casting" data-val="amis">amis</button>
+  <span class="sep"></span>
+  <span class="lbl">Bandeau</span>
+  <button data-set="bandeau" data-val="front">front</button>
+  <button data-set="bandeau" data-val="yeux">yeux</button>
+</nav>
+
+<script>
+"use strict";
+const C = {
+  noir:"#0B0908", pierre:"#C89A5B", or:"#E8B76A", orPale:"#F5D9A8",
+  turq:"#4FD6C0", fauve:"#A9713C", fauveC:"#D69A5C",
+  craie:"#EFE3D2", gris:"#6E635B", cuir:"#17130F"
+};
+
+/* ─────────────────────────────────────────────────────────────
+   MORPHOLOGIES. La tenue est identique partout ; seuls la taille,
+   la largeur d'épaules, la ligne de hanche, la coiffure et le
+   teint changent d'une variante de casting à l'autre. C'est toute
+   la thèse de la section 03, rendue basculable.
+   ───────────────────────────────────────────────────────────── */
+const MORPHO = {
+  oeil: {
+    couple: { cm:168, ep:.175, ha:.155, hip:.46, cheveux:"chignon", peau:"#C79A78", nom:"L'Œil", desc:"Elle repère. Elle ne rentre jamais dans le champ du jeu." },
+    amis:   { cm:174, ep:.205, ha:.150, hip:.47, cheveux:"court",   peau:"#8A5E42", nom:"L'Œil", desc:"Il repère. Il ne rentre jamais dans le champ du jeu." }
+  },
+  main: {
+    couple: { cm:178, ep:.215, ha:.155, hip:.47, cheveux:"ras",    peau:"#E0B48F", nom:"La Main", desc:"Il entre. C'est sa place que prend le Destinataire." },
+    amis:   { cm:170, ep:.185, ha:.165, hip:.46, cheveux:"tresse", peau:"#6F4630", nom:"La Main", desc:"Elle entre. C'est sa place que prend le Destinataire." }
+  },
+  aile: {
+    couple: { cm:175, ep:.235, ha:.205, hip:.47, cheveux:"crane", peau:"#B87C50", nom:"L'Aile", desc:"Il n'entre jamais. Il attend, moteur tournant." },
+    amis:   { cm:175, ep:.235, ha:.205, hip:.47, cheveux:"crane", peau:"#B87C50", nom:"L'Aile", desc:"Il n'entre jamais. Il attend, moteur tournant." }
+  }
+};
+
+/* Figure paramétrique. 7 têtes, proportions en rapports mesurables —
+   jamais en adjectifs : le legacy a mesuré qu'« un peu plus trapu »
+   ne produit rien, et qu'un réglage global de proportions écrase
+   toutes les corrections par plan. */
+function figure(role, casting, bandeau){
+  const m = MORPHO[role][casting];
+  const W = 220, Hb = 420, sol = 396;
+  const H = m.cm * 1.87;
+  const top = sol - H;
+  const th = H/7;
+  const cx = W/2;
+  const yT = top + th*0.50;
+  const rx = th*0.34, ry = th*0.47;
+  const yEp = top + th*1.18;
+  const yTa = top + H*0.40;
+  const yHi = top + H*m.hip;
+  const ep = W*m.ep, ha = W*m.ha;
+  const est = role === "aile";
+  const combi = est ? "#2A211A" : "#151110";
+  const s = [];
+  const p = (d,f)=>s.push('<path d="'+d+'" fill="'+f+'"/>');
+
+  /* jambes + bottes */
+  p("M"+(cx-ha)+" "+yHi+" L"+(cx-ha*.92)+" "+(sol-16)+" L"+(cx-ha*.18)+" "+(sol-16)+" L"+(cx-ha*.12)+" "+yHi+" Z", combi);
+  p("M"+(cx+ha)+" "+yHi+" L"+(cx+ha*.92)+" "+(sol-16)+" L"+(cx+ha*.18)+" "+(sol-16)+" L"+(cx+ha*.12)+" "+yHi+" Z", combi);
+  p("M"+(cx-ha*.95)+" "+(sol-16)+" L"+(cx-ha*1.02)+" "+sol+" L"+(cx-ha*.12)+" "+sol+" L"+(cx-ha*.16)+" "+(sol-16)+" Z", "#0C0A09");
+  p("M"+(cx+ha*.95)+" "+(sol-16)+" L"+(cx+ha*1.02)+" "+sol+" L"+(cx+ha*.12)+" "+sol+" L"+(cx+ha*.16)+" "+(sol-16)+" Z", "#0C0A09");
+
+  /* torse */
+  p("M"+(cx-ep)+" "+yEp+" Q"+(cx-ep*1.03)+" "+yTa+" "+(cx-ha*1.05)+" "+yHi+
+    " L"+(cx+ha*1.05)+" "+yHi+" Q"+(cx+ep*1.03)+" "+yTa+" "+(cx+ep)+" "+yEp+
+    " Q"+cx+" "+(yEp-th*.30)+" "+(cx-ep)+" "+yEp+" Z", combi);
+
+  /* blouson de vol — L'Aile seulement, la seule tache chaude du film */
+  if(est){
+    p("M"+(cx-ep*1.04)+" "+(yEp+2)+" Q"+(cx-ep*1.08)+" "+yTa+" "+(cx-ha*1.06)+" "+(yHi+8)+
+      " L"+(cx+ha*1.06)+" "+(yHi+8)+" Q"+(cx+ep*1.08)+" "+yTa+" "+(cx+ep*1.04)+" "+(yEp+2)+
+      " Q"+cx+" "+(yEp-th*.20)+" "+(cx-ep*1.04)+" "+(yEp+2)+" Z", C.fauve);
+    p("M"+(cx-ep*.56)+" "+(yEp+1)+" Q"+cx+" "+(yEp+th*.22)+" "+(cx+ep*.56)+" "+(yEp+1)+
+      " Q"+(cx+ep*.46)+" "+(yEp-th*.14)+" "+cx+" "+(yEp-th*.09)+
+      " Q"+(cx-ep*.46)+" "+(yEp-th*.14)+" "+(cx-ep*.56)+" "+(yEp+1)+" Z", "#E4D3B4");
+    s.push('<line x1="'+cx+'" y1="'+(yEp+th*.26)+'" x2="'+cx+'" y2="'+(yHi+6)+'" stroke="'+C.fauveC+'" stroke-width="2"/>');
+  }
+
+  /* bras le long du corps — teinte légèrement décalée, sinon ils disparaissent dans le buste */
+  const bras = est ? "#BC8148" : "#1F1A17";
+  p("M"+(cx-ep*.94)+" "+(yEp+2)+" L"+(cx-ep*1.04)+" "+(yHi+H*.10)+" L"+(cx-ep*.74)+" "+(yHi+H*.11)+" L"+(cx-ep*.66)+" "+(yEp+4)+" Z", bras);
+  p("M"+(cx+ep*.94)+" "+(yEp+2)+" L"+(cx+ep*1.04)+" "+(yHi+H*.10)+" L"+(cx+ep*.74)+" "+(yHi+H*.11)+" L"+(cx+ep*.66)+" "+(yEp+4)+" Z", bras);
+
+  /* mains — gant court s'arrêtant à l'os du poignet */
+  const yG = yHi + H*.11;
+  if(est){
+    p("M"+(cx-ep*1.0)+" "+yG+" q-4 14 8 16 q10 1 9 -14 Z", m.peau);
+    p("M"+(cx+ep*1.0)+" "+yG+" q4 14 -8 16 q-10 1 -9 -14 Z", m.peau);
+    /* le bandeau noué au poignet du pilote — le signe de l'équipe */
+    s.push('<rect x="'+(cx+ep*.80)+'" y="'+(yG-8)+'" width="'+(ep*.34)+'" height="6" rx="2" fill="'+C.or+'"/>');
+  } else {
+    p("M"+(cx-ep*1.0)+" "+(yG-4)+" q-5 16 8 19 q11 1 10 -16 Z", C.cuir);
+    p("M"+(cx+ep*1.0)+" "+(yG-4)+" q5 16 -8 19 q-11 1 -10 -16 Z", C.cuir);
+    s.push('<line x1="'+(cx-ep*1.07)+'" y1="'+(yG-4)+'" x2="'+(cx-ep*.72)+'" y2="'+(yG-6)+'" stroke="'+C.gris+'" stroke-width="1.4"/>');
+    s.push('<line x1="'+(cx+ep*1.07)+'" y1="'+(yG-4)+'" x2="'+(cx+ep*.72)+'" y2="'+(yG-6)+'" stroke="'+C.gris+'" stroke-width="1.4"/>');
+  }
+
+  /* harnais — EXACTEMENT deux sangles, boucles or miel */
+  if(!est){
+    const y1 = yEp + (yTa-yEp)*.34, y2 = yEp + (yTa-yEp)*.74;
+    s.push('<path d="M'+(cx-ep*.88)+' '+y1+' L'+(cx+ep*.88)+' '+(y1+3)+'" stroke="#0A0807" stroke-width="7" fill="none"/>');
+    s.push('<path d="M'+(cx-ep*.88)+' '+(y2+3)+' L'+(cx+ep*.88)+' '+y2+'" stroke="#0A0807" stroke-width="7" fill="none"/>');
+    s.push('<rect x="'+(cx-7)+'" y="'+(y1-4)+'" width="14" height="9" rx="2" fill="'+C.or+'"/>');
+    s.push('<rect x="'+(cx-7)+'" y="'+(y2-4)+'" width="14" height="9" rx="2" fill="'+C.or+'"/>');
+    /* fermeture asymétrique hanche gauche → épaule droite */
+    s.push('<path d="M'+(cx-ha*.55)+' '+(yHi-4)+' L'+(cx+ep*.62)+' '+(yEp+th*.18)+'" stroke="#2C2420" stroke-width="1.8" fill="none" stroke-dasharray="3 3"/>');
+    /* col montant */
+    p("M"+(cx-th*.30)+" "+yEp+" Q"+cx+" "+(yEp+th*.16)+" "+(cx+th*.30)+" "+yEp+
+      " L"+(cx+th*.26)+" "+(yEp-th*.20)+" L"+(cx-th*.26)+" "+(yEp-th*.20)+" Z", "#231C18");
+  }
+
+  /* cou + tête */
+  p("M"+(cx-th*.16)+" "+(yT+ry*.82)+" L"+(cx-th*.18)+" "+(yEp+2)+" L"+(cx+th*.18)+" "+(yEp+2)+" L"+(cx+th*.16)+" "+(yT+ry*.82)+" Z", m.peau);
+  s.push('<ellipse cx="'+cx+'" cy="'+yT+'" rx="'+rx+'" ry="'+ry+'" fill="'+m.peau+'"/>');
+
+  /* cheveux */
+  const hair = "#1B1512";
+  if(m.cheveux === "chignon"){
+    s.push('<path d="M'+(cx-rx)+' '+(yT-ry*.10)+' Q'+(cx-rx*1.02)+' '+(yT-ry*1.18)+' '+cx+' '+(yT-ry*1.10)+
+      ' Q'+(cx+rx*1.02)+' '+(yT-ry*1.18)+' '+(cx+rx)+' '+(yT-ry*.10)+
+      ' Q'+(cx+rx*.7)+' '+(yT-ry*.55)+' '+cx+' '+(yT-ry*.52)+
+      ' Q'+(cx-rx*.7)+' '+(yT-ry*.55)+' '+(cx-rx)+' '+(yT-ry*.10)+' Z" fill="'+hair+'"/>');
+    s.push('<circle cx="'+(cx+rx*1.06)+'" cy="'+(yT-ry*.14)+'" r="'+(rx*.42)+'" fill="'+hair+'"/>');
+  } else if(m.cheveux === "tresse"){
+    s.push('<path d="M'+(cx-rx)+' '+(yT-ry*.05)+' Q'+(cx-rx)+' '+(yT-ry*1.2)+' '+cx+' '+(yT-ry*1.12)+
+      ' Q'+(cx+rx)+' '+(yT-ry*1.2)+' '+(cx+rx)+' '+(yT-ry*.05)+
+      ' Q'+(cx+rx*.7)+' '+(yT-ry*.6)+' '+cx+' '+(yT-ry*.55)+
+      ' Q'+(cx-rx*.7)+' '+(yT-ry*.6)+' '+(cx-rx)+' '+(yT-ry*.05)+' Z" fill="'+hair+'"/>');
+    s.push('<path d="M'+(cx+rx*.5)+' '+(yT+ry*.2)+' q'+(rx*.7)+' '+(ry*.9)+' '+(rx*.2)+' '+(ry*1.7)+
+      '" stroke="'+hair+'" stroke-width="'+(rx*.42)+'" fill="none" stroke-linecap="round"/>');
+  } else if(m.cheveux === "crane"){
+    s.push('<path d="M'+(cx-rx*.96)+' '+(yT-ry*.30)+' Q'+cx+' '+(yT-ry*1.16)+' '+(cx+rx*.96)+' '+(yT-ry*.30)+
+      ' Q'+(cx+rx*.6)+' '+(yT-ry*.62)+' '+cx+' '+(yT-ry*.60)+
+      ' Q'+(cx-rx*.6)+' '+(yT-ry*.62)+' '+(cx-rx*.96)+' '+(yT-ry*.30)+' Z" fill="#241B15"/>');
+    s.push('<path d="M'+(cx-rx*.94)+' '+(yT+ry*.02)+' Q'+(cx-rx*.86)+' '+(yT+ry*.95)+' '+cx+' '+(yT+ry*1.0)+
+      ' Q'+(cx+rx*.86)+' '+(yT+ry*.95)+' '+(cx+rx*.94)+' '+(yT+ry*.02)+
+      ' Q'+(cx+rx*.6)+' '+(yT+ry*.42)+' '+cx+' '+(yT+ry*.38)+
+      ' Q'+(cx-rx*.6)+' '+(yT+ry*.42)+' '+(cx-rx*.94)+' '+(yT+ry*.02)+' Z" fill="#1B1512"/>');
+  } else {
+    s.push('<path d="M'+(cx-rx*.99)+' '+(yT-ry*.22)+' Q'+cx+' '+(yT-ry*1.14)+' '+(cx+rx*.99)+' '+(yT-ry*.22)+
+      ' Q'+(cx+rx*.62)+' '+(yT-ry*.66)+' '+cx+' '+(yT-ry*.64)+
+      ' Q'+(cx-rx*.62)+' '+(yT-ry*.66)+' '+(cx-rx*.99)+' '+(yT-ry*.22)+' Z" fill="'+hair+'"/>');
+  }
+
+  /* casque de vol, micro-perche, lunettes relevées */
+  if(est){
+    s.push('<path d="M'+(cx-rx*1.14)+' '+(yT-ry*.02)+' Q'+(cx-rx*1.16)+' '+(yT-ry*1.34)+' '+cx+' '+(yT-ry*1.30)+
+      ' Q'+(cx+rx*1.16)+' '+(yT-ry*1.34)+' '+(cx+rx*1.14)+' '+(yT-ry*.02)+
+      ' Q'+(cx+rx*.8)+' '+(yT-ry*.34)+' '+cx+' '+(yT-ry*.36)+
+      ' Q'+(cx-rx*.8)+' '+(yT-ry*.34)+' '+(cx-rx*1.14)+' '+(yT-ry*.02)+' Z" fill="#4A443E"/>');
+    s.push('<rect x="'+(cx-rx*1.2)+'" y="'+(yT-ry*1.04)+'" width="'+(rx*2.4)+'" height="'+(ry*.30)+'" rx="3" fill="#2E2A26" stroke="'+C.fauveC+'" stroke-width="1"/>');
+    s.push('<circle cx="'+(cx-rx*1.26)+'" cy="'+(yT+ry*.12)+'" r="'+(rx*.34)+'" fill="#3A342F"/>');
+    s.push('<path d="M'+(cx-rx*1.26)+' '+(yT+ry*.40)+' q-2 '+(ry*.5)+' '+(rx*.9)+' '+(ry*.62)+'" stroke="#3A342F" stroke-width="2.6" fill="none"/>');
+  }
+
+  /* le visage — traits minimaux, juste assez pour qu'un regard existe */
+  const yY = yT - ry*.06;
+  const eye = function(dx,r){
+    return '<ellipse cx="'+(cx+dx)+'" cy="'+yY+'" rx="'+(rx*r)+'" ry="'+(ry*r*.62)+'" fill="#F6EFE4"/>'+
+           '<circle cx="'+(cx+dx)+'" cy="'+yY+'" r="'+(rx*r*.60)+'" fill="#2A1F17"/>';
+  };
+  s.push('<path d="M'+(cx-rx*.62)+' '+(yY-ry*.20)+' q'+(rx*.20)+' '+(-ry*.07)+' '+(rx*.40)+' 0" stroke="#3A2A1E" stroke-width="1.5" fill="none" stroke-linecap="round"/>');
+  s.push('<path d="M'+(cx+rx*.22)+' '+(yY-ry*.20)+' q'+(rx*.20)+' '+(-ry*.07)+' '+(rx*.40)+' 0" stroke="#3A2A1E" stroke-width="1.5" fill="none" stroke-linecap="round"/>');
+  s.push(eye(-rx*.42,.175)); s.push(eye(rx*.42,.175));
+  s.push('<path d="M'+(cx-rx*.02)+' '+(yY+ry*.16)+' l'+(rx*.10)+' '+(ry*.22)+' l'+(-rx*.14)+' 0" fill="none" stroke="#8A6244" stroke-width="1.1" stroke-linejoin="round"/>');
+  if(m.cheveux !== "crane"){
+    /* bouche droite : une courbe lisait comme un sourire, or ces trois-là ne sourient pas avant la plage */
+    s.push('<line x1="'+(cx-rx*.24)+'" y1="'+(yT+ry*.52)+'" x2="'+(cx+rx*.24)+'" y2="'+(yT+ry*.52)+'" stroke="#8A5F44" stroke-width="1.6" stroke-linecap="round"/>');
+  }
+
+  /* LE BANDEAU — un seul objet, deux positions à l'écran.
+     La troisième (au poignet) est portée par L'Aile et par le plan de plage. */
+  if(!est){
+    if(bandeau === "yeux"){
+      /* loup étroit : bande noire bordée d'or, ouvertures assez larges pour
+         que l'iris ET le blanc de l'œil se lisent. Sans cette précision,
+         Nano Banana dessine un bandeau opaque et le visage meurt. */
+      const bh = ry*.36, by = yY - bh/2;
+      s.push('<rect x="'+(cx-rx*1.06)+'" y="'+by+'" width="'+(rx*2.12)+'" height="'+bh+'" fill="#131010"/>');
+      s.push('<rect x="'+(cx-rx*1.06)+'" y="'+by+'" width="'+(rx*2.12)+'" height="1.6" fill="'+C.or+'"/>');
+      s.push('<rect x="'+(cx-rx*1.06)+'" y="'+(by+bh-1.6)+'" width="'+(rx*2.12)+'" height="1.6" fill="'+C.or+'"/>');
+      s.push(eye(-rx*.42,.20)); s.push(eye(rx*.42,.20));
+    } else {
+      const bh = ry*.26, by = yT - ry*.88;
+      s.push('<rect x="'+(cx-rx*1.02)+'" y="'+by+'" width="'+(rx*2.04)+'" height="'+bh+'" fill="#131010"/>');
+      s.push('<rect x="'+(cx-rx*1.02)+'" y="'+by+'" width="'+(rx*2.04)+'" height="1.5" fill="'+C.or+'"/>');
+      s.push('<rect x="'+(cx-rx*1.02)+'" y="'+(by+bh-1.5)+'" width="'+(rx*2.04)+'" height="1.5" fill="'+C.or+'"/>');
+    }
+  }
+
+  /* règle graduée — les proportions se lisent, elles ne se devinent pas */
+  const g = [];
+  for(let i=0;i<=7;i++){
+    const y = top + (H/7)*i;
+    g.push('<line x1="16" y1="'+y+'" x2="'+(i%7===0?30:24)+'" y2="'+y+'" stroke="#3A312B" stroke-width="1"/>');
+  }
+  g.push('<line x1="16" y1="'+top+'" x2="16" y2="'+sol+'" stroke="#3A312B" stroke-width="1"/>');
+  g.push('<line x1="14" y1="'+yHi+'" x2="'+(W-14)+'" y2="'+yHi+'" stroke="#3A312B" stroke-width="1" stroke-dasharray="2 4"/>');
+  g.push('<text x="'+(W-14)+'" y="'+(yHi-5)+'" fill="#5A524C" font-family="ui-monospace,monospace" font-size="9" text-anchor="end">hanche '+Math.round(m.hip*100)+' %</text>');
+  g.push('<text x="34" y="'+(top+11)+'" fill="#5A524C" font-family="ui-monospace,monospace" font-size="9">'+m.cm+' cm · 7 têtes</text>');
+
+  return '<svg viewBox="0 0 '+W+' '+Hb+'" role="img" aria-label="Planche personnage">'+
+    '<rect width="'+W+'" height="'+Hb+'" fill="#231F1B"/>'+
+    '<ellipse cx="'+cx+'" cy="'+(sol+3)+'" rx="'+(ep*1.5)+'" ry="7" fill="#1B1714"/>'+
+    g.join("")+s.join("")+'</svg>';
+}
+
+/* ─────────────────────────────────────────────────────────────
+   SCÈNES 9:16. Ce sont des diagrammes de composition, pas des
+   rendus : ce qu'on juge est le cadrage, la lumière, et la place
+   du turquoise.
+   ───────────────────────────────────────────────────────────── */
+const VB = 'viewBox="0 0 180 320" preserveAspectRatio="xMidYMid slice"';
+
+function defsWarm(id){
+  return '<defs>'+
+    '<radialGradient id="g'+id+'a" cx="50%" cy="76%" r="62%">'+
+      '<stop offset="0%" stop-color="#F0C784" stop-opacity=".85"/>'+
+      '<stop offset="55%" stop-color="#A9713C" stop-opacity=".30"/>'+
+      '<stop offset="100%" stop-color="#0B0908" stop-opacity="0"/></radialGradient>'+
+    '<linearGradient id="g'+id+'b" x1="0" y1="0" x2="0" y2="1">'+
+      '<stop offset="0%" stop-color="#0B0908"/><stop offset="100%" stop-color="#241811"/></linearGradient>'+
+    '<filter id="g'+id+'f"><feGaussianBlur stdDeviation="2.9"/></filter></defs>';
+}
+
+/* Vue subjective — deux mains gantées sur le rebord de la verrière,
+   le musée en dessous. Le SEUL paramètre qui change entre la
+   cinématique et le jeu est le rendu : lissé contre facetté. */
+function povVerriere(lowpoly){
+  const f = lowpoly ? "" : ' filter="url(#gPf)"';
+  const op = lowpoly ? "1" : ".9";
+  const cadre = function(x,y,w,h,t){
+    return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" fill="#2B211A" stroke="'+C.or+
+      '" stroke-width="'+(lowpoly?1.4:1.1)+'" opacity="'+op+'"/>'+
+      '<rect x="'+(x+3)+'" y="'+(y+3)+'" width="'+(w-6)+'" height="'+(h-6)+'" fill="'+t+'" opacity="'+op+'"/>';
+  };
+  return '<svg '+VB+'>'+defsWarm("P")+
+    '<rect width="180" height="320" fill="url(#gPb)"/>'+
+    '<ellipse cx="90" cy="205" rx="120" ry="86" fill="url(#gPa)"/>'+
+    '<path d="M0 232 L180 232 L180 320 L0 320 Z" fill="#17110D"/>'+
+    /* le sol : facetté et à arêtes dures côté jeu, fondu côté cinématique */
+    (lowpoly
+      ? '<path d="M0 232 L46 232 L28 320 L0 320 Z" fill="#1D1610"/>'+
+        '<path d="M92 232 L138 232 L156 320 L120 320 Z" fill="#1B140F"/>'+
+        '<path d="M46 232 L92 232 L120 320 L28 320 Z" fill="#211A13"/>'
+      : '<ellipse cx="90" cy="262" rx="96" ry="34" fill="#251B13" opacity=".8" filter="url(#gPf)"/>')+
+    '<g'+f+'>'+
+      cadre(18,120,34,44,"#3B2E22")+
+      cadre(66,110,42,54,"#4A382A")+
+      cadre(122,124,36,40,"#3B2E22")+
+      '<rect x="30" y="196" width="22" height="30" fill="#241C16"/>'+
+      '<rect x="30" y="188" width="22" height="9" fill="'+C.orPale+'" opacity=".55"/>'+
+      '<rect x="120" y="200" width="24" height="28" fill="#241C16"/>'+
+      '<rect x="120" y="192" width="24" height="9" fill="'+C.orPale+'" opacity=".55"/>'+
+      /* LE cône turquoise : la seule couleur froide du film */
+      '<path d="M150 96 L178 176 L120 176 Z" fill="'+C.turq+'" opacity="'+(lowpoly?".26":".18")+'"/>'+
+      '<circle cx="150" cy="94" r="4" fill="#2A2320" stroke="'+C.turq+'" stroke-width="1.2"/>'+
+    '</g>'+
+    /* montants de la verrière */
+    '<g opacity="'+(lowpoly?".9":".55")+'">'+
+      '<line x1="60" y1="60" x2="60" y2="236" stroke="#0B0908" stroke-width="3"/>'+
+      '<line x1="120" y1="60" x2="120" y2="236" stroke="#0B0908" stroke-width="3"/>'+
+      '<line x1="0" y1="150" x2="180" y2="150" stroke="#0B0908" stroke-width="3"/></g>'+
+    /* rebord + les deux mains gantées : l'objet identique des deux côtés.
+       Un liseré or sur le dessus des gants — sans lui le cuir noir se noie
+       dans le sol noir, et c'est justement l'objet qui porte le raccord. */
+    '<rect x="0" y="232" width="180" height="16" fill="#2A211A"/>'+
+    '<rect x="0" y="232" width="180" height="2" fill="'+C.orPale+'" opacity=".45"/>'+
+    '<path d="M24 254 q-6 -22 14 -24 q22 -2 26 12 q2 10 -4 12 Z" fill="#17130F"/>'+
+    '<path d="M156 254 q6 -22 -14 -24 q-22 -2 -26 12 q-2 10 4 12 Z" fill="#17130F"/>'+
+    '<path d="M24 254 q-6 -22 14 -24 q22 -2 26 12" fill="none" stroke="'+C.or+'" stroke-width="1.3" opacity="'+(lowpoly?".75":".5")+'"/>'+
+    '<path d="M156 254 q6 -22 -14 -24 q-22 -2 -26 12" fill="none" stroke="'+C.or+'" stroke-width="1.3" opacity="'+(lowpoly?".75":".5")+'"/>'+
+    '<rect x="22" y="250" width="42" height="6" rx="1" fill="#0C0A09"/>'+
+    '<rect x="116" y="250" width="42" height="6" rx="1" fill="#0C0A09"/>'+
+    (lowpoly ?
+      /* HUD à quatre éléments (#6, amendement 3) : vie, objectif, minicarte, alerte */
+      '<rect x="8" y="10" width="52" height="5" rx="2" fill="#2A2320"/>'+
+      '<rect x="8" y="10" width="42" height="5" rx="2" fill="'+C.or+'"/>'+
+      '<text x="8" y="28" fill="#CBBFAF" font-family="ui-monospace,monospace" font-size="6.5">ATTEINDRE LA GRANDE SALLE</text>'+
+      '<rect x="8" y="34" width="34" height="34" rx="3" fill="#0B0908" opacity=".55" stroke="#3A312B" stroke-width="1"/>'+
+      '<circle cx="25" cy="51" r="2.4" fill="'+C.or+'"/>'+
+      '<text x="172" y="16" fill="#7C7168" font-family="ui-monospace,monospace" font-size="6.5" text-anchor="end">CALME</text>'+
+      /* arme abaissée, canon vers le sol, aucun réticule hors visée */
+      '<path d="M148 320 L148 288 L162 283 L170 298 L164 320 Z" fill="#3A322C"/>'+
+      '<path d="M148 288 L162 283 L170 298 Z" fill="#4E443C"/>'
+      : "")+
+    '</svg>';
+}
+
+/* Plan large : les deux sur le toit, lumière venant d'en dessous.
+   Composition en trois bandes — ciel / verrière / les deux au bord. */
+function toit(){
+  const etoiles = [];
+  for(let i=0;i<26;i++){
+    const x = (i*37)%180, y = 8 + ((i*53)%74);
+    etoiles.push('<rect x="'+x+'" y="'+y+'" width="2" height="2" fill="'+C.or+'" opacity="'+(.2+((i*7)%6)/12)+'"/>');
+  }
+  const montants = [];
+  for(let i=0;i<5;i++){
+    montants.push('<line x1="'+(60+i*15)+'" y1="128" x2="'+(18+i*36)+'" y2="200" stroke="#0B0908" stroke-width="2"/>');
+  }
+  return '<svg '+VB+'>'+defsWarm("T")+
+    '<rect width="180" height="320" fill="#0B0908"/>'+
+    '<g opacity=".5">'+etoiles.join("")+'</g>'+
+    '<ellipse cx="90" cy="196" rx="110" ry="60" fill="url(#gTa)"/>'+
+    '<path d="M18 200 L60 128 L120 128 L162 200 Z" fill="#1A130E" stroke="#2E241C" stroke-width="1.4"/>'+
+    montants.join("")+
+    '<path d="M30 186 L64 138 L116 138 L150 186 Z" fill="'+C.or+'" opacity=".22"/>'+
+    '<path d="M64 138 L116 138 L112 160 L68 160 Z" fill="'+C.orPale+'" opacity=".30"/>'+
+    '<path d="M126 150 L142 186 L112 186 Z" fill="'+C.turq+'" opacity=".14"/>'+
+    '<path d="M0 214 L180 214 L180 320 L0 320 Z" fill="#0D0B09"/>'+
+    '<g fill="#100D0B">'+
+      '<path d="M52 302 q-2 -36 8 -44 q6 -5 12 -1 q10 7 8 45 Z"/><circle cx="66" cy="252" r="9"/>'+
+      '<path d="M104 304 q-3 -40 10 -49 q7 -5 14 -1 q11 8 8 50 Z"/><circle cx="120" cy="246" r="10"/>'+
+    '</g>'+
+    '<rect x="58" y="246" width="17" height="3" fill="'+C.or+'" opacity=".9"/>'+
+    '<rect x="111" y="240" width="19" height="3" fill="'+C.or+'" opacity=".9"/>'+
+    '</svg>';
+}
+
+/* La bascule de sortie : les mains se referment sur le cadre,
+   alarme au stroboscope BLANC — le rouge est déjà la mort. */
+function alarme(){
+  return '<svg '+VB+'>'+defsWarm("A")+
+    '<rect width="180" height="320" fill="#0B0908"/>'+
+    '<ellipse cx="90" cy="150" rx="120" ry="110" fill="url(#gAa)"/>'+
+    '<rect x="0" y="0" width="180" height="320" fill="#FFFFFF" opacity=".07"/>'+
+    '<rect x="34" y="70" width="112" height="150" fill="#2B211A" stroke="'+C.or+'" stroke-width="3"/>'+
+    '<rect x="42" y="78" width="96" height="134" fill="#4A382A"/>'+
+    '<path d="M42 190 L74 132 L96 168 L116 140 L138 186 L138 212 L42 212 Z" fill="#6B4E33" opacity=".8"/>'+
+    '<circle cx="112" cy="104" r="12" fill="'+C.orPale+'" opacity=".5"/>'+
+    '<path d="M20 252 q-4 -36 22 -42 q30 -6 34 20 q3 16 -8 22 Z" fill="#17130F"/>'+
+    '<path d="M160 252 q4 -36 -22 -42 q-30 -6 -34 20 q-3 16 8 22 Z" fill="#17130F"/>'+
+    '<path d="M20 252 q-4 -36 22 -42 q30 -6 34 20" fill="none" stroke="'+C.or+'" stroke-width="1.4" opacity=".6"/>'+
+    '<path d="M160 252 q4 -36 -22 -42 q-30 -6 -34 20" fill="none" stroke="'+C.or+'" stroke-width="1.4" opacity=".6"/>'+
+    '<rect x="18" y="248" width="58" height="6" rx="2" fill="#0C0A09"/>'+
+    '<rect x="104" y="248" width="58" height="6" rx="2" fill="#0C0A09"/>'+
+    '<path d="M0 0 L52 0 L18 44 Z" fill="#FFFFFF" opacity=".30"/>'+
+    '<path d="M180 0 L128 0 L162 44 Z" fill="#FFFFFF" opacity=".30"/>'+
+    '<circle cx="14" cy="8" r="5" fill="#FFFFFF" opacity=".85"/>'+
+    '<circle cx="166" cy="8" r="5" fill="#FFFFFF" opacity=".85"/>'+
+    '</svg>';
+}
+
+/* La plage — trois bandes empilées. Le turquoise change de camp. */
+function plage(){
+  return '<svg '+VB+'>'+
+    '<defs><linearGradient id="pl" x1="0" y1="0" x2="0" y2="1">'+
+      '<stop offset="0%" stop-color="#F1C888"/><stop offset="100%" stop-color="#8E5B33"/></linearGradient>'+
+      '<filter id="plf"><feGaussianBlur stdDeviation="1.9"/></filter></defs>'+
+    '<rect width="180" height="320" fill="url(#pl)"/>'+
+    /* BANDE 1 : la mer, étroite, en HAUT. Le turquoise devient la mer. */
+    '<rect x="0" y="0" width="180" height="30" fill="#E9C489"/>'+
+    '<rect x="0" y="30" width="180" height="34" fill="'+C.turq+'" opacity=".62"/>'+
+    '<rect x="0" y="62" width="180" height="10" fill="'+C.turq+'" opacity=".34"/>'+
+    /* BANDE 2 : les deux visages, flou léger */
+    '<g opacity=".95" filter="url(#plf)">'+
+      '<ellipse cx="58" cy="132" rx="26" ry="32" fill="#B67F52"/>'+
+      '<ellipse cx="124" cy="126" rx="27" ry="34" fill="#8E5C3A"/>'+
+      '<path d="M32 176 q26 -18 52 0 q-4 26 -26 26 q-22 0 -26 -26 Z" fill="#D9BE96"/>'+
+      '<path d="M97 172 q27 -18 54 0 q-4 28 -27 28 q-23 0 -27 -28 Z" fill="#C9A87E"/>'+
+    '</g>'+
+    '<rect x="0" y="96" width="180" height="112" fill="#0B0908" opacity=".07"/>'+
+    /* l'œuvre dérobée, dos au spectateur, contre le transat */
+    '<rect x="6" y="196" width="40" height="56" fill="'+C.or+'" opacity=".9"/>'+
+    '<rect x="11" y="201" width="30" height="46" fill="#3A2C1E"/>'+
+    /* BANDE 3 : les deux verres qui trinquent, au premier plan */
+    '<path d="M52 320 L52 268 L36 236 L84 236 L68 268 L68 320 Z" fill="#F6E6C8" opacity=".92"/>'+
+    '<path d="M40 240 L80 240 L70 262 L50 262 Z" fill="#E0713C" opacity=".9"/>'+
+    '<path d="M118 320 L118 264 L102 230 L150 230 L134 264 L134 320 Z" fill="#F6E6C8" opacity=".92"/>'+
+    '<path d="M106 234 L146 234 L136 256 L116 256 Z" fill="#E0713C" opacity=".9"/>'+
+    /* le bandeau, noué au poignet. Le film se referme sur son seul accessoire. */
+    '<path d="M84 302 q24 -16 48 -4 l0 22 q-26 -12 -48 4 Z" fill="#C08F5E"/>'+
+    '<rect x="92" y="298" width="32" height="9" rx="3" fill="#131010"/>'+
+    '<rect x="92" y="298" width="32" height="2" fill="'+C.or+'"/>'+
+    '<rect x="92" y="305" width="32" height="2" fill="'+C.or+'"/>'+
+    '</svg>';
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Contenu des fiches et des blocs de prompt.
+   ───────────────────────────────────────────────────────────── */
+const FICHES = {
+  oeil: {
+    cle:"oeil",
+    fonction:"Trouve le journal. Lit la salle. Ne rentre jamais dans le champ du jeu.",
+    cadeau:"L'<b>Offrant</b> — celui qui a tout préparé.",
+    tenue:"La tenue, intégrale. Bandeau relevé sur le front pendant tout le premier acte.",
+    cadre:"Le visage le plus éclairé de chaque plan qu'il partage. Gros plans autorisés, et souhaités.",
+    constantes:[
+      "<b>Le visage.</b> C'est le seul des trois dont l'identité doit tenir en gros plan sur une dizaine de plans.",
+      "<b>Les cheveux tirés, plaqués, aucune mèche libre.</b> Une mèche est ce qui dérive le plus vite d'un plan à l'autre.",
+      "<b>Le bandeau au front</b> jusqu'au toit, puis sur les yeux. Jamais l'inverse.",
+      "<b>Épaules plus étroites que les hanches</b> en variante <code>couple</code> — écrit en rapport chiffré, jamais en adjectif."
+    ],
+    plaques:["oeil-tete.png <span class='dim'>— tête seule, cadrée à la clavicule</span>","oeil-pied.png <span class='dim'>— pied, face, A-pose</span>"]
+  },
+  main: {
+    cle:"main",
+    fonction:"Entre, avance, prend l'œuvre. Filmé de dos ou en vue subjective.",
+    cadeau:"Le <b>Destinataire</b> — c'est sa place qu'on prend.",
+    tenue:"La tenue, intégrale. Bandeau sur les yeux dès le toit et jusqu'à la fuite.",
+    cadre:"<b>Jamais de gros plan de face tenu.</b> De dos, de trois-quarts en mouvement, ou en vue subjective.",
+    constantes:[
+      "<b>Les gants et la manche.</b> C'est tout ce qu'on voit de lui pendant six à huit minutes de jeu — c'est donc ça, sa fiche la plus importante.",
+      "<b>Épaules nettement plus larges que les hanches</b> en variante <code>couple</code>.",
+      "<b>Le bandeau ne se relève plus</b> après le toit : il porte le rôle que le Destinataire occupe.",
+      "<b>Jamais de face en gros plan</b> — parce que c'est la place que le Destinataire prend, et parce que c'est ce qui rend son re-casting presque gratuit."
+    ],
+    plaques:["main-tete.png <span class='dim'>— tête seule</span>","main-pied.png <span class='dim'>— pied, dos et trois-quarts</span>","main-gants.png <span class='dim'>— <b>mains gantées en vue subjective</b></span>"]
+  },
+  aile: {
+    cle:"aile",
+    fonction:"N'entre jamais. Attend dehors, arrive à l'hélicoptère, lance la corde.",
+    cadeau:"Personne. Le seul rôle sans contrepartie dans le cadeau.",
+    tenue:"<b>Pas la tenue.</b> Blouson de vol fauve, col mouton, casque à micro-perche, lunettes relevées.",
+    cadre:"Deux plans, pas plus. Il doit se reconnaître en une seconde et de loin.",
+    constantes:[
+      "<b>Il ne porte jamais la combinaison.</b> Trois noirs identiques feraient un commando ; ici c'est un ami qui passe.",
+      "<b>La seule personne en couleur chaude du film.</b> C'est ce qui le rend lisible en 9:16 sur un plan de deux secondes.",
+      "<b>Le bandeau miel noué au poignet gauche</b>, sur le manche. Le seul signe qu'il est de l'équipe.",
+      "<b>Sa fiche ne se re-caste pas.</b> Une seule génération, valable pour <code>couple</code> comme pour <code>amis</code>."
+    ],
+    plaques:["aile-tete.png <span class='dim'>— tête et casque</span>","aile-pied.png <span class='dim'>— pied, trois-quarts</span>"]
+  }
+};
+
+const PROMPTS = [
+  { nom:"STYLE", tag:"recollé à chaque appel · jamais modifié", txt:
+"stylized semi-realistic 3D game cinematic, Uncharted and Overwatch cinematic\n"+
+"art direction, no outlines, soft subsurface skin,\n"+
+"natural adult proportions (7 heads, never taller), readable expressive eyes,\n"+
+"sculpted simplified surfaces, hair in solid shaped masses,\n"+
+"one warm key light with a strong warm coloured bounce, volumetric haze,\n"+
+"shallow depth of field, physically based rendering,\n"+
+"composed for a VERTICAL 9:16 frame,\n"+
+"no photorealism, no live action" },
+
+  { nom:"NEGATIF", tag:"recollé à chaque appel · jamais modifié", txt:
+"photorealistic, live action, real skin pores, celebrity likeness,\n"+
+"text, letters, captions, signage, newspaper text, subtitles, watermark,\n"+
+"logo, brand mark, badge, emblem, unit patch, insignia,\n"+
+"firearm, gun, pistol, rifle, holster, muzzle, gun barrel, ammunition,\n"+
+"tactical vest, plate carrier, military webbing, pouches, combat boots,\n"+
+"balaclava, ski mask, blindfold, opaque eye covering, covered eyes,\n"+
+"latex, shiny catsuit, glossy vinyl,\n"+
+"red alarm light, red emergency glow, green sewer light, cyan interior light,\n"+
+"extra fingers, malformed hands, distorted face, twin faces, duplicated limbs,\n"+
+"cel shading, thick outlines, anime, chibi, cartoon,\n"+
+"blurry, washed out, low contrast",
+    note:"Trois entrées ne sont pas des préférences mais des décisions produit. <code>firearm…</code> tient mécaniquement la règle « aucune arme dans une cinématique ». <code>blindfold, opaque eye covering</code> empêche le loup de tuer le visage. <code>red alarm light, green sewer light, cyan interior light</code> tient la règle du turquoise et l'alarme blanche." },
+
+  { nom:"CADRAGE", tag:"recollé à chaque plan large", txt:
+"VERTICAL 9:16 FRAME, and compose for it: three stacked horizontal bands,\n"+
+"never a horizon across the middle of the frame. One band must carry a face or\n"+
+"a hand at readable size. Keep everything essential inside the central 90%.\n"+
+"Nothing essential in the top 8% or the bottom 12% of the frame." },
+
+  { nom:"TENUE", tag:"l'actif · réutilisé par toutes les variantes de casting", txt:
+"THE SUIT — identical on both infiltrators, never varied between shots or\n"+
+"between castings:\n"+
+"a matte black one-piece coverall, high collar, an asymmetric zip running from\n"+
+"the left hip to the right shoulder, no pockets, no pouches, no patches;\n"+
+"a thin chest harness of black webbing with warm honey-gold buckles, EXACTLY\n"+
+"TWO straps across the chest, never a tactical rig;\n"+
+"short black leather gloves ending at the wrist bone, no gauntlet, no cuff;\n"+
+"low black soft-soled boots, laces not visible;\n"+
+"one band six centimetres wide, matte black with a half-centimetre honey-gold\n"+
+"edge, worn either pushed up on the forehead or as a narrow domino mask.\n"+
+"THE MASK, when worn over the eyes, is a NARROW DOMINO MASK with wide open eye\n"+
+"holes: both eyes fully visible and lit, irises and whites clearly readable.\n"+
+"Never a blindfold, never an opaque band, never a balaclava." },
+
+  { nom:"QUI_OEIL", tag:"un bloc par personnage présent au cadre", txt:
+"@ImageN is L'OEIL, the one who reads the room. Reproduce her exactly from the\n"+
+"reference: same face, same hair, same build.\n"+
+"Adult, mid-thirties, 168 cm tall. Head is one seventh of total height.\n"+
+"Hip line at 46% of total height. Shoulders NARROWER than the hips.\n"+
+"Dark hair pulled back tight and low, flat to the skull, no loose strand.\n"+
+"Still, alert, watches before she moves.\n"+
+"She wears THE SUIT. Her face is the most lit thing in any frame she is in." },
+
+  { nom:"QUI_MAIN", tag:"un bloc par personnage présent au cadre", txt:
+"@ImageN is LA MAIN, the one who goes in. Reproduce him exactly from the\n"+
+"reference: same face, same hair, same build.\n"+
+"Adult, mid-thirties, 178 cm tall. Head is one seventh of total height.\n"+
+"Hip line at 47% of total height. Shoulders CLEARLY WIDER than the hips.\n"+
+"Very short dark hair, three days of stubble. Moves first, looks second.\n"+
+"He wears THE SUIT. He is filmed from behind, over the shoulder, or from his\n"+
+"own point of view. When his face is visible it is in three-quarter and in\n"+
+"motion — NEVER a held front close-up." },
+
+  { nom:"QUI_AILE", tag:"généré une fois · valable pour toutes les relations", txt:
+"@ImageN is L'AILE, the friend at the controls. Reproduce him exactly from the\n"+
+"reference: same face, same build.\n"+
+"Adult, forty, 175 cm tall, heavy-set. Head is one seventh of total height.\n"+
+"Dense black beard trimmed short, shaved head under the helmet.\n"+
+"He does NOT wear THE SUIT: a tan leather flight jacket with a shearling\n"+
+"collar, a scuffed grey flight helmet with a boom microphone, tinted goggles\n"+
+"pushed up on the helmet, bare hands on the controls, and the honey-gold band\n"+
+"knotted around his left wrist.\n"+
+"He is the only warm-coloured person in the film." },
+
+  { nom:"TAILLES", tag:"recollé dès que deux partagent le cadre", txt:
+"HEIGHTS: L'OEIL is 168 cm, LA MAIN is 178 cm, L'AILE is 175 cm. Ten\n"+
+"centimetres between the tallest and the shortest — never a head apart.\n"+
+"No towering figure, no child-sized adult, no low camera angle exaggerating\n"+
+"anyone's size.",
+    note:"Sans ce bloc, le legacy a mesuré que le modèle exagère spontanément l'écart de stature dès qu'un personnage domine l'autre dans l'action — « on dirait un géant à côté du petit »." },
+
+  { nom:"DECOR_TOIT", tag:"un bloc par lieu", txt:
+"SETTING — THE ROOF: the glass roof of a city museum at night, seen from\n"+
+"above. Warm honey light rises through the glass from the galleries below and\n"+
+"lights the two figures from underneath. Everything else is warm black: the\n"+
+"sky, the stone parapet, the city beyond. No moon, no blue, no street lighting." },
+
+  { nom:"DECOR_GALERIE", tag:"un bloc par lieu", txt:
+"SETTING — THE GALLERY: a night museum interior in warm honey stone, ceiling\n"+
+"in warm black, all light coming from below and from rails above the frames.\n"+
+"Gilded frames on the walls, lit display cases on plinths.\n"+
+"The ONLY cool colour anywhere in frame is the turquoise cone of a surveillance\n"+
+"camera. Nothing else in this film is turquoise." },
+
+  { nom:"DECOR_EGOUT", tag:"un bloc par lieu", txt:
+"SETTING — THE SEWER: a brick tunnel in warm black. The only light comes from\n"+
+"street gratings overhead: vertical honey-gold bars falling through the dark,\n"+
+"one after another down the length of the tunnel, reflected in standing water.\n"+
+"No green, no cyan, no cold light anywhere." },
+
+  { nom:"DECOR_EXTRACTION", tag:"un bloc par lieu", txt:
+"SETTING — THE EXTRACTION: a rooftop courtyard at night. A helicopter hovers\n"+
+"in the TOP THIRD of the vertical frame, its landing light warm. A single rope\n"+
+"runs the FULL HEIGHT of the frame from the aircraft to the ground. Dust and\n"+
+"paper lifted by the rotor wash. Warm black sky, no blue." },
+
+  { nom:"DECOR_PLAGE", tag:"un bloc par lieu · le dernier plan", txt:
+"SETTING — THE BEACH: early evening on a tropical beach, composed in three\n"+
+"stacked bands for the vertical frame — two cocktail glasses touching in the\n"+
+"near foreground at the BOTTOM, the two faces just behind them in soft focus in\n"+
+"the MIDDLE, and a narrow band of turquoise sea across the TOP of the frame.\n"+
+"A gilded picture frame rests face-away against a deck chair at the frame edge.\n"+
+"The honey-gold band is knotted around the wrist of the hand holding a glass.\n"+
+"Warm low sun. No horizon across the middle of the frame." },
+
+  { nom:"PLANCHE_PIED", tag:"nano-banana-pro · aspect_ratio 9:16 · num_images 2", txt:
+"Character sheet plate, single subject, flat neutral warm grey background,\n"+
+"even soft light from the front left, no scenery, no props, no text.\n"+
+"FULL BODY, standing straight, arms slightly away from the body, feet together,\n"+
+"facing camera. The whole figure inside the frame with clear margin above the\n"+
+"head and below the feet.\n\n"+
+"+ QUI_<RÔLE> + TENUE + STYLE + NEGATIF" },
+
+  { nom:"PLANCHE_TETE", tag:"nano-banana-pro · la plaque qui débloque les proportions", txt:
+"Character sheet plate, HEAD AND SHOULDERS ONLY, cropped at the collarbone.\n"+
+"Flat neutral warm grey background. Three-quarter view, eyes to camera,\n"+
+"neutral expression. Nothing below the collarbone is visible.\n\n"+
+"+ la partie VISAGE de QUI_<RÔLE> + STYLE + NEGATIF",
+    note:"C'est la plaque qu'on donne quand le CORPS doit changer — en variante de casting, ou quand une proportion refuse de bouger. Le legacy a mesuré quatre passes infructueuses sur une taille : elle a basculé en une seule passe dès qu'on a donné la tête seule. On ne discute pas avec une image, on la recadre." },
+
+  { nom:"PLANCHE_GANTS", tag:"nano-banana-pro · La Main uniquement", txt:
+"Character sheet plate, HANDS ONLY. Two gloved hands seen from the wearer's own\n"+
+"point of view, palms down, low in the frame, resting on a ledge.\n"+
+"Short black leather gloves ending at the wrist bone, the black coverall cuff\n"+
+"just visible above them. Flat neutral warm grey background, no scenery,\n"+
+"no text.\n\n"+
+"+ STYLE + NEGATIF",
+    note:"Ce sont les seuls éléments de La Main visibles pendant six à huit minutes de jeu. Ils coûtent 0,15 $ et ils portent à eux seuls le raccord de la variante C." }
+];
+
+const PALETTE = [
+  { hx:"#0B0908", nm:"Noir chaud",  wh:"Le fond de tout : le ciel, les plafonds, la combinaison. La même valeur que le noir de la marque (#7)." },
+  { hx:"#C89A5B", nm:"Pierre miel", wh:"La pierre du musée, éclairée par en dessous. La couleur du bâtiment, celle qui doit se retrouver dans le jeu." },
+  { hx:"#E8B76A", nm:"Or miel",     wh:"Les cadres, la lumière des vitrines, les boucles du harnais, la bordure du bandeau. L'or de la marque, à l'identique." },
+  { hx:"#4FD6C0", nm:"Turquoise",   wh:"Les cônes de caméras, et rien d'autre — jusqu'à la mer du dernier plan." },
+  { hx:"#A9713C", nm:"Fauve vol",   wh:"Le blouson de L'Aile, l'hélicoptère, la lumière de la fuite. Le seul personnage en couleur." }
+];
+
+const VERDICTS = {
+  A: "<b>A n'est pas retenu, et l'argument est de mesure.</b> À lumière strictement identique, la seule différence qui reste entre les deux images est le nombre de polygones — et l'œil va exactement là. Vouloir masquer la rupture, c'est la désigner. Ce qui était tentant, et qui ne l'est pas rien : c'est la seule variante qui n'ajoute aucun dispositif, donc le seul plan de bascule qu'on n'a pas à dérisquer avant de le tirer.",
+  B: "<b>B n'est pas retenu, mais on lui prend une chose.</b> Signer la coupure est juste ; la signer deux fois ne l'est pas — les bandes devraient se refermer sur un jeu qu'on est en train de jouer, et une bande noire qui tombe pendant une partie se lit comme un chargement, pas comme un film. <b>On garde la boîte aux lettres sur les deux premières secondes du film et nulle part ailleurs</b> : elle dit « ça commence », puis le cadre s'ouvre et ne se referme plus.",
+  C: "<b>C est retenu, aux deux bascules.</b> La rupture se dépense sur une seule image et sur un objet identique : les mêmes mains gantées sur le même rebord, lissées d'un côté, facettées de l'autre. C'est le seul endroit du film où le spectateur peut comparer, donc le seul endroit où l'on choisit ce qu'il compare — un gant, pas une salle. Le legacy avait déjà trouvé la règle sans la nommer : <em>« le dernier plan de la cinématique doit reproduire la première image du jeu »</em>. La sortie se joue en miroir, sur les mêmes gants qui se referment sur le cadre de l'œuvre. <b>Contrepartie assumée : la planche des mains gantées devient l'actif le plus critique du film</b> — si elle dérive, les deux bascules tombent ensemble."
+};
+
+const CAPS = {
+  A: "Plan large : les deux au bord de la verrière, éclairés par en dessous. Même palette, même source, aucun signe de changement de média.",
+  B: "Le même plan, signé comme un film : bandes, grain, focale longue. Le jeu commence quand les bandes s'écartent.",
+  C: "Vue subjective semi-réaliste : deux mains gantées sur le rebord de la verrière, le musée en dessous. C'est la composition exacte de l'image d'à côté."
+};
+
+/* ── Rendu ────────────────────────────────────────────────── */
+const $  = function(s,r){ return (r||document).querySelector(s); };
+const $$ = function(s,r){ return Array.prototype.slice.call((r||document).querySelectorAll(s)); };
+const state = { variant:"C", casting:"couple", bandeau:"front" };
+
+function swapSvg(el, svg){
+  $$("svg", el).forEach(function(n){ n.remove(); });
+  el.insertAdjacentHTML("afterbegin", svg);
+}
+
+function buildFiches(){
+  $("#fichesGrid").innerHTML = ["oeil","main","aile"].map(function(r){
+    const f = FICHES[r], m = MORPHO[r][state.casting];
+    return '<article class="fiche">'+
+      '<div class="plate">'+ figure(r, state.casting, state.bandeau)+
+        '<div class="role"><div class="k">rôle · '+f.cle+'</div><div class="n">'+m.nom+'</div><div class="f">'+m.desc+'</div></div>'+
+      '</div>'+
+      '<div class="body"><dl>'+
+        '<dt>fonction</dt><dd>'+f.fonction+'</dd>'+
+        '<dt>cadeau</dt><dd>'+f.cadeau+'</dd>'+
+        '<dt>tenue</dt><dd>'+f.tenue+'</dd>'+
+        '<dt>cadre</dt><dd>'+f.cadre+'</dd>'+
+        '<dt>planches</dt><dd>'+f.plaques.map(function(p){ return '<code>'+p+'</code>'; }).join("<br>")+'</dd>'+
+      '</dl>'+
+      '<div class="const"><div class="h">Ce qui doit rester constant d\'un plan à l\'autre</div>'+
+      '<ul>'+f.constantes.map(function(c){ return '<li>'+c+'</li>'; }).join("")+'</ul></div>'+
+      '</div></article>';
+  }).join("");
+}
+
+function buildPalette(){
+  $("#palGrid").innerHTML = PALETTE.map(function(p){
+    return '<div class="sw"><div class="c" style="background:'+p.hx+'"></div>'+
+      '<div class="i"><div class="hx">'+p.hx+'</div><div class="nm">'+p.nm+'</div><div class="wh">'+p.wh+'</div></div></div>';
+  }).join("");
+}
+
+function esc(s){ return s.replace(/[<>&]/g, function(c){ return {"<":"&lt;",">":"&gt;","&":"&amp;"}[c]; }); }
+
+function buildPrompts(){
+  $("#promptBlocks").innerHTML = PROMPTS.map(function(b){
+    return '<div class="blk"><div class="hd"><span class="nm">'+b.nom+'</span><span class="tag">'+b.tag+'</span></div>'+
+      '<pre>'+esc(b.txt)+'</pre></div>'+
+      (b.note ? '<div class="note" style="margin-top:-4px">'+b.note+'</div>' : "");
+  }).join("");
+}
+
+function render(){
+  document.body.dataset.variant = state.variant;
+  document.body.dataset.casting = state.casting;
+  document.body.dataset.bandeau = state.bandeau;
+  $$(".bar button").forEach(function(b){ b.setAttribute("aria-pressed", String(state[b.dataset.set] === b.dataset.val)); });
+  $$(".vcard").forEach(function(c){ c.dataset.on = (c.dataset.v === state.variant) ? "1" : "0"; });
+
+  swapSvg($("#shotCine"), state.variant === "C" ? povVerriere(false) : toit());
+  $("#badgeCine").textContent = state.variant === "C" ? "cinématique · vue subjective" : "cinématique";
+  $("#capCine").textContent = CAPS[state.variant];
+
+  swapSvg($("#shotJeu"),   povVerriere(true));
+  swapSvg($("#shotFuite"), alarme());
+  swapSvg($("#shotPlage"), plage());
+
+  $("#verdictBox").innerHTML = VERDICTS[state.variant];
+  buildFiches();
+
+  try {
+    const u = new URL(location.href);
+    u.searchParams.set("variant", state.variant);
+    history.replaceState(null, "", u);
+  } catch(e){ /* file:// sans historique — sans conséquence */ }
+}
+
+$$(".bar button").forEach(function(b){
+  b.addEventListener("click", function(){ state[b.dataset.set] = b.dataset.val; render(); });
+});
+$$(".vcard").forEach(function(c){
+  c.addEventListener("click", function(){ state.variant = c.dataset.v; render(); });
+});
+addEventListener("keydown", function(e){
+  const o = ["A","B","C"], i = o.indexOf(state.variant);
+  if(e.key === "ArrowRight"){ state.variant = o[(i+1)%3]; render(); }
+  if(e.key === "ArrowLeft"){  state.variant = o[(i+2)%3]; render(); }
+});
+
+try {
+  const q = new URL(location.href).searchParams.get("variant");
+  if(q && ["A","B","C"].indexOf(q.toUpperCase()) !== -1) state.variant = q.toUpperCase();
+} catch(e){ /* idem */ }
+
+buildPalette(); buildPrompts(); render();
+</script>
+</body>
+</html>
