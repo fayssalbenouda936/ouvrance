@@ -1,0 +1,23 @@
+# Un asset servi au navigateur est CC0 ou il n'entre pas
+
+Toute maille, texture ou animation servie au Destinataire est **CC0**, ou **générée par nous**, ou **modélisée par nous**. Aucune autre licence ne franchit la frontière du dépôt — ni royalty-free payante, ni CC-BY, ni autorisation d'usage liée à un compte. Et **la provenance se consigne à la récolte**, dans un `PROVENANCE.json` par répertoire d'assets qui cite la clause décisive au lieu de la résumer.
+
+## Pourquoi
+
+Parce qu'un `.glb` servi depuis le domaine R2 public de l'[ADR-0007](0007-d1-porte-l-etat-r2-ne-porte-que-des-octets.md) est extractible par construction, et que la vraie question d'une licence n'est pas « autorise-t-elle le commerce » — presque toutes l'autorisent — mais « **impose-t-elle une obligation technique que nous ne pouvons pas tenir** ».
+
+Deux des plus grandes banques payantes du marché en imposent une, et la formulent en toutes lettres. TurboSquid exige que le modèle soit « contenu dans un format propriétaire, de sorte qu'il ne puisse pas être ouvert ou importé dans une application publiquement disponible, ni extrait sans rétro-ingénierie » — et énumère les exports WebGL admis : Unity, Unreal, Lumberyard, Stingray. CGTrader définit l'« Incorporated Product » comme celui qui ne peut pas être extrait « sans outils de rétro-ingénierie ». glTF est un format ouvert et documenté ; un `GET` n'est pas de la rétro-ingénierie. Le choix de Three.js, fait pour la performance parce qu'un lien reçu par SMS n'attend pas un téléchargement, ferme ces deux portes par un chemin qu'on n'avait pas prévu.
+
+CC-BY est juridiquement franchissable et pratiquement inutilisable ici : une Expérience qui s'ouvre sur « Toucher pour commencer » et se ferme sur la Récompense n'a aucune surface où poser une attribution, et en fabriquer une pour créditer un banc à trois polygones est un mauvais échange.
+
+Et la règle de consignation naît d'une facture déjà payée. `combat-3d/decor/parking.glb` pèse 14 484 480 octets, il est servi en HTTP sur un cadeau **vendu**, et l'outil de préparation a effacé les métadonnées d'origine du GLB : personne ne peut plus dire sous quelle licence il est servi. Une licence supposée n'est pas une licence vérifiée.
+
+## Conséquences
+
+- **On n'achète pas d'assets, et le prix n'est pas la raison.** Synty passe la barre juridique — son EULA concède l'incorporation dans un produit sans imposer de format — et un `Heist Pack` à 9 $ plus un `Spy Kit` à 9,99 $ auraient donné une cohérence toute faite. On refuse parce que leurs fiches disent « no animations included » : l'achat n'achète pas la seule chose chère, un garde qui patrouille, tire et tombe. Le retour en arrière coûte 19 $ et une soirée ; il reste ouvert.
+- **Le même lot n'a pas la même licence selon le magasin.** L'Asset Store d'Unity interdit la rediffusion permettant l'extraction ; le magasin de Synty non. Acheter au bon endroit fait partie de la décision.
+- **Mixamo sort du dépôt.** Adobe autorise l'usage commercial sans redevance, mais interdit de distribuer les fichiers à des clients — et c'est une autorisation liée à un compte, pas une licence libre. Le corps et les clips du garde viennent de Quaternius, CC0, même rig humanoïde pour les deux.
+- **La cohérence devient une étape de construction.** Toute maille entrante est dépouillée de ses matériaux à l'import, remise à l'échelle métrique du dépôt et rebranchée sur l'unique matériau de palette du niveau. C'est ce qui autorise quatre origines dans la même salle — et ce qui rend la génération viable, puisque le défaut d'un tirage image→3D est sa texture, qu'on jette de toute façon.
+- **La Chaîne d'auteur gagne une branche 3D.** Elle ne produit plus seulement des Cinématiques maîtres : elle tire aussi les sculptures et l'œuvre de la Récompense par image→3D, à 0,30 $ le tirage, et elle consigne la provenance de chaque récolte avant l'étape qui l'efface.
+- **Le Contenu par défaut se récolte sous règle.** Les toiles viennent de l'Open Access du Met, CC0 sans attribution exigée : ni sujet religieux, ni violence, ni nu, ni personne moderne identifiable. L'[ADR-0003](0003-experience-complete-sans-personnalisation.md) en fait l'état normal de l'Expérience, pas un repli — une décollation de saint au mur d'un cadeau de mariage est un défaut avant d'être une infraction à une règle.
+- **Ce qu'on paie en échange** : le musée n'existe nulle part tout fait. La coque des cinq salles et les dix Emplacements se modélisent chez nous — non parce que la géométrie est difficile, mais parce que ce sont les ancres de proximité qui coûtent, et qu'aucun lot acheté ne les porte.

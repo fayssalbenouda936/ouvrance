@@ -1,6 +1,6 @@
 # ouvrance
 
-ouvrance transforme un cadeau en argent en expérience numérique. L'offrant achète une formule, la personnalise et reçoit un lien à transmettre ; le destinataire ouvre le lien, vit l'expérience et découvre à la fin le message et le lien de virement. L'argent ne transite jamais par la plateforme.
+ouvrance met en scène ce qu'on offre. L'offrant achète une formule, la personnalise et reçoit un lien à transmettre ; le destinataire ouvre le lien, vit l'expérience et découvre à la fin la récompense — le message de l'offrant, et son lien de virement s'il en a joint un. L'argent, quand il y en a, ne transite jamais par la plateforme.
 
 Ce fichier est un glossaire et rien d'autre : aucun détail d'implémentation, aucune spécification.
 
@@ -25,7 +25,7 @@ La déclinaison d'une cinématique maître selon la relation représentée. Le s
 _Avoid_ : version, déclinaison, variante (employé seul)
 
 **Emplacement** :
-Une place, prévue par la mise en scène d'une expérience, où un Souvenir de l'offrant peut apparaître — un mur du musée, un polaroïd sur la feuille. Là où la mise en scène est fixe, un emplacement est toujours occupé : il porte un contenu par défaut qu'un Souvenir vient remplacer. Là où elle s'adapte, un emplacement sans Souvenir n'apparaît pas. Jamais de trou dans les deux cas. C'est une capacité de mise en scène, à ne pas confondre avec le quota.
+Une place, prévue par la mise en scène d'une expérience, où un Souvenir de l'offrant peut apparaître — un mur du musée, un polaroïd sur la table. Là où la mise en scène est fixe, un emplacement est toujours occupé : il porte un contenu par défaut qu'un Souvenir vient remplacer. Là où elle s'adapte, un emplacement sans Souvenir n'apparaît pas. Jamais de trou dans les deux cas. C'est une capacité de mise en scène, à ne pas confondre avec le quota.
 _Avoid_ : slot, champ, zone
 
 **Contenu par défaut** :
@@ -96,13 +96,17 @@ _Avoid_ : commande, livraison, instance
 L'adresse par laquelle un destinataire atteint un cadeau. Révocable ; un même cadeau peut en porter plusieurs au fil du temps.
 _Avoid_ : URL, jeton, token
 
+**Extinction** :
+La destruction des dérivés d'un cadeau et de tout ce qui le décrit — ses phrases, son message, son lien de virement. Elle révoque tous ses liens et ne se défait pas. À distinguer de la révocation d'un lien, qui ne détruit rien et laisse le cadeau vivant.
+_Avoid_ : suppression, purge (pour un cadeau), désactivation, retrait
+
 **Récompense** :
-Ce que le cadeau révèle à la fin : le message de l'offrant, son lien de virement, et le montant offert s'il a choisi de l'afficher. Dans le braquage, la récompense est l'œuvre dérobée.
+Ce que le cadeau révèle à la fin : le message de l'offrant, et le montant offert s'il a choisi de l'afficher. Le message est le seul contenu qu'un destinataire reçoit à coup sûr. Le lien de virement se montre au même moment sans faire partie de la récompense — c'est une adresse, pas un contenu. Dans le braquage, la récompense est l'œuvre dérobée.
 _Avoid_ : reveal, écran de fin, cagnotte
 
 **Lien de virement** :
-L'adresse de virement de l'offrant, révélée au destinataire dans la récompense. ouvrance la montre et ne l'encaisse jamais.
-_Avoid_ : cagnotte, don, paiement, transfert
+L'adresse de virement de l'offrant, facultative, montrée au destinataire au moment de la récompense. Elle appartient au cadeau et non à la personnalisation : elle se périme, et c'est le seul élément d'un cadeau que l'offrant révise après la validation, sans en repasser la porte. Elle se choisit dans une liste close de services. ouvrance la montre et ne l'encaisse jamais.
+_Avoid_ : cagnotte, don, paiement, transfert, lien de paiement
 
 ### La production
 
