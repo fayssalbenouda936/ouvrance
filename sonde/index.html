@@ -1,0 +1,704 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="data:,">
+<title>Sonde de capacités — ouvrance</title>
+<style>
+  :root { --fond:#0e1116; --carte:#161b22; --trait:#2a323d; --texte:#e6edf3; --gris:#8b949e;
+          --ok:#3fb950; --ko:#f85149; --attention:#d29922; --accent:#58a6ff; }
+  * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body { margin:0; padding:14px 14px 60px; background:var(--fond); color:var(--texte);
+         font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; }
+  h1 { font-size:19px; margin:0 0 4px; }
+  h2 { font-size:14px; margin:0 0 10px; color:var(--gris); text-transform:uppercase; letter-spacing:.06em; }
+  .carte { background:var(--carte); border:1px solid var(--trait); border-radius:10px; padding:14px; margin:12px 0; }
+  button { font:600 16px/1 inherit; color:var(--texte); background:#21262d; border:1px solid var(--trait);
+           border-radius:9px; padding:15px 16px; width:100%; margin:6px 0; text-align:left; }
+  button:active { background:#30363d; }
+  button.primaire { background:#1f6feb; border-color:#1f6feb; }
+  button.danger { border-color:#7d2b26; }
+  button[disabled] { opacity:.4; }
+  button small { display:block; font-weight:400; font-size:12px; color:var(--gris); margin-top:5px; }
+  button.primaire small { color:#cfe3ff; }
+  input, textarea, select { font:14px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace; color:var(--texte);
+           background:#0d1117; border:1px solid var(--trait); border-radius:8px; padding:11px; width:100%; }
+  label { display:block; font-size:12px; color:var(--gris); margin:10px 0 4px; }
+  table { width:100%; border-collapse:collapse; font-size:13px; }
+  td { padding:5px 0; vertical-align:top; border-bottom:1px solid #1d232b; }
+  td:first-child { color:var(--gris); width:44%; padding-right:10px; }
+  td:last-child { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; word-break:break-word; }
+  pre { font:12px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace; white-space:pre-wrap;
+        word-break:break-word; margin:0; }
+  .ok{color:var(--ok)} .ko{color:var(--ko)} .att{color:var(--attention)} .gris{color:var(--gris)}
+  #resume { background:#0d1117; border:1px solid var(--accent); border-radius:10px; padding:14px;
+            font:13px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace; white-space:pre-wrap; }
+  #bacDecodeurs { display:flex; flex-wrap:wrap; gap:2px; margin-top:10px; }
+  #bacDecodeurs video { width:15px; height:26px; object-fit:cover; background:#000; }
+  #couleurs { position:fixed; inset:0; z-index:99; display:none; flex-direction:column; }
+  #couleurs .bande { flex:1; display:flex; align-items:center; justify-content:center;
+                     font:600 14px/1 -apple-system,sans-serif; color:#00000099; }
+  #couleurs .mire { flex:1; display:grid; grid-template-columns:repeat(6,1fr); }
+  #couleurs .barres { position:absolute; left:0; right:0; bottom:0; padding:12px; background:#000c; }
+  .avert { font-size:12px; color:var(--attention); margin-top:8px; }
+  .repere { font-size:12px; color:var(--gris); margin-top:8px; }
+</style>
+</head>
+<body>
+
+<h1>Sonde de capacités — ouvrance</h1>
+<p class="repere">Ouvre cette page <b>depuis l'application à tester</b> (TikTok, Instagram, WhatsApp, Snapchat) — pas depuis le navigateur, sauf pour la mesure de référence.</p>
+
+<div class="carte">
+  <h2>1 · Identifier la mesure</h2>
+  <label for="app">Application d'où le lien a été ouvert</label>
+  <select id="app">
+    <option value="">— choisir —</option>
+    <option>TikTok</option><option>Instagram</option><option>WhatsApp</option>
+    <option>Snapchat</option><option>Navigateur (Safari / Chrome)</option><option>Autre</option>
+  </select>
+  <label for="appareil">Appareil (modèle + version d'OS)</label>
+  <input id="appareil" placeholder="iPhone 13 · iOS 18.5">
+</div>
+
+<div class="carte">
+  <h2>2 · Relevé automatique</h2>
+  <div id="reprise"></div>
+  <table id="tableStatique"><tbody></tbody></table>
+</div>
+
+<div class="carte">
+  <h2>3 · Ce qu'un tap débloque</h2>
+  <button class="primaire" id="btnGeste">Lancer la sonde
+    <small>plein écran · AudioContext · vidéo inline · son · décodage hevc / av1 / vp9</small></button>
+  <table id="tableGeste"><tbody></tbody></table>
+  <div style="display:flex;gap:8px;margin-top:8px">
+    <video id="vInline" muted loop playsinline webkit-playsinline preload="auto"
+           style="width:60px;height:104px;object-fit:cover;background:#000;border-radius:4px"></video>
+    <video id="vSon" loop playsinline webkit-playsinline preload="auto"
+           style="width:60px;height:104px;object-fit:cover;background:#000;border-radius:4px"></video>
+    <video id="vHevc" muted loop playsinline webkit-playsinline preload="auto" style="width:34px;height:60px;background:#000"></video>
+    <video id="vAv1" muted loop playsinline webkit-playsinline preload="auto" style="width:34px;height:60px;background:#000"></video>
+    <video id="vVp9" muted loop playsinline webkit-playsinline preload="auto" style="width:34px;height:60px;background:#000"></video>
+  </div>
+  <div class="repere">Le deuxième carré a du son : dis si tu l'entends, et vérifie l'interrupteur silencieux.</div>
+  <div style="display:flex;gap:8px;margin-top:6px">
+    <button id="btnSonOui" style="width:auto;flex:1">J'entends le son</button>
+    <button id="btnSonNon" style="width:auto;flex:1">Aucun son</button>
+  </div>
+</div>
+
+<div class="carte">
+  <h2>4 · Combien de décodeurs vidéo</h2>
+  <button id="btnDecodeurs">Monter à 40 vidéos simultanées
+    <small>toutes amorcées dans le même tap — c'est la règle iOS</small></button>
+  <button id="btnPlus" disabled>Ajouter 40 de plus
+    <small>si les 40 premières tiennent, le plafond est plus haut : il faut monter</small></button>
+  <button id="btnPause" disabled>Mettre la moitié en pause, puis relancer les échouées
+    <small>une vidéo en pause retient-elle son décodeur ?</small></button>
+  <table id="tableDecodeurs"><tbody></tbody></table>
+  <div id="bacDecodeurs"></div>
+</div>
+
+<div class="carte">
+  <h2>5 · Plafonds — peut faire planter l'onglet</h2>
+  <p class="avert">Le plantage <b>est</b> la mesure. Le dernier palier est écrit dans l'adresse de la page : il survit au rechargement. Si l'onglet meurt, rouvre simplement la page et le relevé reprendra le chiffre.</p>
+  <button class="danger" id="btnMemoire">Rampe mémoire — par blocs de 32 Mo</button>
+  <button class="danger" id="btnTextures">Rampe textures WebGL — par 1024×1024 (4 Mo)</button>
+  <table id="tablePlafonds"><tbody></tbody></table>
+</div>
+
+<div class="carte">
+  <h2>6 · Les deux verts, en plein soleil</h2>
+  <p class="repere">Box de soin <b>#34C77B</b> contre cône de caméra <b>#4FD6C0</b>. À juger dehors, en plein jour, mode économie d'énergie activé et luminosité automatique.</p>
+  <button id="btnCouleurs">Afficher les deux verts</button>
+  <div id="verdictCouleurs"></div>
+</div>
+
+<div class="carte">
+  <h2>7 · Rapport</h2>
+  <div id="resume">—</div>
+  <label for="notes">Ce que tu as vu et que la page ne peut pas mesurer</label>
+  <textarea id="notes" rows="3" placeholder="l'onglet a rechargé tout seul, la vidéo est partie en plein écran natif, …"></textarea>
+  <button class="primaire" id="btnCopier">Copier le rapport</button>
+  <button id="btnPartager">Partager le rapport (message, mail, notes)</button>
+  <label for="json">Rapport brut</label>
+  <textarea id="json" rows="10" readonly></textarea>
+</div>
+
+<div id="couleurs">
+  <div class="bande" style="background:#34C77B">#34C77B — soin</div>
+  <div class="mire" id="mire"></div>
+  <div class="bande" style="background:#4FD6C0">#4FD6C0 — caméra</div>
+  <div class="barres">
+    <button id="cOk">Les deux se distinguent nettement</button>
+    <button id="cLimite">À la limite, il faut chercher</button>
+    <button id="cNon">Indistinguables</button>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+var R = {
+  meta:{ sonde:2, ouvertLe:new Date().toISOString(), app:'', appareil:'', url:location.href },
+  moteur:{}, apis:{}, ecran:{}, codecs:{}, webgl:{}, webgpu:{},
+  geste:{}, decodeurs:{}, memoire:{}, textures:{}, couleurs:{}, notes:''
+};
+
+var $ = function(id){ return document.getElementById(id); };
+var attendre = function(ms){ return new Promise(function(r){ setTimeout(r, ms); }); };
+function essai(f){ try { return f(); } catch(e){ return 'ERREUR ' + e.name + ' : ' + e.message; } }
+
+/* ---- jalons dans l'adresse : ils survivent au plantage ---- */
+var jalons = {};
+(function lireJalons(){
+  var h = location.hash.replace(/^#/,'');
+  if(!h) return;
+  h.split(',').forEach(function(p){
+    var kv = p.split(':');
+    if(kv.length === 2) jalons[kv[0]] = kv[1];
+  });
+})();
+function jalon(cle, valeur){
+  jalons[cle] = String(valeur);
+  var s = Object.keys(jalons).map(function(k){ return k + ':' + jalons[k]; }).join(',');
+  try { history.replaceState(null, '', '#' + s); } catch(e) { location.hash = s; }
+}
+
+/* ---- rendu ---- */
+function remplir(idTable, obj){
+  var tb = $(idTable).querySelector('tbody');
+  tb.innerHTML = '';
+  Object.keys(obj).forEach(function(k){
+    var v = obj[k];
+    if (v && typeof v === 'object') v = JSON.stringify(v);
+    var cl = v === true ? 'ok' : (v === false ? 'ko' : (String(v).indexOf('ERREUR') === 0 ? 'att' : ''));
+    var tr = document.createElement('tr');
+    tr.innerHTML = '<td>' + k + '</td><td class="' + cl + '">' + String(v) + '</td>';
+    tb.appendChild(tr);
+  });
+}
+
+function maj(){
+  R.meta.app = $('app').value;
+  R.meta.appareil = $('appareil').value;
+  R.notes = $('notes').value;
+  $('json').value = JSON.stringify(R, null, 1);
+  var g = R.geste, d = R.decodeurs, l = [];
+  function ligne(a, b){ l.push((a + '          ').slice(0,10) + ': ' + b); }
+  ligne('APP',      (R.meta.app || '?') + ' · ' + (R.meta.appareil || '?'));
+  ligne('MOTEUR',   R.moteur.verdict || '?');
+  ligne('PLEIN ÉCR', g.pleinEcranReel === undefined ? '—' :
+        (g.pleinEcranReel ? 'OUI' : 'NON (' + (g.pleinEcranRejet || 'sans erreur : no-op') + ')'));
+  ligne('VIDÉO',    g.inlineJoue === undefined ? '—' :
+        (g.inlinePleinEcranForce ? 'PLEIN ÉCRAN NATIF FORCÉ' : (g.inlineJoue ? 'inline OK' : 'ne joue pas')));
+  ligne('AUDIO',    g.audioEtatApres || '—');
+  ligne('SON',      g.sonEntendu === undefined ? '—' : (g.sonEntendu ? 'entendu' : 'muet'));
+  ligne('DÉCODEURS', d.enLecture === undefined ? (jalons.dec ? 'plantage après ' + jalons.dec : '—')
+        : d.enLecture + ' / ' + d.demandes + (d.apresPause && d.apresPause.relancees ? ' · après pause +' + d.apresPause.reussis : ''));
+  ligne('MÉMOIRE',  R.memoire.atteintMo ? R.memoire.atteintMo + ' Mo' + (R.memoire.plafond ? ' (plafond, pas de crash)' : '')
+        : (jalons.mem ? 'plantage après ' + jalons.mem + ' Mo' : '—'));
+  ligne('TEXTURES', R.textures.atteintMo ? R.textures.atteintMo + ' Mo' + (R.textures.contextePerdu ? ' (contexte perdu)' : '')
+        : (jalons.tex ? 'plantage après ' + jalons.tex + ' Mo' : '—'));
+  ligne('VERTS',    R.couleurs.verdict || '—');
+  $('resume').textContent = l.join('\n');
+}
+
+/* ================= 2 · relevé automatique ================= */
+function sondeMoteur(){
+  var ua = navigator.userAgent, m = R.moteur;
+  m.ua = ua;
+  m.jetonWv = /[;(]\s*wv[;)]/.test(ua);
+  m.version40 = ua.indexOf('Version/4.0') >= 0;
+  m.chrome = (ua.match(/Chrome\/([\d.]+)/) || [])[1] || null;
+  m.suffixeSafari = / Safari\/[\d.]+/.test(ua);
+  m.jetonMobile = (ua.match(/Mobile\/(\w+)/) || [])[1] || null;
+  m.versionWebkit = (ua.match(/Version\/([\d.]+) /) || [])[1] || null;
+  m.plateforme = navigator.platform;
+  m.pointsTactiles = navigator.maxTouchPoints;
+  m.uaData = navigator.userAgentData ? {
+    mobile: navigator.userAgentData.mobile,
+    plateforme: navigator.userAgentData.platform,
+    marques: (navigator.userAgentData.brands || []).map(function(b){ return b.brand + ' ' + b.version; })
+  } : null;
+
+  var android = ua.indexOf('Android') >= 0;
+  var ios = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  m.os = android ? 'Android' : (ios ? 'iOS' : 'autre');
+  if (android) {
+    m.verdict = (m.jetonWv || m.version40)
+      ? 'WebView Android (in-app)'
+      : 'Chrome Android ou Custom Tab — indiscernables par UA';
+  } else if (ios) {
+    m.verdict = m.suffixeSafari
+      ? 'WebKit avec suffixe Safari/ — Safari ou SFSafariViewController'
+      : 'WKWebView (in-app) — pas de suffixe Safari/';
+  } else {
+    m.verdict = 'bureau ou inconnu';
+  }
+  m.note = 'verdict décisif : le test vidéo inline du bloc 3';
+}
+
+function sondeApis(){
+  var a = R.apis, de = document.documentElement, v = document.createElement('video');
+  a.contexteSecurise = window.isSecureContext;
+  a.localStorage = essai(function(){ localStorage.setItem('_s','1'); var ok = localStorage.getItem('_s') === '1'; localStorage.removeItem('_s'); return ok; });
+  a.sessionStorage = essai(function(){ sessionStorage.setItem('_s','1'); var ok = sessionStorage.getItem('_s') === '1'; sessionStorage.removeItem('_s'); return ok; });
+  a.indexedDB = !!window.indexedDB;
+  a.caches = !!window.caches;
+  a.serviceWorker = !!navigator.serviceWorker;
+  a.permissionsApi = !!navigator.permissions;
+  a.partage = !!navigator.share;
+  a.pressePapier = !!(navigator.clipboard && navigator.clipboard.writeText);
+  a.fullscreenEnabled = document.fullscreenEnabled !== undefined ? document.fullscreenEnabled
+                        : (document.webkitFullscreenEnabled !== undefined ? document.webkitFullscreenEnabled : null);
+  a.requestFullscreen = !!(de.requestFullscreen || de.webkitRequestFullscreen);
+  a.videoEnterFullscreen = 'webkitEnterFullscreen' in v;
+  a.verrouOrientation = !!(screen.orientation && screen.orientation.lock);
+  a.wakeLock = !!navigator.wakeLock;
+  a.webAudio = !!(window.AudioContext || window.webkitAudioContext);
+  a.mediaSource = !!window.MediaSource;
+  a.mediaCapabilities = !!(navigator.mediaCapabilities && navigator.mediaCapabilities.decodingInfo);
+  a.coeurs = navigator.hardwareConcurrency || null;
+  a.deviceMemoryGo = navigator.deviceMemory || null;
+  a.tasJsMo = (window.performance && performance.memory) ? Math.round(performance.memory.jsHeapSizeLimit / 1048576) : null;
+  a.reseau = navigator.connection ? {
+    type: navigator.connection.effectiveType, debit: navigator.connection.downlink, saveData: navigator.connection.saveData
+  } : null;
+  a.crossOriginIsolated = window.crossOriginIsolated;
+  a.webWorker = !!window.Worker;
+  a.sharedWorker = !!window.SharedWorker;
+  a.offscreenCanvas = !!window.OffscreenCanvas;
+  /* en HTTP, ces API sont coupées par la règle du contexte sécurisé, pas par l'application hôte :
+     les compter comme absentes serait un faux négatif */
+  if (!window.isSecureContext) {
+    var brides = 'non mesurable en HTTP (contexte non sécurisé)';
+    a.serviceWorker = brides; a.caches = brides; a.pressePapier = brides;
+    a.partage = brides; a.crossOriginIsolated = brides;
+  }
+  if (navigator.storage && navigator.storage.estimate) {
+    navigator.storage.estimate().then(function(e){
+      a.quotaMo = Math.round((e.quota || 0) / 1048576); remplir('tableStatique', apercu());
+    }).catch(function(){});
+  }
+}
+
+function sondeEcran(){
+  var e = R.ecran, d = document.createElement('div');
+  d.style.cssText = 'position:fixed;top:0;left:0;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);visibility:hidden';
+  document.body.appendChild(d);
+  var cs = getComputedStyle(d);
+  e.ecran = screen.width + '×' + screen.height;
+  e.dispo = screen.availWidth + '×' + screen.availHeight;
+  e.fenetre = innerWidth + '×' + innerHeight;
+  e.dpr = devicePixelRatio;
+  e.pixelsReels = Math.round(innerWidth * devicePixelRatio) + '×' + Math.round(innerHeight * devicePixelRatio);
+  e.zonesSures = [cs.paddingTop, cs.paddingRight, cs.paddingBottom, cs.paddingLeft].join(' ');
+  e.viewportVisuel = window.visualViewport ? Math.round(visualViewport.width) + '×' + Math.round(visualViewport.height) : null;
+  e.orientation = (screen.orientation && screen.orientation.type) || null;
+  e.gamut = matchMedia('(color-gamut: p3)').matches ? 'p3' : 'srgb';
+  e.hdr = matchMedia('(dynamic-range: high)').matches;
+  e.mouvementReduit = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.body.removeChild(d);
+}
+
+var TYPES = {
+  h264:  'video/mp4; codecs="avc1.640028"',
+  hevc:  'video/mp4; codecs="hvc1.1.6.L93.B0"',
+  av1:   'video/mp4; codecs="av01.0.05M.08"',
+  vp9:   'video/webm; codecs="vp09.00.10.08"',
+  aac:   'audio/mp4; codecs="mp4a.40.2"',
+  opus:  'audio/webm; codecs="opus"'
+};
+function sondeCodecs(){
+  var v = document.createElement('video'), c = R.codecs;
+  Object.keys(TYPES).forEach(function(nom){
+    c[nom] = { canPlayType: v.canPlayType(TYPES[nom]) || 'non',
+               mse: window.MediaSource ? MediaSource.isTypeSupported(TYPES[nom]) : null };
+  });
+  if (navigator.mediaCapabilities && navigator.mediaCapabilities.decodingInfo) {
+    ['h264','hevc','av1','vp9'].forEach(function(nom){
+      navigator.mediaCapabilities.decodingInfo({
+        type:'file',
+        video:{ contentType: TYPES[nom], width:720, height:1280, bitrate:2000000, framerate:24 }
+      }).then(function(r){
+        c[nom].materiel = { supporte:r.supported, fluide:r.smooth, econome:r.powerEfficient };
+        remplir('tableStatique', apercu());
+      }).catch(function(e){ c[nom].materiel = 'ERREUR ' + e.name; });
+    });
+  }
+}
+
+function sondeWebGL(){
+  var w = R.webgl, cv = document.createElement('canvas');
+  var gl = cv.getContext('webgl2') || cv.getContext('webgl');
+  if (!gl) { w.disponible = false; return; }
+  w.disponible = true;
+  w.version = gl.getParameter(gl.VERSION);
+  w.glsl = gl.getParameter(gl.SHADING_LANGUAGE_VERSION);
+  w.textureMax = gl.getParameter(gl.MAX_TEXTURE_SIZE);
+  w.cubeMax = gl.getParameter(gl.MAX_CUBE_MAP_TEXTURE_SIZE);
+  w.renderbufferMax = gl.getParameter(gl.MAX_RENDERBUFFER_SIZE);
+  w.viewportMax = Array.prototype.slice.call(gl.getParameter(gl.MAX_VIEWPORT_DIMS) || []).join('×');
+  w.unitesTexture = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
+  w.unitesCombinees = gl.getParameter(gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS);
+  w.attributsSommet = gl.getParameter(gl.MAX_VERTEX_ATTRIBS);
+  var p = gl.getShaderPrecisionFormat(gl.FRAGMENT_SHADER, gl.HIGH_FLOAT);
+  w.highpFragment = p ? p.precision : null;
+  var dbg = gl.getExtension('WEBGL_debug_renderer_info');
+  w.rendu = dbg ? gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL) : '(restreint)';
+  w.fabricant = dbg ? gl.getParameter(dbg.UNMASKED_VENDOR_WEBGL) : '(restreint)';
+  var exts = gl.getSupportedExtensions() || [];
+  w.nbExtensions = exts.length;
+  w.texturesCompressees = exts.filter(function(x){ return /compressed_texture/.test(x); })
+                              .map(function(x){ return x.replace(/^(WEBGL|WEBKIT_WEBGL|EXT)_compressed_texture_/,''); });
+  w.floatLineaire = exts.indexOf('OES_texture_float_linear') >= 0;
+  var pd = cv.getContext('webgl2') ? 'webgl2' : 'webgl1';
+  w.contexte = pd;
+}
+
+function sondeWebGPU(){
+  if (!navigator.gpu) {
+    R.webgpu.disponible = window.isSecureContext ? false : 'non mesurable en HTTP (contexte non sécurisé)';
+    return;
+  }
+  navigator.gpu.requestAdapter().then(function(a){
+    if (!a) { R.webgpu.disponible = false; R.webgpu.note = 'navigator.gpu présent, aucun adaptateur'; return; }
+    R.webgpu.disponible = true;
+    R.webgpu.info = a.info ? { fabricant:a.info.vendor, architecture:a.info.architecture, description:a.info.description } : null;
+    R.webgpu.limites = { texture2dMax:a.limits.maxTextureDimension2D,
+                         tamponMax:Math.round(a.limits.maxBufferSize / 1048576) + ' Mo',
+                         bindingStockageMax:Math.round(a.limits.maxStorageBufferBindingSize / 1048576) + ' Mo' };
+    R.webgpu.fonctions = Array.from(a.features || []).slice(0, 12);
+    remplir('tableStatique', apercu());
+  }).catch(function(e){ R.webgpu.disponible = 'ERREUR ' + e.name; });
+}
+
+function apercu(){
+  return {
+    'verdict moteur': R.moteur.verdict,
+    'contexte sécurisé': R.apis.contexteSecurise,
+    'user agent': R.moteur.ua,
+    'jeton wv': R.moteur.jetonWv, 'Version/4.0': R.moteur.version40, 'suffixe Safari/': R.moteur.suffixeSafari,
+    'localStorage': R.apis.localStorage, 'API Permissions': R.apis.permissionsApi,
+    'fullscreenEnabled': R.apis.fullscreenEnabled,
+    'coeurs': R.apis.coeurs, 'deviceMemory': R.apis.deviceMemoryGo, 'tas JS max': R.apis.tasJsMo ? R.apis.tasJsMo + ' Mo' : null,
+    'quota stockage': R.apis.quotaMo ? R.apis.quotaMo + ' Mo' : null,
+    'réseau': R.apis.reseau,
+    'fenêtre': R.ecran.fenetre + '  (dpr ' + R.ecran.dpr + ' → ' + R.ecran.pixelsReels + ')',
+    'zones sûres': R.ecran.zonesSures,
+    'gamut': R.ecran.gamut + (R.ecran.hdr ? ' · HDR' : ''),
+    'WebGL': R.webgl.disponible === false ? false : R.webgl.contexte + ' · texture max ' + R.webgl.textureMax,
+    'GPU': R.webgl.rendu,
+    'textures compressées': (R.webgl.texturesCompressees || []).join(' '),
+    'WebGPU': R.webgpu.disponible === true ? ('oui · ' + (R.webgpu.limites ? R.webgpu.limites.texture2dMax : '')) : R.webgpu.disponible,
+    'h264': R.codecs.h264 && R.codecs.h264.materiel ? JSON.stringify(R.codecs.h264.materiel) : (R.codecs.h264 || {}).canPlayType,
+    'hevc': R.codecs.hevc && R.codecs.hevc.materiel ? JSON.stringify(R.codecs.hevc.materiel) : (R.codecs.hevc || {}).canPlayType,
+    'av1':  R.codecs.av1  && R.codecs.av1.materiel  ? JSON.stringify(R.codecs.av1.materiel)  : (R.codecs.av1  || {}).canPlayType,
+    'vp9':  R.codecs.vp9  && R.codecs.vp9.materiel  ? JSON.stringify(R.codecs.vp9.materiel)  : (R.codecs.vp9  || {}).canPlayType
+  };
+}
+
+/* ================= 3 · ce qu'un tap débloque ================= */
+var clipBlob = null;
+fetch('clips/clip-h264.mp4').then(function(r){ return r.blob(); }).then(function(b){
+  clipBlob = b;
+  $('vInline').src = URL.createObjectURL(b);
+}).catch(function(e){ R.geste.clipErreur = 'ERREUR ' + e.message; });
+$('vSon').src  = 'clips/clip-h264-son.mp4';
+$('vHevc').src = 'clips/clip-hevc.mp4';
+$('vAv1').src  = 'clips/clip-av1.mp4';
+$('vVp9').src  = 'clips/clip-vp9.webm';
+
+$('btnGeste').addEventListener('click', function(){
+  var g = R.geste = {};
+  var de = document.documentElement;
+  g.hauteurAvant = innerHeight;
+
+  /* --- tout ce qui suit doit partir DANS le geste --- */
+  var fn = de.requestFullscreen || de.webkitRequestFullscreen;
+  var pFs = null;
+  if (fn) { try { pFs = fn.call(de); } catch(e){ g.pleinEcranRejet = e.name + ' (synchrone)'; } }
+  else g.pleinEcranRejet = 'aucune API requestFullscreen';
+
+  var ctx = null;
+  try {
+    var AC = window.AudioContext || window.webkitAudioContext;
+    ctx = new AC();
+    g.audioEtatInitial = ctx.state;
+    g.audioSampleRate = ctx.sampleRate;
+    ctx.resume().catch(function(e){ g.audioRejet = e.name; });
+    var osc = ctx.createOscillator(), gain = ctx.createGain();
+    gain.gain.value = 0.0001; osc.connect(gain); gain.connect(ctx.destination); osc.start();
+  } catch(e){ g.audioErreur = 'ERREUR ' + e.name + ' : ' + e.message; }
+
+  var vi = $('vInline'), vs = $('vSon');
+  vi.addEventListener('webkitbeginfullscreen', function(){ g.inlinePleinEcranForce = true; });
+  try { var p = vi.play(); if (p) p.catch(function(e){ g.inlineRejet = e.name + ' : ' + e.message; }); }
+  catch(e){ g.inlineRejet = e.name; }
+  try { vs.muted = false; vs.volume = 1; var p2 = vs.play(); if (p2) p2.catch(function(e){ g.sonRejet = e.name + ' : ' + e.message; }); }
+  catch(e){ g.sonRejet = e.name; }
+
+  g.codecs = {};
+  [['hevc','vHevc'],['av1','vAv1'],['vp9','vVp9']].forEach(function(pair){
+    var el = $(pair[1]);
+    try { var pc = el.play(); if (pc) pc.catch(function(e){ g.codecs[pair[0]] = 'play() rejeté : ' + e.name; }); }
+    catch(e){ g.codecs[pair[0]] = 'ERREUR ' + e.name; }
+  });
+
+  /* --- le geste est fini, on observe --- */
+  if (pFs) pFs.then(function(){ g.pleinEcranPromesse = 'tenue'; })
+             .catch(function(e){ g.pleinEcranRejet = e.name + ' : ' + e.message; });
+
+  setTimeout(function(){
+    g.pleinEcranElement = !!(document.fullscreenElement || document.webkitFullscreenElement);
+    g.hauteurApres = innerHeight;
+    g.pleinEcranReel = g.pleinEcranElement || (innerHeight > g.hauteurAvant + 20);
+    if (document.exitFullscreen) document.exitFullscreen().catch(function(){});
+    else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+  }, 700);
+
+  setTimeout(function(){
+    g.audioEtatApres = ctx ? ctx.state : null;
+    g.inlineJoue = !vi.paused && vi.currentTime > 0 && vi.videoWidth > 0;
+    g.inlineVideoWidth = vi.videoWidth;
+    g.inlinePleinEcranForce = !!(g.inlinePleinEcranForce || vi.webkitDisplayingFullscreen);
+    g.inlineModePresentation = vi.webkitPresentationMode || null;
+    g.sonJoue = !vs.paused && vs.currentTime > 0;
+    g.sonMuted = vs.muted;
+    [['hevc','vHevc'],['av1','vAv1'],['vp9','vVp9']].forEach(function(pair){
+      var el = $(pair[1]);
+      var decode = el.videoWidth > 0 && el.currentTime > 0;
+      if (!g.codecs[pair[0]]) g.codecs[pair[0]] = decode ? 'décodé ' + el.videoWidth + '×' + el.videoHeight
+                                                        : 'pas décodé (readyState ' + el.readyState + (el.error ? ', erreur ' + el.error.code : '') + ')';
+    });
+    g.videoInlineVerdict = g.inlinePleinEcranForce
+      ? 'allowsInlineMediaPlayback = false : le lecteur natif prend l’écran'
+      : (g.inlineJoue ? 'lecture inline autorisée' : 'ne démarre pas');
+    remplir('tableGeste', g); maj();
+  }, 2600);
+});
+$('btnSonOui').addEventListener('click', function(){ R.geste.sonEntendu = true;  remplir('tableGeste', R.geste); maj(); });
+$('btnSonNon').addEventListener('click', function(){ R.geste.sonEntendu = false; remplir('tableGeste', R.geste); maj(); });
+
+/* ================= 4 · décodeurs ================= */
+var videosDecodeurs = [];
+var demarrees = {};
+var nbDemarrees = 0;
+
+/* DOIT être appelé dans le geste : sur iOS chaque <video> s'amorce au tap */
+function ajouterLot(n){
+  var bac = $('bacDecodeurs'), promesses = [], base = videosDecodeurs.length;
+  for (var i = 0; i < n; i++) {
+    (function(idx){
+      var v = document.createElement('video');
+      v.muted = true; v.loop = true; v.playsInline = true;
+      v.setAttribute('playsinline',''); v.setAttribute('webkit-playsinline','');
+      v.preload = 'auto';
+      v.src = URL.createObjectURL(clipBlob);
+      v.addEventListener('playing', function(){
+        if (!demarrees[idx]) { demarrees[idx] = true; nbDemarrees++; jalon('dec', nbDemarrees); }
+      });
+      bac.appendChild(v); videosDecodeurs.push(v);
+      var p = v.play();
+      promesses.push(p ? p.then(function(){ return null; })
+                          .catch(function(e){ return { i:idx, err:e.name + ' : ' + e.message }; })
+                       : Promise.resolve(null));
+    })(base + i);
+  }
+  return Promise.all(promesses);
+}
+
+function mesurerDecodeurs(){
+  return attendre(3000).then(function(){
+    var d = R.decodeurs, joue = 0, detail = [];
+    videosDecodeurs.forEach(function(v, i){
+      var q = v.getVideoPlaybackQuality ? v.getVideoPlaybackQuality() : null;
+      var ok = !v.paused && v.currentTime > 0 && v.videoWidth > 0;
+      if (ok) joue++;
+      detail.push({ i:i, joue:ok, readyState:v.readyState, t:+v.currentTime.toFixed(2),
+                    images:q ? q.totalVideoFrames : null, erreur:v.error ? v.error.code : null });
+    });
+    var premier = -1;
+    for (var k = 0; k < detail.length; k++) if (!detail[k].joue) { premier = k; break; }
+    d.enLecture = joue;
+    d.premierEchec = premier < 0 ? 'aucun' : premier;
+    d.detail = detail;
+    d.plafondAtteint = joue < d.demandes;
+    jalon('dec', joue);
+    $('btnPause').disabled = false;
+    $('btnPlus').disabled = d.plafondAtteint;
+    remplir('tableDecodeurs', {
+      'demandées': d.demandes,
+      'en lecture': joue,
+      'premier échec (index)': d.premierEchec,
+      'play() rejetés': d.rejets.length,
+      'noms d\u2019erreur': d.rejets.slice(0,4).map(function(r){ return r.err; }).join(' | ') || '—',
+      'plafond atteint': d.plafondAtteint ? 'OUI — ' + joue + ' décodeurs simultanés'
+                                          : 'non, il faut monter plus haut'
+    });
+    maj();
+  });
+}
+
+$('btnDecodeurs').addEventListener('click', function(){
+  if (!clipBlob) { alert('Le clip n\u2019est pas encore chargé, réessaie dans deux secondes.'); return; }
+  videosDecodeurs = []; demarrees = {}; nbDemarrees = 0;
+  $('bacDecodeurs').innerHTML = '';
+  R.decodeurs = { demandes:40, rejets:[], lots:[40] };
+  ajouterLot(40).then(function(res){
+    R.decodeurs.rejets = res.filter(Boolean);
+    return mesurerDecodeurs();
+  });
+});
+
+$('btnPlus').addEventListener('click', function(){
+  var d = R.decodeurs;
+  d.demandes += 40; d.lots.push(40);
+  $('btnPlus').disabled = true;
+  ajouterLot(40).then(function(res){
+    d.rejets = d.rejets.concat(res.filter(Boolean));
+    return mesurerDecodeurs();
+  });
+});
+
+$('btnPause').addEventListener('click', function(){
+  var d = R.decodeurs, moitie = Math.floor(videosDecodeurs.length / 2);
+  var echouees = videosDecodeurs.filter(function(v, i){
+    return i >= moitie && (v.paused || v.currentTime === 0 || v.videoWidth === 0);
+  });
+  for (var i = 0; i < moitie; i++) videosDecodeurs[i].pause();
+  attendre(1500).then(function(){
+    return Promise.all(echouees.map(function(v){
+      var p = v.play();
+      return p ? p.then(function(){ return true; }).catch(function(){ return false; }) : Promise.resolve(true);
+    }));
+  }).then(function(){ return attendre(2500); }).then(function(){
+    var reussis = echouees.filter(function(v){ return !v.paused && v.currentTime > 0 && v.videoWidth > 0; }).length;
+    d.apresPause = {
+      misEnPause: moitie, relancees: echouees.length, reussis: reussis,
+      lecture: echouees.length === 0 ? 'sans objet — aucune vidéo n\u2019avait échoué, le plafond n\u2019est pas atteint'
+             : (reussis > 0 ? 'la pause libère le décodeur (' + reussis + ' reparties)'
+                            : 'la pause NE libère PAS le décodeur')
+    };
+    remplir('tableDecodeurs', { 'en lecture (avant)':d.enLecture, 'mises en pause':moitie,
+                                'relancées':echouees.length, 'reparties':reussis, 'lecture':d.apresPause.lecture });
+    maj();
+  });
+});
+
+/* ================= 5 · plafonds ================= */
+$('btnMemoire').addEventListener('click', function(){
+  var m = R.memoire = { pasMo:32, plafondViseMo:2048 };
+  var blocs = [], mo = 0;
+  if (window.performance && performance.memory) m.tasJsMaxMo = Math.round(performance.memory.jsHeapSizeLimit / 1048576);
+  (function pas(){
+    if (mo >= m.plafondViseMo) { m.atteintMo = mo; m.plafond = true; blocs.length = 0; remplir('tablePlafonds', m); maj(); return; }
+    try {
+      var a = new Uint8Array(m.pasMo * 1048576);
+      for (var i = 0; i < a.length; i += 4096) a[i] = (i >> 12) & 255;
+      blocs.push(a); mo += m.pasMo;
+    } catch(e) {
+      m.atteintMo = mo; m.arret = 'ERREUR ' + e.name + ' : ' + e.message;
+      blocs.length = 0; remplir('tablePlafonds', m); maj(); return;
+    }
+    jalon('mem', mo);
+    remplir('tablePlafonds', { 'mémoire allouée': mo + ' Mo', 'tas JS max': m.tasJsMaxMo ? m.tasJsMaxMo + ' Mo' : '(inconnu)' });
+    setTimeout(pas, 60);
+  })();
+});
+
+$('btnTextures').addEventListener('click', function(){
+  var t = R.textures = { taille:'1024×1024 RGBA', pasMo:4, plafondViseMo:2048 };
+  var cv = document.createElement('canvas'); cv.width = cv.height = 128;
+  var gl = cv.getContext('webgl2') || cv.getContext('webgl');
+  if (!gl) { t.erreur = 'pas de contexte WebGL'; remplir('tablePlafonds', t); return; }
+  var perdu = false;
+  cv.addEventListener('webglcontextlost', function(e){ e.preventDefault(); perdu = true; });
+  var px = new Uint8Array(1024 * 1024 * 4);
+  for (var k = 0; k < px.length; k += 997) px[k] = k & 255;
+  var texs = [], mo = 0;
+  (function pas(){
+    if (perdu || mo >= t.plafondViseMo) {
+      t.atteintMo = mo; t.contextePerdu = perdu; t.plafond = !perdu;
+      remplir('tablePlafonds', t); maj(); return;
+    }
+    var tex = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, tex);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1024, 1024, 0, gl.RGBA, gl.UNSIGNED_BYTE, px);
+    var err = gl.getError();
+    if (err) { t.atteintMo = mo; t.erreurGl = err; t.contextePerdu = perdu; remplir('tablePlafonds', t); maj(); return; }
+    gl.finish();
+    texs.push(tex); mo += t.pasMo;
+    jalon('tex', mo);
+    remplir('tablePlafonds', { 'textures allouées': mo + ' Mo', 'nombre': texs.length });
+    setTimeout(pas, 16);
+  })();
+});
+
+/* ================= 6 · les deux verts ================= */
+(function(){
+  var m = $('mire');
+  for (var i = 0; i < 36; i++) {
+    var c = document.createElement('div');
+    c.style.background = (i % 2 === 0) ? '#34C77B' : '#4FD6C0';
+    m.appendChild(c);
+  }
+})();
+$('btnCouleurs').addEventListener('click', function(){ $('couleurs').style.display = 'flex'; });
+function verdictCouleur(v){
+  R.couleurs = { verdict:v, luminanceRelative:'#34C77B L*≈70 · #4FD6C0 L*≈78' };
+  $('couleurs').style.display = 'none';
+  $('verdictCouleurs').innerHTML = '<p class="repere">Relevé : <b>' + v + '</b></p>';
+  maj();
+}
+$('cOk').addEventListener('click', function(){ verdictCouleur('distincts'); });
+$('cLimite').addEventListener('click', function(){ verdictCouleur('à la limite'); });
+$('cNon').addEventListener('click', function(){ verdictCouleur('indistinguables'); });
+
+/* ================= 7 · rapport ================= */
+$('btnCopier').addEventListener('click', function(){
+  maj();
+  var texte = $('json').value;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(texte).then(function(){ $('btnCopier').textContent = 'Copié ✓'; })
+      .catch(function(){ copierRepli(); });
+  } else copierRepli();
+  function copierRepli(){
+    var ta = $('json'); ta.removeAttribute('readonly'); ta.select(); ta.setSelectionRange(0, 999999);
+    try { document.execCommand('copy'); $('btnCopier').textContent = 'Copié ✓'; }
+    catch(e){ $('btnCopier').textContent = 'Copie refusée — fais une capture d’écran'; }
+    ta.setAttribute('readonly','');
+  }
+});
+$('btnPartager').addEventListener('click', function(){
+  maj();
+  var texte = 'Sonde ouvrance — ' + ($('app').value || '?') + ' / ' + ($('appareil').value || '?') + '\n\n'
+            + $('resume').textContent + '\n\n' + $('json').value;
+  if (navigator.share) navigator.share({ title:'Sonde ouvrance', text:texte }).catch(function(){});
+  else $('btnPartager').textContent = 'Partage indisponible ici — utilise Copier';
+});
+['app','appareil','notes'].forEach(function(id){ $(id).addEventListener('input', maj); });
+
+/* ================= amorçage ================= */
+(function(){
+  var p = new URLSearchParams(location.search);
+  if (p.get('app')) $('app').value = p.get('app');
+  if (p.get('dev')) $('appareil').value = p.get('dev');
+  sondeMoteur(); sondeApis(); sondeEcran(); sondeCodecs(); sondeWebGL(); sondeWebGPU();
+  remplir('tableStatique', apercu());
+  if (jalons.dec || jalons.mem || jalons.tex) {
+    R.meta.reprise = JSON.parse(JSON.stringify(jalons));
+    $('reprise').innerHTML = '<p class="avert">Reprise après rechargement — derniers paliers atteints : '
+      + (jalons.dec ? 'décodeurs ' + jalons.dec + ' · ' : '')
+      + (jalons.mem ? 'mémoire ' + jalons.mem + ' Mo · ' : '')
+      + (jalons.tex ? 'textures ' + jalons.tex + ' Mo' : '') + '</p>';
+  }
+  maj();
+})();
+</script>
+</body>
+</html>
