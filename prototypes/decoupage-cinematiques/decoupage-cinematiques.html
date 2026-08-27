@@ -1,0 +1,1015 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Découpage plan par plan — cinématiques du braquage</title>
+<!--
+  ═══════════════════════════════════════════════════════════════════════════
+  STORYBOARD JOUABLE — ticket #24
+  « Le découpage plan par plan des cinématiques »
+
+  ─ CE QUE CE PROTOTYPE CHERCHE À DÉPARTAGER ────────────────────────────────
+
+  Une durée ne se décide pas sur un tableau : elle se décide en la subissant.
+  La question du ticket est « le destinataire regarde-t-il ou saute-t-il ? »,
+  et la seule façon de le savoir est de rester assis devant. Ce fichier joue
+  donc les trois découpages EN TEMPS RÉEL, dans le cadre 9:16 final, plan par
+  plan, avec le jeu réduit à un carton noir entre les deux films.
+
+    A — LE MONTAGE FIDÈLE.   91 s. Chaque beat de la trame a son plan : la
+        balade, la façade, l'habillage en pied, la descente, la plaque d'égout
+        à l'aller et au retour. Rien n'est elliptique.
+    B — LE MONTAGE TENDU.    61 s. Six plans à l'ouverture, sept à la fuite.
+        Tout ce qu'une coupe peut dire est dit par une coupe.
+    C — LE MONTAGE MINIMAL.  41 s. Quatre plans par cinématique. On garde le
+        journal, le regard, le toit, la bascule ; l'œuvre, l'égout, la corde,
+        la plage.
+
+  ─ CE QUI EST TENU CONSTANT DANS LES TROIS ──────────────────────────────────
+
+    · 9:16 portrait figé (#6). Aucun changement de cadre.
+    · La trame de #20, dans son ordre, sans ajout : journal → regard → tenue
+      → toit → JEU → œuvre → alarme → égout → hélicoptère → plage.
+    · Les trois rôles de #23 — L'Œil, La Main, L'Aile — leur tenue unique,
+      l'horloge du bandeau, la règle des trois bandes en plan large.
+    · Le raccord C aux deux bascules : la coupe se joue sur les mains gantées,
+      sur une composition identique. Le prototype la montre lissée puis
+      facettée, en coupe franche, aux deux bouts du jeu.
+    · Palette à cinq valeurs. Le turquoise n'est que les cônes de caméras,
+      jusqu'à la mer du dernier plan.
+    · AUCUNE ARME DANS AUCUN PLAN.
+    · Aucun texte gravé, aucun prénom prononcé, aucune voix off.
+
+  Commutable par ?variant=A|B|C, les flèches du clavier, ou la barre du haut.
+  Espace = lecture / pause. Clic sur la frise = aller au plan.
+  Aucun asset externe, aucun CDN, aucun rendu : ce sont des compositions
+  vectorielles, pas des images générées. La porte de validation est ici.
+  ═══════════════════════════════════════════════════════════════════════════
+-->
+<style>
+:root{
+  --noir:#0B0908; --noir2:#141010; --noir3:#1E1815;
+  --pierre:#C89A5B; --or:#E8B76A; --or-pale:#F5D9A8;
+  --turquoise:#4FD6C0; --fauve:#A9713C; --fauve-clair:#D69A5C;
+  --craie:#EFE3D2; --gris:#8A8078; --gris2:#5A524C;
+  --serif:"Cormorant Garamond",Cormorant,Georgia,"Times New Roman",serif;
+  --sans:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,system-ui,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--noir);color:var(--craie);font-family:var(--sans);
+  font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:var(--or)}
+code{font-family:var(--mono);font-size:.88em;color:var(--or-pale)}
+b{color:#FFF6E8}
+.wrap{max-width:1180px;margin:0 auto;padding:0 18px}
+
+header{padding:34px 0 22px;border-bottom:1px solid #241d19}
+h1{font-family:var(--serif);font-weight:400;font-size:clamp(29px,6.6vw,48px);
+  line-height:1.04;margin:0 0 12px;letter-spacing:-.01em}
+h1 em{color:var(--or);font-style:italic}
+.chapo{max-width:64ch;color:#C6B9A8;font-size:15.5px;margin:0 0 10px}
+.meta{font-family:var(--mono);font-size:11px;color:var(--gris);letter-spacing:.06em;
+  text-transform:uppercase;margin:0 0 14px}
+
+section{padding:40px 0;border-bottom:1px solid #241d19}
+h2{font-family:var(--serif);font-weight:400;font-size:clamp(22px,4.4vw,32px);
+  margin:0 0 10px;letter-spacing:-.01em}
+h2 .n{font-family:var(--mono);font-size:11.5px;color:var(--or);letter-spacing:.14em;
+  display:block;margin-bottom:7px;text-transform:uppercase}
+h3{font-family:var(--sans);font-weight:600;font-size:12.5px;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--or);margin:26px 0 8px}
+p{max-width:70ch}
+
+/* ── Sélecteur de variante ─────────────────────────────────── */
+.switch{position:sticky;top:0;z-index:40;background:rgba(11,9,8,.94);
+  backdrop-filter:blur(10px);border-bottom:1px solid #241d19}
+.switch .inner{display:flex;gap:8px;align-items:center;padding:10px 18px;
+  max-width:1180px;margin:0 auto;flex-wrap:wrap}
+.sw{flex:1 1 180px;min-width:150px;text-align:left;background:var(--noir2);
+  border:1px solid #2b2320;color:var(--gris);padding:9px 12px;border-radius:7px;
+  cursor:pointer;font-family:var(--sans);font-size:13px;line-height:1.3;transition:.15s}
+.sw b{display:block;color:inherit;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+.sw span{font-family:var(--mono);font-size:11px;opacity:.75}
+.sw:hover{border-color:#4a3b2f;color:var(--craie)}
+.sw.on{background:#241a11;border-color:var(--or);color:var(--or-pale)}
+.sw.on b{color:var(--or)}
+
+/* ── Lecteur ───────────────────────────────────────────────── */
+.stage{display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:30px;
+  align-items:start;padding:34px 0}
+@media(max-width:820px){.stage{grid-template-columns:1fr}}
+.phone{position:relative;width:100%;max-width:300px;margin:0 auto;
+  aspect-ratio:9/16;border-radius:22px;overflow:hidden;background:#000;
+  border:1px solid #2b2320;box-shadow:0 24px 60px rgba(0,0,0,.7)}
+.canvasbox{position:absolute;inset:0;overflow:hidden}
+.canvasbox svg{position:absolute;inset:0;width:100%;height:100%;display:block;
+  will-change:transform}
+.lb{position:absolute;left:0;right:0;height:13%;background:#000;z-index:5;
+  transition:transform .55s cubic-bezier(.4,0,.2,1)}
+.lb.t{top:0}.lb.b{bottom:0}
+.phone.open .lb.t{transform:translateY(-100%)}
+.phone.open .lb.b{transform:translateY(100%)}
+.badge{position:absolute;top:10px;left:10px;z-index:8;font-family:var(--mono);
+  font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:#7d7268;
+  background:rgba(0,0,0,.45);padding:3px 7px;border-radius:4px}
+.chrono{position:absolute;top:10px;right:10px;z-index:8;font-family:var(--mono);
+  font-size:10px;color:var(--or);background:rgba(0,0,0,.45);padding:3px 7px;border-radius:4px}
+.tapstart{position:absolute;inset:0;z-index:20;display:flex;align-items:center;
+  justify-content:center;background:rgba(11,9,8,.86);cursor:pointer;text-align:center;
+  font-family:var(--serif);font-size:20px;color:var(--or);letter-spacing:.02em;
+  flex-direction:column;gap:8px}
+.tapstart small{font-family:var(--mono);font-size:10px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--gris)}
+.tapstart.hide{display:none}
+
+/* ── Frise ─────────────────────────────────────────────────── */
+.frise{display:flex;gap:2px;height:34px;margin:14px auto 0;width:100%;max-width:300px}
+.seg{flex-grow:1;background:#1c1613;border-radius:2px;position:relative;cursor:pointer;
+  overflow:hidden;transition:background .15s}
+.seg:hover{background:#2b211a}
+.seg.jeu{background:#120f0e;cursor:default}
+.seg.rac{background:#241a11}
+.seg .fill{position:absolute;inset:0;background:var(--or);opacity:.85;
+  transform-origin:left;transform:scaleX(0)}
+.seg .lab{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:8.5px;color:#6b6058;z-index:2;pointer-events:none}
+.seg.cur .lab,.seg.done .lab{color:#2a1e12;font-weight:600}
+.ctrl{display:flex;gap:8px;justify-content:center;margin-top:12px;flex-wrap:wrap}
+.btn{background:var(--noir2);border:1px solid #2b2320;color:var(--craie);
+  padding:7px 14px;border-radius:6px;cursor:pointer;font-family:var(--mono);
+  font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+.btn:hover{border-color:var(--or);color:var(--or)}
+
+/* ── Fiche du plan courant ─────────────────────────────────── */
+.fiche{background:var(--noir2);border:1px solid #241d19;border-radius:12px;padding:20px 22px}
+.fiche .id{font-family:var(--mono);font-size:11px;color:var(--or);letter-spacing:.14em;
+  text-transform:uppercase;margin-bottom:8px}
+.fiche h4{font-family:var(--serif);font-weight:400;font-size:27px;margin:0 0 4px;line-height:1.15}
+.fiche .cadre{font-size:13px;color:var(--gris);margin:0 0 14px;font-style:italic}
+.fiche .txt{font-size:14.5px;color:#D8CBBA;margin:0 0 16px;max-width:62ch}
+.kv{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+.tag{font-family:var(--mono);font-size:10px;letter-spacing:.07em;text-transform:uppercase;
+  padding:4px 8px;border-radius:4px;background:#1f1815;color:var(--gris);border:1px solid #2b2320}
+.tag.or{color:var(--or);border-color:#4a3a26;background:#241a11}
+.tag.tq{color:var(--turquoise);border-color:#1f4a44;background:#0f1f1d}
+.tag.fv{color:var(--fauve-clair);border-color:#4a3423;background:#231710}
+pre{background:#0d0b0a;border:1px solid #241d19;border-radius:8px;padding:13px 14px;
+  overflow-x:auto;font-family:var(--mono);font-size:11px;line-height:1.55;
+  color:#B9AC9B;margin:0;white-space:pre-wrap;word-break:break-word}
+pre .k{color:var(--or)}
+
+/* ── Tableaux ──────────────────────────────────────────────── */
+table{width:100%;border-collapse:collapse;font-size:13.5px;margin:14px 0 6px;display:block;
+  overflow-x:auto;white-space:nowrap}
+th,td{text-align:left;padding:8px 12px 8px 0;border-bottom:1px solid #241d19;vertical-align:top}
+th{font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--or);font-weight:400}
+td.wrap2{white-space:normal;min-width:260px}
+tr.tot td{border-top:1px solid #3a2e26;font-weight:600;color:#FFF6E8}
+
+.note{border-left:2px solid var(--or);padding:12px 0 12px 16px;margin:20px 0;
+  background:linear-gradient(90deg,rgba(232,183,106,.05),transparent);font-size:14.5px;
+  color:#D8CBBA;max-width:72ch}
+.note.warn{border-color:var(--fauve-clair);
+  background:linear-gradient(90deg,rgba(214,154,92,.07),transparent)}
+.verdict{border:1px solid #2b2320;border-radius:10px;padding:16px 18px;margin:16px 0;
+  background:var(--noir2);font-size:14.5px;color:#D8CBBA;max-width:74ch}
+.verdict.keep{border-color:var(--or);background:#1a1410}
+.verdict .h{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--gris);margin-bottom:6px}
+.verdict.keep .h{color:var(--or)}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+.card{background:var(--noir2);border:1px solid #241d19;border-radius:10px;padding:16px 18px}
+.card .h{font-family:var(--mono);font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--or);margin-bottom:6px}
+.card p{margin:0;font-size:14px;color:#C6B9A8}
+.big{font-family:var(--serif);font-size:34px;color:var(--or);line-height:1;margin:2px 0 6px}
+footer{padding:30px 0 60px;color:var(--gris2);font-size:12.5px;font-family:var(--mono)}
+</style>
+</head>
+<body>
+
+<div class="switch"><div class="inner">
+  <button class="sw" data-v="A"><b>A — Fidèle</b><span>91 s · 20 plans</span></button>
+  <button class="sw" data-v="B"><b>B — Tendu</b><span>61 s · 13 plans</span></button>
+  <button class="sw" data-v="C"><b>C — Minimal</b><span>41 s · 8 plans</span></button>
+</div></div>
+
+<div class="wrap">
+<header>
+  <div class="meta">Ticket #24 · storyboard jouable · aucun rendu engagé</div>
+  <h1>Le découpage <em>plan par plan</em> des cinématiques</h1>
+  <p class="chapo">La trame de <b>#20</b> convertie en plans tirables. Le lecteur ci-dessous joue les trois découpages <b>en temps réel</b>, dans le cadre 9:16 final — parce qu'une durée ne se juge pas sur un tableau, elle se subit. Le jeu est réduit à un carton noir : ce qui est en test, c'est ce qu'il y a avant et après.</p>
+  <p class="chapo">Les deux <b>bascules</b> sont jouées, pas décrites : la coupe se fait sur les mêmes mains gantées, <b>lissées puis facettées</b>, à l'entrée du jeu — et en miroir à sa sortie. C'est le raccord C tranché par <b>#23</b>.</p>
+</header>
+
+<div class="stage">
+  <div>
+    <div class="phone" id="phone">
+      <div class="canvasbox" id="canvasbox"></div>
+      <div class="lb t"></div><div class="lb b"></div>
+      <div class="badge" id="badge">—</div>
+      <div class="chrono" id="chrono">0.0 s</div>
+      <div class="tapstart" id="tapstart">Toucher pour commencer<small>écran imposé par iOS · #3</small></div>
+    </div>
+    <div class="frise" id="frise"></div>
+    <div class="ctrl">
+      <button class="btn" id="play">Lecture</button>
+      <button class="btn" id="restart">Reprendre</button>
+    </div>
+  </div>
+  <div class="fiche" id="fiche"></div>
+</div>
+
+<section>
+  <h2><span class="n">01 — le verdict</span>B, le montage tendu : 29 s puis 32 s</h2>
+  <div class="verdict"><div class="h">A — le montage fidèle · 91 s · non retenu</div>
+    <b>Il était tentant, et pour une raison sérieuse : c'est le seul découpage dont aucun plan ne demande au spectateur de combler un trou.</b> La balade, la façade, la descente, la plaque d'égout à l'aller <em>et</em> au retour — chaque beat de la trame a son plan, donc rien ne peut être mal compris. On le paie deux fois. En attention : <b>47 s avant que le jeu ne commence</b>, sur un lien ouvert depuis un SMS, sans qu'aucun de ces sept plans n'ajoute une information que la coupe suivante ne donnait pas. Et en argent : les plans de liaison ajoutent <b>30 s</b>, dont <b>22 s re-castées</b>, ce qui fait passer une variante de casting de <b>24 $ à 38 $</b> — le coût de la fidélité littérale n'est pas payé une fois, il est payé par chaque variante, indéfiniment.</div>
+  <div class="verdict"><div class="h">C — le montage minimal · 41 s · non retenu</div>
+    <b>Il perd deux choses que la trame nomme explicitement, et une troisième que personne ne voit.</b> L'habillage disparaît, donc la transformation — le seul mouvement du film, celui qui fait passer deux personnes à deux rôles — n'est plus à l'image, et l'horloge du bandeau de #23 n'a plus de premier temps. L'Aile disparaît du film entier : l'hélicoptère devient un objet sans pilote, alors que l'auteur en fait un personnage. Et surtout : <b>21 s d'ouverture ne laissent aucune marge au chargement du moteur</b>. La coupe de bascule ne peut pas arriver avant que Three.js et le musée soient rendus, et sur un téléphone milieu de gamme en 4G l'estimation est de vingt secondes — donc C parie qu'il n'y aura pas de retard, et un retard fait exactement ce que le ticket interdit : <b>le premier plan du jeu se mérite</b>. C'est aussi la mesure à faire en premier sur le moteur, parce qu'elle peut allonger l'ouverture et rien d'autre.</div>
+  <div class="verdict keep"><div class="h">B — le montage tendu · 61 s · retenu</div>
+    <b>Six plans à l'ouverture, sept à la fuite ; 29 s puis 32 s.</b> Les 29 s ne sont pas un compromis d'attention : c'est un <b>plancher technique</b> — la cinématique d'ouverture est l'écran de chargement du moteur, et elle doit tenir le temps que Three.js et le musée arrivent. Les 32 s de la fuite sont le seul endroit où l'on peut dépenser : le destinataire qui a fini le jeu ne saute rien, et la Récompense est derrière. <b>Tout ce qu'une coupe peut dire est dit par une coupe</b> — la décision d'y aller est une coupe (le regard, puis la fermeture éclair qui se ferme), l'arrivée au musée est une coupe (la fermeture, puis le toit), la sortie d'égout est une coupe (le tunnel, puis la cour). Contrepartie assumée, visible en A : trois ellipses que le spectateur doit franchir seul.</div>
+</section>
+
+<section>
+  <h2><span class="n">02 — la contrainte qui gouverne tout</span>Le prix est à la seconde, pas au plan</h2>
+  <p>Le ticket avertit que « chaque plan que tu ajoutes coûte de l'argent réel ». <b>C'est vrai des secondes, pas des plans.</b> La formule de facturation relevée par #5 est <code>tokens = (h × l × durée × 24) / 1024</code> : le coût d'un appel Seedance 2.5 est strictement proportionnel à sa durée de sortie, et il n'y a aucun forfait d'appel. Découper 29 s en six plans ou les tirer en un seul coûte le même prix nu — <b>13,40 $</b>.</p>
+  <div class="note"><b>Le découpage fin est donc gratuit, et il divise le prix d'un essai raté par cinq.</b> Un plan de 5 s manqué se re-tire pour <b>2,31 $</b> ; les 30 s d'ouverture du legacy, tirées en une passe, se re-tirent pour <b>13,87 $</b> parce qu'un détail faux à la seconde 22 jette tout. Le seul surcoût du découpage est <b>0,15 $ d'image clé par plan</b> — 1,95 $ pour les treize. Le découpage n'est pas un budget, c'est une <b>résolution du risque</b>.</div>
+  <div class="note warn"><b>Deux bornes dures de Seedance 2.5, non négociables :</b> la durée est un entier de <b>4 à 30 s</b> — donc aucun plan de ce découpage ne descend sous 4 s, et une coupe sèche d'une seconde s'obtient <b>au montage, en taillant dans un plan de 4 s tiré</b>, jamais en commande. Et la résolution plafonne à <b>720p</b> : le maître est un 720 × 1280, il n'existe pas de version 1080p sans changer de modèle.</div>
+  <h3>Le son est ce qui rend le découpage fin possible</h3>
+  <p>Chaque appel 2.5 génère sa propre bande son. Treize appels, c'est treize ambiances indépendantes qui sautent à chaque raccord — et <b>le saut sonore désigne la couture que l'image, elle, tenait</b>. Règle : <b>une nappe continue est posée au montage du premier au dernier plan de chaque cinématique, et l'audio natif de Seedance n'est conservé que sur le plan qui porte une réplique.</b> Il n'y en a qu'un dans tout le film.</p>
+</section>
+
+<section>
+  <h2><span class="n">03 — le film</span>Treize plans, et ce qui change entre variantes</h2>
+  <div id="tabplans"></div>
+  <div class="note"><b>Seuls deux plans du film montrent un visage à taille lisible</b> — O2, le regard, et F7, la plage. Tout le reste est dos, silhouettes en contre-jour, ou mains gantées. Ce n'est pas de l'avarice de mise en scène : c'est la règle de #23 — « La Main n'a jamais de gros plan de face tenu » — poussée jusqu'à sa conséquence économique. <b>Une variante de casting se joue sur deux plans à risque et cinq silhouettes sans risque.</b></div>
+</section>
+
+<section>
+  <h2><span class="n">04 — le pic</span>O2, le regard : L'Œil vous regarde par-dessus l'épaule de La Main</h2>
+  <p><b>Le pic émotionnel filmable en 9:16 est le plan O2, et ce n'est ni le toit, ni la corde, ni la plage.</b> L'argument n'est pas d'atmosphère, il est structurel : #23 a posé que <b>La Main est la place du Destinataire</b> et <b>L'Œil est l'Offrant</b>. Le plan est donc une amorce d'épaule sur La Main, et ce qu'on voit dans le cadre, c'est le visage de L'Œil qui lève les yeux du journal — c'est-à-dire <b>le visage de la personne qui a préparé le cadeau, qui regarde le destinataire</b>, à l'endroit exact du film où ils sont encore deux personnes et pas encore deux rôles, bandeaux relevés sur le front.</p>
+  <p>Le portrait est un cadre à visage : un seul visage dans la bande centrale, l'épaule noire en bas, les lumières du café en haut. C'est le seul plan du film où le 9:16 ne coûte rien. <b>Contrepartie nommée : un visage n'arrête pas un pouce comme une corde d'hélicoptère.</b> C'est pourquoi le plan de <em>fuite</em> reste la corde (F5), désignée par #23 — le film a deux plans postables et ils ne font pas le même travail : <b>O2 est le plan qui fait acheter, F5 est le plan qui fait regarder.</b></p>
+  <div class="note warn"><b>C'est aussi le seul plan lip-syncé du film, et le seul qui ne peut pas être dérisqué.</b> Seedance 1.0 lite est muet : la réplique unique — « Vingt millions. » — ne s'éprouve qu'en 2.5, à 2,77 $ l'essai. D'où la règle : <b>la réplique est optionnelle par construction</b>. La décision d'y aller se lit sans le son, dans la coupe qui suit — le regard, puis la fermeture éclair qui se ferme. Si le lip-sync échoue au deuxième essai, le plan se re-tire muet et le film ne perd rien. <b>#3 l'impose de toute façon : le mode silencieux d'iPhone coupe même une vidéo muette.</b></div>
+</section>
+
+<section>
+  <h2><span class="n">05 — les bascules</span>Deux plans de mains, et une coupe franche</h2>
+  <div class="cols">
+    <div class="card"><div class="h">Entrée · O6 → première image du jeu</div><p>Vue subjective, mains gantées posées sur le rebord de la verrière ouverte, la galerie en contrebas. <b>Le film s'arrête avant la descente : c'est le joueur qui descend.</b> Aucune corde à l'ouverture — la corde est l'actif de la fuite et s'en servir deux fois la dépenserait.</p></div>
+    <div class="card"><div class="h">Sortie · dernière image du jeu → F1</div><p>Vue subjective, les mêmes mains gantées se referment sur le cadre doré. Le moteur rend la prise, le film reprend sur la même composition, et le stroboscope blanc part au premier photogramme du film. <b>La sortie du jeu est narrative, pas une fin de niveau</b> (#20).</p></div>
+  </div>
+  <div class="note"><b>La coupe est franche, jamais un fondu.</b> Un fondu montrerait les deux textures superposées — c'est exactement l'échec de la variante A de #23, qui désignait la rupture en voulant la masquer. Deux règles de fabrication portent la bascule : le maître d'ouverture <b>se termine sur une demi-seconde de plan fixe</b>, et l'élément <code>&lt;video&gt;</code> reste affiché jusqu'à ce que le moteur ait rendu sa première image — la permutation se fait alors entre deux images identiques, et un moteur en retard ne produit aucun trou, seulement un gel.</div>
+  <div class="note warn"><b>Ces deux plans sont les deux plans pilotes que #23 a désignés sans les nommer.</b> Ce ticket les nomme : <b>O6</b> et <b>F5</b>. O6 parce que c'est le raccord, et qu'un dessin ne peut pas prouver qu'il tient quand ça bouge ; F5 parce que c'est la corde, et qu'un cadre vertical qui tient un plan large ne se démontre pas non plus sur une planche. Ils se tirent en <code>image-to-video</code>, sans exception — écart au raccord mesuré par le legacy : <b>4,2/255 en image-to-video contre 48,6/255 en reference-to-video</b>.</div>
+</section>
+
+<section>
+  <h2><span class="n">06 — le lecteur</span>Deux éléments <code>&lt;video&gt;</code>, et pas trois</h2>
+  <p>Le ticket demande combien d'éléments vidéo le lecteur devra tenir. <b>Deux, et le découpage n'y change rien : les treize plans sont montés à l'écriture, pas à la lecture.</b> Un plan par élément vidéo serait treize décodeurs à débloquer au premier tap et treize sources à préchauffer, ce que #3 interdit — <em>« précharger trois vidéos ne marche pas, une vidéo en pause retient un décodeur matériel »</em>. Le maître est un MP4 par cinématique et par variante de casting, servi depuis R2 public, haché, <code>immutable</code> (#11).</p>
+  <div class="cols">
+    <div class="card"><div class="h">Élément 1 · ouverture</div><div class="big">29 s</div><p>≈ 6,4 Mo en 720p, au débit mesuré sur le legacy. Amorcé au tap, il est <b>prioritaire sur le moteur</b> : il se met à jouer sur le premier mégaoctet, et Three.js se charge pendant qu'il joue.</p></div>
+    <div class="card"><div class="h">Élément 2 · fuite</div><div class="big">32 s</div><p>≈ 7,1 Mo. Amorcé au même tap, mais <b>préchargé seulement après <code>ended</code> de l'ouverture</b> — donc pendant la partie, qui dure 6 à 8 minutes (#8). La contrainte séquentielle de #3 est ici gratuite.</p></div>
+  </div>
+  <div class="note"><b>Aucun bouton « passer » à la première ouverture</b> — sauter l'ouverture débarquerait sur un moteur non chargé, et le film est ce que l'Offrant a payé. Le bouton n'apparaît qu'à partir de la deuxième ouverture du même Lien, qui est en ligne à vie. La discipline qui rend cette décision tenable est le plafond de durée : <b>29 s, c'est court parce qu'on n'a pas le droit de le sauter.</b></div>
+</section>
+
+<section>
+  <h2><span class="n">07 — le chiffrage</span>Ce que ce découpage coûte, et ce qu'il coûte de le re-caster</h2>
+  <div id="tabcout"></div>
+  <div class="note"><b>Une passe complète en Seedance 1.0 lite sur les treize plans coûte 2,26 $. Un seul plan de 6 s raté en 2.5 en coûte 2,77 $.</b> La passe lite est donc rentable dès qu'elle évite <em>un seul</em> essai sur <em>un seul</em> plan. Décision : <b>les treize plans passent par lite avant d'être tirés en 2.5, sans exception</b> — pas seulement les deux pilotes. Le levier acquis de la carte n'est pas un principe de prudence, c'est une inégalité arithmétique.</div>
+</section>
+
+<section>
+  <h2><span class="n">08 — les prompts</span>Des blocs recollés, plan par plan</h2>
+  <p>Aucun prompt n'est rédigé de bout en bout : chaque plan est une ligne d'action anglaise recollée aux blocs constants de #23 — <code>STYLE</code>, <code>NEGATIF</code>, <code>CADRAGE</code>, <code>TENUE</code>, un <code>QUI_&lt;RÔLE&gt;</code> par personnage au cadre, <code>TAILLES</code> dès qu'ils sont deux, un bloc par décor. <b>C'est ce qui isole le casting : un plan sans personnage est partagé par toutes les variantes.</b> Le prompt complet de chaque plan est sous le lecteur, plan par plan.</p>
+  <div class="note warn"><b>Un bloc manque à #23 et ce découpage l'ajoute : <code>TENUE_CIVILE</code>.</b> La trame fait trouver le journal <em>avant</em> l'habillage, donc O1 et O2 se passent en vêtements de ville — et l'horloge du bandeau de #23 ne commence qu'à O3. Sans un bloc de garde-robe civile figé, chaque variante de casting rhabillerait deux personnages de zéro. Écrit une fois, comme la combinaison : <b>les corps changent, les vêtements ne bougent pas d'un point.</b></div>
+  <div class="note"><b>Un plan ne se génère pas du tout.</b> La une du journal de O1 est du <b>HTML capturé en headless</b> — aucun modèle ne sait écrire, et <code>newspaper text</code> est au bloc négatif ; la page composite (table, tasses, journal) devient l'image clé de O1, animée en <code>image-to-video</code>. Et <b>aucun texte à l'écran n'est jamais gravé</b> : un texte gravé obligerait à réencoder le maître par commande, et l'invariant économique tomberait.</div>
+</section>
+
+<footer>
+  Prototype de validation du ticket #24 · aucune clé cherchée, aucun appel lancé ·
+  la porte de validation humaine est ici, avant tout rendu.
+</footer>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════════
+   1. PALETTE ET PRIMITIVES DE DESSIN
+   ═══════════════════════════════════════════════════════════════════ */
+var P={noir:'#0B0908',noir2:'#171210',pierre:'#C89A5B',or:'#E8B76A',
+  orp:'#F5D9A8',turq:'#4FD6C0',fauve:'#A9713C',fauveC:'#D69A5C',craie:'#EFE3D2'};
+var W=360,H=640;
+
+/* Silhouette. wide=true -> epaules nettement plus larges que les hanches (La Main). */
+function fig(x,yb,h,o){
+  o=o||{};
+  var c=o.fill||'#070605', hd=h/7;
+  var s=(o.wide?0.30:0.235)*h, hp=(o.wide?0.205:0.245)*h;
+  var top=yb-h, shY=top+hd*1.20, hipY=yb-h*0.50;
+  var rim=o.rim||P.or;
+  return '<g opacity="'+(o.op===undefined?1:o.op)+'">'
+   +'<path d="M'+(x-s/2)+','+shY+' L'+(x+s/2)+','+shY+' L'+(x+hp/2)+','+hipY+' L'+(x-hp/2)+','+hipY+' Z" fill="'+c+'"/>'
+   +'<path d="M'+(x-hp/2)+','+hipY+' L'+(x-hp*0.40)+','+yb+'" stroke="'+c+'" stroke-width="'+(h*0.078)+'" stroke-linecap="round"/>'
+   +'<path d="M'+(x+hp/2)+','+hipY+' L'+(x+hp*0.40)+','+yb+'" stroke="'+c+'" stroke-width="'+(h*0.078)+'" stroke-linecap="round"/>'
+   +'<path d="M'+(x-s/2+1)+','+(shY+2)+' L'+(x-s*0.60)+','+(hipY+h*0.05)+'" stroke="'+c+'" stroke-width="'+(h*0.056)+'" stroke-linecap="round"/>'
+   +'<path d="M'+(x+s/2-1)+','+(shY+2)+' L'+(x+s*0.60)+','+(hipY+h*0.05)+'" stroke="'+c+'" stroke-width="'+(h*0.056)+'" stroke-linecap="round"/>'
+   +'<ellipse cx="'+x+'" cy="'+(top+hd*0.58)+'" rx="'+(hd*0.40)+'" ry="'+(hd*0.50)+'" fill="'+c+'"/>'
+   +(o.norim?'':'<path d="M'+(x+s/2-1)+','+shY+' L'+(x+hp/2)+','+hipY+'" stroke="'+rim+'" stroke-width="1.1" opacity=".75"/>'
+     +'<path d="M'+(x+hd*0.30)+','+(top+hd*0.22)+' A'+(hd*0.40)+','+(hd*0.50)+' 0 0 1 '+(x+hd*0.30)+','+(top+hd*0.95)+'" stroke="'+rim+'" stroke-width="1" fill="none" opacity=".7"/>')
+   +'</g>';
+}
+/* Silhouette accroupie, de dos. */
+function crouch(x,yb,h,o){
+  o=o||{}; var c=o.fill||'#070605', hd=h/7;
+  var s=(o.wide?0.34:0.27)*h;
+  return '<g>'
+   +'<path d="M'+(x-s/2)+','+(yb-h*0.62)+' Q'+x+','+(yb-h*0.90)+' '+(x+s/2)+','+(yb-h*0.62)+' L'+(x+s*0.44)+','+yb+' L'+(x-s*0.44)+','+yb+' Z" fill="'+c+'"/>'
+   +'<ellipse cx="'+(x+s*0.06)+'" cy="'+(yb-h*0.92)+'" rx="'+(hd*0.42)+'" ry="'+(hd*0.48)+'" fill="'+c+'"/>'
+   +'<path d="M'+(x+s/2-1)+','+(yb-h*0.62)+' L'+(x+s*0.44)+','+yb+'" stroke="'+P.or+'" stroke-width="1.1" opacity=".7"/>'
+   +'</g>';
+}
+/* Mains gantees en vue subjective, bas de cadre. */
+function gloves(y,o){
+  o=o||{}; var c='#171210', ed=o.edge||'#2a201a';
+  function hand(cx,flip){
+    var d=flip?-1:1;
+    return '<g transform="translate('+cx+','+y+') scale('+d+',1)">'
+     +'<path d="M0,150 L0,26 Q4,6 26,4 Q52,2 70,14 Q86,25 88,46 L92,150 Z" fill="'+c+'" stroke="'+ed+'" stroke-width="1.5"/>'
+     +'<path d="M0,26 Q4,6 26,4 Q52,2 70,14 Q86,25 88,46" stroke="'+P.or+'" stroke-width="2.2" fill="none" opacity=".85"/>'
+     +'<path d="M6,22 Q30,6 58,10 Q78,16 84,40" stroke="'+P.orp+'" stroke-width="1.2" fill="none" opacity=".45"/>'
+     +'<path d="M30,12 L34,34 M48,10 L50,34 M64,16 L63,37" stroke="#050403" stroke-width="1.6" opacity=".9"/>'
+     +'<rect x="0" y="86" width="92" height="8" fill="#0a0807"/>'
+     +'<path d="M0,86 L92,86" stroke="'+P.or+'" stroke-width="1.4" opacity=".6"/>'
+     +'</g>';
+  }
+  return hand(14,false)+hand(346,true);
+}
+function grain(){return '<rect width="'+W+'" height="'+H+'" fill="url(#vig)"/>';}
+function defs(){
+  return '<defs>'
+   +'<radialGradient id="vig" cx="50%" cy="46%" r="72%"><stop offset="55%" stop-color="#000" stop-opacity="0"/><stop offset="100%" stop-color="#000" stop-opacity=".72"/></radialGradient>'
+   +'<linearGradient id="glow" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="'+P.or+'" stop-opacity=".55"/><stop offset="1" stop-color="'+P.or+'" stop-opacity="0"/></linearGradient>'
+   +'<linearGradient id="stone" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="'+P.pierre+'" stop-opacity=".85"/><stop offset="1" stop-color="'+P.pierre+'" stop-opacity=".08"/></linearGradient>'
+   +'<linearGradient id="sea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+P.turq+'"/><stop offset="1" stop-color="#1d6d63"/></linearGradient>'
+   +'<linearGradient id="sun" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a2418"/><stop offset="1" stop-color="'+P.fauve+'"/></linearGradient>'
+   +'</defs>';
+}
+function sk(inner,bg){return '<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="xMidYMid slice">'
+  +defs()+'<rect width="'+W+'" height="'+H+'" fill="'+(bg||P.noir)+'"/>'+inner+grain()+'</svg>';}
+
+/* ═══════════════════════════════════════════════════════════════════
+   2. LES COMPOSITIONS
+   ═══════════════════════════════════════════════════════════════════ */
+var SCENES={};
+
+SCENES.rue=function(){
+  var s='',i;
+  for(i=0;i<7;i++){var x=i*54; s+='<rect x="'+x+'" y="'+(120+((i*37)%90))+'" width="46" height="420" fill="#100c0a"/>';}
+  for(i=0;i<26;i++){s+='<rect x="'+(8+(i*53)%352)+'" y="'+(150+(i*61)%330)+'" width="4" height="5" fill="'+P.or+'" opacity="'+(0.2+((i*7)%5)/10)+'"/>';}
+  s+='<rect y="540" width="360" height="100" fill="#0a0807"/>';
+  s+='<ellipse cx="180" cy="548" rx="150" ry="24" fill="url(#glow)" opacity=".5"/>';
+  s+=fig(150,545,120,{})+fig(206,545,128,{wide:true});
+  return sk(s);
+};
+SCENES.journal=function(){
+  var s='<rect width="360" height="640" fill="#141010"/>',i;
+  s+='<ellipse cx="180" cy="330" rx="230" ry="230" fill="url(#glow)" opacity=".38"/>';
+  s+='<rect x="14" y="120" width="332" height="420" rx="6" fill="#1d1512"/>';
+  s+='<g transform="rotate(-4 180 330)"><rect x="52" y="152" width="256" height="356" fill="#D9CBB4"/>';
+  s+='<rect x="52" y="152" width="256" height="52" fill="#C8B79C"/>';
+  s+='<rect x="66" y="168" width="228" height="10" fill="#4a4038"/>';
+  s+='<rect x="66" y="184" width="140" height="5" fill="#6d6055"/>';
+  s+='<rect x="66" y="218" width="228" height="132" fill="#2a231d"/>';
+  s+='<rect x="106" y="242" width="148" height="86" fill="none" stroke="'+P.or+'" stroke-width="5"/>';
+  s+='<rect x="112" y="248" width="136" height="74" fill="#4a3a26"/>';
+  s+='<path d="M112,322 L146,272 L172,300 L196,258 L248,322 Z" fill="'+P.pierre+'" opacity=".55"/>';
+  for(i=0;i<9;i++)s+='<rect x="66" y="'+(366+i*14)+'" width="'+(228-((i*37)%70))+'" height="4" fill="#6d6055"/>';
+  s+='</g>';
+  s+='<ellipse cx="44" cy="120" rx="30" ry="12" fill="#241b16"/><ellipse cx="44" cy="116" rx="24" ry="9" fill="#3a2a1e"/>';
+  s+='<ellipse cx="318" cy="118" rx="30" ry="12" fill="#241b16"/><ellipse cx="318" cy="114" rx="24" ry="9" fill="#3a2a1e"/>';
+  return sk(s);
+};
+SCENES.regard=function(){
+  var s='',i;
+  s+='<rect width="360" height="640" fill="#120e0c"/>';
+  for(i=0;i<9;i++)s+='<circle cx="'+(30+(i*47)%330)+'" cy="'+(70+(i*53)%150)+'" r="'+(10+(i%4)*6)+'" fill="'+P.or+'" opacity=".12"/>';
+  s+='<ellipse cx="176" cy="330" rx="180" ry="200" fill="url(#glow)" opacity=".45"/>';
+  s+='<path d="M-10,640 L-10,392 Q40,318 116,320 L150,640 Z" fill="#050403"/>';
+  s+='<path d="M-10,392 Q40,318 116,320" stroke="'+P.or+'" stroke-width="1.4" fill="none" opacity=".5"/>';
+  var cx=228, cy=316;
+  s+='<g>';
+  s+='<path d="M'+(cx-42)+','+(cy-6)+' Q'+(cx-46)+','+(cy-70)+' '+cx+','+(cy-76)+' Q'+(cx+46)+','+(cy-70)+' '+(cx+42)+','+(cy-6)+' Q'+(cx+38)+','+(cy+58)+' '+cx+','+(cy+70)+' Q'+(cx-38)+','+(cy+58)+' '+(cx-42)+','+(cy-6)+' Z" fill="#7a5a42"/>';
+  s+='<path d="M'+(cx-46)+','+(cy-18)+' Q'+(cx-52)+','+(cy-86)+' '+cx+','+(cy-88)+' Q'+(cx+52)+','+(cy-86)+' '+(cx+46)+','+(cy-18)+' Q'+(cx+30)+','+(cy-58)+' '+cx+','+(cy-56)+' Q'+(cx-30)+','+(cy-58)+' '+(cx-46)+','+(cy-18)+' Z" fill="#191210"/>';
+  s+='<path d="M'+(cx-46)+','+(cy-52)+' Q'+cx+','+(cy-66)+' '+(cx+46)+','+(cy-52)+' L'+(cx+45)+','+(cy-40)+' Q'+cx+','+(cy-54)+' '+(cx-45)+','+(cy-40)+' Z" fill="#0d0a09"/>';
+  s+='<path d="M'+(cx-45)+','+(cy-40)+' Q'+cx+','+(cy-54)+' '+(cx+45)+','+(cy-40)+'" stroke="'+P.or+'" stroke-width="2" fill="none"/>';
+  s+='<ellipse cx="'+(cx-17)+'" cy="'+(cy-12)+'" rx="9.5" ry="5.6" fill="#F3EAE0"/><circle cx="'+(cx-16)+'" cy="'+(cy-12)+'" r="4" fill="#2b1d13"/><circle cx="'+(cx-14.6)+'" cy="'+(cy-13.6)+'" r="1.3" fill="#fff"/>';
+  s+='<ellipse cx="'+(cx+17)+'" cy="'+(cy-12)+'" rx="9.5" ry="5.6" fill="#F3EAE0"/><circle cx="'+(cx+18)+'" cy="'+(cy-12)+'" r="4" fill="#2b1d13"/><circle cx="'+(cx+19.4)+'" cy="'+(cy-13.6)+'" r="1.3" fill="#fff"/>';
+  s+='<path d="M'+(cx-27)+','+(cy-22)+' Q'+(cx-16)+','+(cy-27)+' '+(cx-7)+','+(cy-21)+'" stroke="#1b1310" stroke-width="2.4" fill="none"/>';
+  s+='<path d="M'+(cx+7)+','+(cy-21)+' Q'+(cx+16)+','+(cy-27)+' '+(cx+27)+','+(cy-22)+'" stroke="#1b1310" stroke-width="2.4" fill="none"/>';
+  s+='<path d="M'+cx+','+(cy-6)+' L'+(cx-3)+','+(cy+12)+' L'+(cx+4)+','+(cy+13)+'" stroke="#5d4130" stroke-width="2" fill="none"/>';
+  s+='<path d="M'+(cx-12)+','+(cy+31)+' Q'+cx+','+(cy+36)+' '+(cx+12)+','+(cy+31)+'" stroke="#4a2f22" stroke-width="2.4" fill="none"/>';
+  s+='<path d="M'+(cx-20)+','+(cy+64)+' L'+(cx-26)+','+(cy+110)+' L'+(cx+26)+','+(cy+110)+' L'+(cx+20)+','+(cy+64)+' Z" fill="#6b4e39"/>';
+  s+='<path d="M'+(cx-40)+','+(cy+104)+' L'+(cx+40)+','+(cy+112)+' L'+(cx+52)+',640 L'+(cx-56)+',640 Z" fill="#231a15"/>';
+  s+='</g>';
+  return sk(s);
+};
+SCENES.habillageLong=function(){
+  var s='<ellipse cx="180" cy="470" rx="200" ry="180" fill="url(#glow)" opacity=".3"/>';
+  s+='<rect y="530" width="360" height="110" fill="#0a0807"/>';
+  s+='<rect x="24" y="90" width="6" height="440" fill="#1a1412"/><rect x="330" y="90" width="6" height="440" fill="#1a1412"/>';
+  s+=fig(122,528,250,{})+fig(238,528,266,{wide:true});
+  return sk(s);
+};
+SCENES.habillage=function(){
+  var s='<ellipse cx="180" cy="330" rx="180" ry="220" fill="url(#glow)" opacity=".34"/>';
+  s+='<path d="M28,640 L28,150 Q180,88 332,150 L332,640 Z" fill="#1a1512"/>';
+  s+='<path d="M28,150 Q180,88 332,150" stroke="'+P.or+'" stroke-width="1.8" fill="none" opacity=".5"/>';
+  s+='<path d="M92,596 Q170,370 268,206" stroke="#241c16" stroke-width="12" fill="none"/>';
+  s+='<path d="M92,596 Q170,370 268,206" stroke="'+P.or+'" stroke-width="2.4" fill="none" opacity=".9"/>';
+  s+='<path d="M40,300 L322,258" stroke="#191310" stroke-width="16"/><path d="M40,378 L322,336" stroke="#191310" stroke-width="16"/>';
+  s+='<rect x="150" y="270" width="26" height="22" rx="3" fill="'+P.or+'"/><rect x="150" y="348" width="26" height="22" rx="3" fill="'+P.or+'"/>';
+  s+='<g transform="translate(236,178) rotate(-24)"><path d="M0,0 L0,-58 Q6,-78 34,-80 Q66,-82 84,-68 Q100,-56 100,-34 L100,0 Z" fill="#0A0807" stroke="#1a1512" stroke-width="1.6"/>';
+  s+='<path d="M8,-70 Q40,-78 70,-66" stroke="'+P.or+'" stroke-width="1.4" fill="none" opacity=".6"/>';
+  s+='<rect x="0" y="-6" width="100" height="8" fill="#120e0c"/></g>';
+  return sk(s);
+};
+SCENES.facade=function(){
+  var s='',i;
+  s+='<path d="M0,640 L0,300 L180,150 L360,300 L360,640 Z" fill="#100c0a"/>';
+  s+='<path d="M0,300 L180,150 L360,300 Z" fill="#0c0908"/>';
+  for(i=0;i<6;i++){var x=32+i*56;s+='<rect x="'+x+'" y="330" width="30" height="200" fill="#1c1512"/>';
+    s+='<rect x="'+x+'" y="330" width="30" height="200" fill="url(#stone)" opacity=".5"/>';}
+  s+='<rect y="530" width="360" height="110" fill="#080606"/>';
+  s+='<ellipse cx="180" cy="536" rx="170" ry="26" fill="url(#glow)" opacity=".4"/>';
+  s+=fig(180,600,84,{wide:true,op:.9});
+  return sk(s);
+};
+SCENES.toit=function(){
+  var s='',i,r,c;
+  for(i=0;i<40;i++)s+='<rect x="'+((i*67)%352)+'" y="'+(30+(i*41)%150)+'" width="3" height="4" fill="'+P.or+'" opacity="'+(0.15+((i*11)%6)/12)+'"/>';
+  s+='<rect y="150" width="360" height="30" fill="#0a0807"/>';
+  s+='<g><rect x="26" y="214" width="308" height="212" fill="#1a130d"/>';
+  for(r=0;r<4;r++)for(c=0;c<5;c++){
+    s+='<rect x="'+(30+c*61)+'" y="'+(218+r*52)+'" width="57" height="48" fill="'+P.or+'" opacity="'+(0.20+((r+c)%3)*0.11)+'"/>';}
+  for(c=0;c<6;c++)s+='<rect x="'+(26+c*61.6)+'" y="214" width="3" height="212" fill="#0a0807"/>';
+  for(r=0;r<5;r++)s+='<rect x="26" y="'+(214+r*53)+'" width="308" height="3" fill="#0a0807"/>';
+  s+='</g>';
+  s+='<ellipse cx="180" cy="320" rx="230" ry="150" fill="url(#glow)" opacity=".28"/>';
+  s+='<rect y="470" width="360" height="170" fill="#080606"/>';
+  s+='<rect y="466" width="360" height="10" fill="#181310"/>';
+  s+=crouch(128,556,120,{})+crouch(232,556,128,{wide:true});
+  return sk(s);
+};
+SCENES.verriere=function(){
+  var s='<ellipse cx="180" cy="400" rx="210" ry="200" fill="url(#glow)" opacity=".42"/>',r,c;
+  s+='<rect x="20" y="120" width="320" height="400" fill="#150f0b"/>';
+  for(r=0;r<3;r++)for(c=0;c<3;c++)s+='<rect x="'+(28+c*105)+'" y="'+(128+r*130)+'" width="99" height="124" fill="'+P.or+'" opacity="'+(0.14+((r+c)%3)*.08)+'"/>';
+  s+='<g transform="translate(133,258) rotate(-16)"><rect width="99" height="124" fill="'+P.or+'" opacity=".42" stroke="'+P.orp+'" stroke-width="2"/></g>';
+  s+=gloves(490,{});
+  return sk(s);
+};
+SCENES.descente=function(){
+  var s='<ellipse cx="180" cy="440" rx="220" ry="220" fill="url(#glow)" opacity=".34"/>',i;
+  s+='<rect y="480" width="360" height="160" fill="#1a130d"/>';
+  for(i=0;i<4;i++)s+='<rect x="'+(20+i*88)+'" y="500" width="60" height="86" fill="'+P.or+'" opacity=".16"/>';
+  s+='<rect x="176" y="0" width="3" height="420" fill="#2b211a"/>';
+  s+=fig(178,438,150,{wide:true});
+  return sk(s);
+};
+/* La composition de bascule, en deux rendus : lisse (film) et facette (jeu). */
+function basculeComp(facet){
+  var s='',i;
+  s+='<rect y="120" width="360" height="420" fill="'+(facet?'#181008':'#150f0b')+'"/>';
+  if(!facet){s+='<ellipse cx="180" cy="380" rx="240" ry="220" fill="url(#glow)" opacity=".45"/>';}
+  else{s+='<path d="M0,540 L120,300 L240,340 L360,280 L360,540 Z" fill="#241708" opacity=".7"/>';}
+  for(i=0;i<4;i++){var x=22+i*86;
+    if(facet){s+='<path d="M'+x+',300 L'+(x+62)+',292 L'+(x+62)+',376 L'+x+',384 Z" fill="'+P.or+'" opacity=".55"/>';}
+    else{s+='<rect x="'+x+'" y="298" width="62" height="82" fill="none" stroke="'+P.or+'" stroke-width="4" opacity=".8"/>'
+      +'<rect x="'+(x+5)+'" y="303" width="52" height="72" fill="'+P.pierre+'" opacity=".22"/>';}
+  }
+  if(facet)s+='<path d="M330,190 L188,470 L286,486 Z" fill="'+P.turq+'" opacity=".22"/>';
+  else s+='<path d="M330,190 L188,470 L286,486 Z" fill="'+P.turq+'" opacity=".13"/>';
+  s+='<circle cx="332" cy="186" r="7" fill="'+(facet?'#2b3a38':'#22302e')+'"/>';
+  for(i=0;i<2;i++){var xv=104+i*128;
+    if(facet)s+='<path d="M'+xv+',470 L'+(xv+56)+',464 L'+(xv+52)+',530 L'+(xv+4)+',534 Z" fill="'+P.or+'" opacity=".35"/>';
+    else s+='<rect x="'+xv+'" y="466" width="56" height="66" fill="'+P.or+'" opacity=".18" stroke="'+P.or+'" stroke-width="1.4"/>';
+  }
+  s+='<rect y="486" width="360" height="14" fill="'+(facet?'#0f0b09':'#141010')+'"/>';
+  s+='<path d="M0,486 L360,486" stroke="'+P.or+'" stroke-width="'+(facet?1.6:1.1)+'" opacity=".55"/>';
+  s+=gloves(500,{edge:facet?'#241a12':'#1a1512'});
+  if(facet){
+    s+='<g opacity=".95"><rect x="16" y="22" width="96" height="7" rx="3" fill="#3a1f1a"/><rect x="16" y="22" width="78" height="7" rx="3" fill="'+P.craie+'" opacity=".85"/>';
+    s+='<rect x="16" y="38" width="58" height="4" rx="2" fill="'+P.or+'" opacity=".8"/>';
+    s+='<rect x="16" y="52" width="46" height="46" rx="4" fill="#000" opacity=".35" stroke="'+P.or+'" stroke-width=".9"/>';
+    s+='<circle cx="39" cy="75" r="3" fill="'+P.or+'"/></g>';
+  }
+  return s;
+}
+SCENES.bascule=function(){return sk(basculeComp(false));};
+SCENES.basculeJeu=function(){return sk(basculeComp(true),'#0d0906');};
+/* Le raccord de sortie : les mains sur le cadre dore. */
+function oeuvreComp(facet,strobe){
+  var s='';
+  s+='<rect width="360" height="640" fill="'+(facet?'#150e07':'#120d09')+'"/>';
+  if(!facet)s+='<ellipse cx="180" cy="290" rx="200" ry="230" fill="url(#glow)" opacity=".5"/>';
+  else s+='<path d="M0,520 L360,470 L360,640 L0,640 Z" fill="#241708" opacity=".6"/>';
+  s+='<rect y="0" width="360" height="520" fill="'+(facet?'#1d1409':'#1a130d')+'" opacity=".75"/>';
+  var fx=64,fy=126,fw=232,fh=290;
+  if(facet){s+='<path d="M'+fx+','+fy+' L'+(fx+fw)+','+(fy-6)+' L'+(fx+fw)+','+(fy+fh)+' L'+fx+','+(fy+fh+6)+' Z" fill="'+P.or+'"/>';
+    s+='<path d="M'+(fx+16)+','+(fy+16)+' L'+(fx+fw-16)+','+(fy+10)+' L'+(fx+fw-16)+','+(fy+fh-16)+' L'+(fx+16)+','+(fy+fh-10)+' Z" fill="#2b1d12"/>';}
+  else{s+='<rect x="'+fx+'" y="'+fy+'" width="'+fw+'" height="'+fh+'" fill="none" stroke="'+P.or+'" stroke-width="15"/>';
+    s+='<rect x="'+(fx+8)+'" y="'+(fy+8)+'" width="'+(fw-16)+'" height="'+(fh-16)+'" fill="#2b1d12"/>';
+    s+='<rect x="'+fx+'" y="'+fy+'" width="'+fw+'" height="'+fh+'" fill="none" stroke="'+P.orp+'" stroke-width="2" opacity=".7"/>';}
+  s+='<path d="M'+(fx+30)+','+(fy+240)+' L'+(fx+92)+','+(fy+96)+' L'+(fx+134)+','+(fy+168)+' L'+(fx+168)+','+(fy+70)+' L'+(fx+202)+','+(fy+240)+' Z" fill="'+P.pierre+'" opacity=".5"/>';
+  if(strobe)s+='<rect width="360" height="640" fill="#FFFFFF" opacity=".5"/>';
+  s+=gloves(430,{edge:facet?'#241a12':'#1a1512'});
+  return s;
+}
+SCENES.oeuvreJeu=function(){return sk(oeuvreComp(true,false));};
+SCENES.oeuvre=function(){return sk(oeuvreComp(false,false));};
+SCENES.salle=function(){
+  var s='',i;
+  s+='<rect y="90" width="360" height="450" fill="#1a130d"/>';
+  s+='<ellipse cx="180" cy="300" rx="220" ry="200" fill="url(#glow)" opacity=".3"/>';
+  s+='<rect x="118" y="140" width="124" height="160" fill="none" stroke="'+P.or+'" stroke-width="9"/>';
+  s+='<rect x="124" y="146" width="112" height="148" fill="#0d0a08"/>';
+  for(i=0;i<11;i++)s+='<rect x="'+(8+i*33)+'" y="90" width="6" height="188" fill="#0a0807"/>';
+  s+='<rect y="272" width="360" height="8" fill="#0a0807"/>';
+  s+=fig(48,470,110,{op:.55,norim:true})+fig(320,466,116,{op:.5,norim:true,wide:true});
+  s+='<rect y="470" width="360" height="170" fill="#080606"/>';
+  s+=fig(146,616,190,{})+fig(216,616,204,{wide:true});
+  s+='<rect x="228" y="500" width="52" height="66" fill="'+P.or+'" opacity=".9"/><rect x="234" y="506" width="40" height="54" fill="#2b1d12"/>';
+  s+='<rect width="360" height="640" fill="#FFF" opacity=".16"/>';
+  return sk(s);
+};
+SCENES.securite=function(){
+  var s='<rect y="100" width="360" height="440" fill="#181109"/>',i;
+  for(i=0;i<3;i++)s+='<path d="M'+(40+i*120)+',60 L'+(-40+i*120)+',540 L'+(150+i*120)+',540 Z" fill="'+P.craie+'" opacity=".07"/>';
+  s+='<rect y="500" width="360" height="140" fill="#080606"/>';
+  s+=fig(60,560,150,{op:.75,norim:true})+fig(180,566,158,{op:.85,norim:true,wide:true})+fig(300,558,146,{op:.7,norim:true});
+  s+='<rect width="360" height="640" fill="#FFF" opacity=".2"/>';
+  return sk(s);
+};
+SCENES.plaqueEntree=function(){
+  var s='<rect width="360" height="640" fill="#0e0b09"/>';
+  s+='<ellipse cx="180" cy="300" rx="180" ry="160" fill="url(#glow)" opacity=".3"/>';
+  s+='<circle cx="180" cy="330" r="96" fill="#151010" stroke="#241c16" stroke-width="6"/>';
+  s+='<circle cx="180" cy="330" r="72" fill="#0a0807"/>';
+  s+='<g transform="translate(180,330) rotate(-22)"><path d="M-96,0 A96,96 0 0 1 96,0 Z" fill="#1c1511" stroke="'+P.or+'" stroke-width="1.6" opacity=".85"/></g>';
+  s+=gloves(470,{});
+  return sk(s);
+};
+SCENES.egout=function(){
+  var s='<rect width="360" height="640" fill="#0A0807"/>',i;
+  s+='<path d="M0,0 L360,0 L360,640 L0,640 Z" fill="#0d0a09"/>';
+  s+='<ellipse cx="180" cy="300" rx="150" ry="250" fill="#120d0a"/>';
+  for(i=0;i<5;i++){var x=44+i*70, w=16-i*1.4;
+    s+='<path d="M'+x+',60 L'+(x+w)+',60 L'+(x+w+22)+',470 L'+(x-22)+',470 Z" fill="'+P.or+'" opacity="'+(0.20-i*0.03)+'"/>';
+    s+='<rect x="'+(x-4)+'" y="52" width="'+(w+8)+'" height="7" fill="#1a1310"/>';}
+  s+='<rect y="470" width="360" height="170" fill="#0c0908"/>';
+  for(i=0;i<5;i++){var x2=44+i*70;
+    s+='<rect x="'+(x2-16)+'" y="474" width="40" height="'+(120-i*14)+'" fill="'+P.or+'" opacity="'+(0.10-i*0.014)+'"/>';}
+  s+=fig(150,486,180,{norim:true})+fig(214,486,192,{wide:true,norim:true});
+  return sk(s);
+};
+SCENES.plaque=function(){
+  var s='<rect width="360" height="640" fill="#0A0807"/>';
+  s+='<ellipse cx="180" cy="180" rx="180" ry="150" fill="url(#glow)" opacity=".45"/>';
+  s+='<path d="M40,150 L320,150 L300,640 L60,640 Z" fill="#0d0a09"/>';
+  s+='<g transform="translate(180,190) rotate(30)"><ellipse rx="92" ry="26" fill="#1c1511" stroke="'+P.or+'" stroke-width="1.6"/></g>';
+  s+=gloves(400,{});
+  return sk(s);
+};
+SCENES.cour=function(){
+  var s='',i;
+  s+='<rect width="360" height="640" fill="#0A0807"/>';
+  s+='<path d="M0,0 L96,0 L110,640 L0,640 Z" fill="#100c0a"/>';
+  s+='<path d="M264,0 L360,0 L360,640 L250,640 Z" fill="#100c0a"/>';
+  for(i=0;i<5;i++){s+='<rect x="24" y="'+(70+i*106)+'" width="42" height="58" fill="'+P.or+'" opacity=".1"/>';
+    s+='<rect x="296" y="'+(96+i*106)+'" width="42" height="58" fill="'+P.or+'" opacity=".1"/>';}
+  s+='<g transform="translate(180,86)"><ellipse rx="52" ry="22" fill="#1d1410" stroke="'+P.fauve+'" stroke-width="2"/>';
+  s+='<rect x="-96" y="-30" width="192" height="4" rx="2" fill="#241a13"/>';
+  s+='<path d="M40,-8 L96,-22 L98,-16 L44,4 Z" fill="#1d1410"/>';
+  s+='<circle cx="-30" cy="8" r="8" fill="'+P.orp+'" opacity=".9"/>';
+  s+='<path d="M-30,14 L-92,300 L32,300 Z" fill="'+P.or+'" opacity=".13"/></g>';
+  s+='<rect x="175" y="104" width="6" height="450" fill="#4a382b"/>';
+  s+='<rect x="175" y="104" width="2.4" height="450" fill="'+P.orp+'" opacity=".8"/>';
+  s+='<rect y="540" width="360" height="100" fill="#080606"/>';
+  s+='<g transform="translate(120,548) rotate(-16)"><ellipse rx="46" ry="13" fill="#1c1511" stroke="'+P.or+'" stroke-width="1.2"/></g>';
+  s+=fig(146,600,96,{})+fig(210,596,104,{wide:true});
+  return sk(s);
+};
+SCENES.corde=function(){
+  var s='<rect width="360" height="640" fill="#0A0807"/>',i;
+  s+='<path d="M0,0 L74,120 L88,640 L0,640 Z" fill="#0f0b09"/>';
+  s+='<path d="M286,120 L360,0 L360,640 L272,640 Z" fill="#0f0b09"/>';
+  for(i=0;i<7;i++){s+='<rect x="18" y="'+(160+i*74)+'" width="36" height="40" fill="'+P.or+'" opacity=".07"/>';
+    s+='<rect x="306" y="'+(190+i*74)+'" width="36" height="40" fill="'+P.or+'" opacity=".07"/>';}
+  s+='<g transform="translate(182,54)"><ellipse rx="60" ry="25" fill="#20160f" stroke="'+P.fauve+'" stroke-width="2.4"/>';
+  s+='<rect x="-110" y="-34" width="220" height="5" rx="2" fill="#2a1e16"/>';
+  s+='<circle cx="-34" cy="10" r="9" fill="'+P.orp+'"/>';
+  s+='<path d="M-34,18 L-118,560 L44,560 Z" fill="'+P.or+'" opacity=".12"/></g>';
+  s+='<rect x="178" y="78" width="5" height="562" fill="#3d2e23"/>';
+  s+='<rect x="178" y="78" width="2" height="562" fill="'+P.or+'" opacity=".55"/>';
+  s+=fig(196,392,140,{wide:true})+fig(166,470,128,{});
+  s+='<rect x="200" y="300" width="40" height="50" fill="'+P.or+'" opacity=".9"/><rect x="205" y="305" width="30" height="40" fill="#2b1d12"/>';
+  for(i=0;i<18;i++)s+='<rect x="'+((i*83)%352)+'" y="'+(120+(i*97)%460)+'" width="3" height="8" fill="'+P.orp+'" opacity=".16"/>';
+  return sk(s);
+};
+SCENES.cockpit=function(){
+  var s='<rect width="360" height="640" fill="#0A0807"/>',i;
+  s+='<path d="M186,120 L360,120 L360,540 L186,540 Z" fill="#0f0c0a"/>';
+  s+='<g opacity=".7"><rect x="212" y="360" width="126" height="130" fill="#140f0c"/>';
+  for(i=0;i<15;i++)s+='<rect x="'+(200+(i*41)%150)+'" y="'+(300+(i*67)%210)+'" width="3" height="4" fill="'+P.or+'" opacity=".5"/>';
+  s+='<rect x="212" y="360" width="126" height="130" fill="#FFF" opacity=".13"/></g>';
+  s+='<ellipse cx="150" cy="300" rx="150" ry="180" fill="'+P.fauve+'" opacity=".1"/>';
+  s+='<path d="M40,640 L36,392 Q60,318 128,312 Q196,318 214,398 L212,640 Z" fill="#7a4e28"/>';
+  s+='<path d="M36,392 Q60,318 128,312 Q196,318 214,398" stroke="'+P.fauveC+'" stroke-width="2" fill="none"/>';
+  s+='<path d="M126,432 L120,640" stroke="#4e3018" stroke-width="4"/>';
+  s+='<path d="M56,404 Q124,368 196,406 L188,438 Q124,404 64,436 Z" fill="#A08A70" opacity=".8"/>';
+  s+='<path d="M84,306 L84,236 Q84,196 130,194 Q176,196 176,236 L176,306 Z" fill="#6d5340"/>';
+  s+='<path d="M88,256 Q130,320 172,256 Q172,300 130,314 Q88,300 88,256 Z" fill="#140f0d"/>';
+  s+='<path d="M72,232 Q72,164 130,162 Q188,164 188,232 L188,244 L72,244 Z" fill="#4a443f"/>';
+  s+='<path d="M72,206 Q130,186 188,206" stroke="#6a625a" stroke-width="3" fill="none"/>';
+  s+='<path d="M72,196 Q130,172 188,196 L188,182 Q130,158 72,182 Z" fill="#2b2622"/>';
+  s+='<path d="M176,240 Q206,254 200,278" stroke="#2b2622" stroke-width="5" fill="none"/><circle cx="199" cy="282" r="7" fill="#2b2622"/>';
+  s+='<ellipse cx="104" cy="248" rx="8" ry="4.5" fill="#EFE3D2"/><circle cx="105" cy="248" r="3.2" fill="#2b1d13"/>';
+  s+='<ellipse cx="156" cy="248" rx="8" ry="4.5" fill="#EFE3D2"/><circle cx="157" cy="248" r="3.2" fill="#2b1d13"/>';
+  s+='<rect x="150" y="470" width="54" height="17" rx="3" fill="#0d0a09"/>';
+  s+='<rect x="150" y="470" width="54" height="4" fill="'+P.or+'"/><rect x="150" y="483" width="54" height="4" fill="'+P.or+'"/>';
+  return sk(s);
+};
+SCENES.plage=function(){
+  var s='',i;
+  s+='<rect width="360" height="640" fill="url(#sun)"/>';
+  s+='<rect y="96" width="360" height="86" fill="url(#sea)"/>';
+  for(i=0;i<9;i++)s+='<rect x="'+((i*61)%350)+'" y="'+(120+(i*23)%54)+'" width="46" height="2" fill="#FFF" opacity=".22"/>';
+  s+='<rect y="182" width="360" height="42" fill="#8a6a45"/>';
+  s+='<rect y="224" width="360" height="416" fill="#3d2a1c"/>';
+  s+='<ellipse cx="180" cy="300" rx="240" ry="200" fill="'+P.or+'" opacity=".14"/>';
+  s+='<g opacity=".92">';
+  s+='<ellipse cx="122" cy="330" rx="46" ry="56" fill="#8a6549"/><path d="M78,320 Q76,262 122,258 Q168,262 166,320 Q150,290 122,292 Q94,290 78,320 Z" fill="#191210"/>';
+  s+='<ellipse cx="238" cy="322" rx="48" ry="58" fill="#7a5942"/><path d="M192,308 Q192,258 238,254 Q284,258 284,308 Q262,286 238,288 Q214,286 192,308 Z" fill="#120d0b"/>';
+  s+='<ellipse cx="106" cy="330" rx="7" ry="4" fill="#2b1d13"/><ellipse cx="140" cy="330" rx="7" ry="4" fill="#2b1d13"/>';
+  s+='<ellipse cx="222" cy="322" rx="7" ry="4" fill="#2b1d13"/><ellipse cx="256" cy="322" rx="7" ry="4" fill="#2b1d13"/>';
+  s+='<path d="M108,358 Q122,368 138,357" stroke="#3d2418" stroke-width="3" fill="none"/>';
+  s+='<path d="M224,350 Q238,360 254,349" stroke="#3d2418" stroke-width="3" fill="none"/>';
+  s+='<path d="M84,392 L60,640 L300,640 L282,388 Z" fill="#c9b79c" opacity=".5"/>';
+  s+='</g>';
+  s+='<g transform="translate(300,404) rotate(9)"><rect width="76" height="104" fill="#3a2a1c" stroke="'+P.or+'" stroke-width="7"/></g>';
+  s+='<path d="M286,392 L352,372 L360,560 L296,556 Z" fill="#2b1d13" opacity=".65"/>';
+  s+='<g>';
+  s+='<path d="M74,640 L74,560 L34,470 L166,470 L126,560 L126,640 Z" fill="'+P.orp+'" opacity=".30"/>';
+  s+='<path d="M40,478 L160,478 L124,552 L76,552 Z" fill="'+P.fauveC+'" opacity=".8"/>';
+  s+='<path d="M234,640 L234,562 L196,474 L326,474 L286,562 L286,640 Z" fill="'+P.orp+'" opacity=".30"/>';
+  s+='<path d="M202,482 L320,482 L284,554 L238,554 Z" fill="'+P.fauveC+'" opacity=".8"/>';
+  s+='<circle cx="60" cy="466" r="10" fill="'+P.craie+'" opacity=".5"/><circle cx="300" cy="470" r="10" fill="'+P.craie+'" opacity=".5"/>';
+  s+='</g>';
+  s+='<path d="M120,600 L188,584 L196,626 L128,640 Z" fill="#6b4e39"/>';
+  s+='<rect x="140" y="590" width="52" height="19" rx="3" fill="#0d0a09" transform="rotate(-13 166 600)"/>';
+  s+='<rect x="140" y="590" width="52" height="4" fill="'+P.or+'" transform="rotate(-13 166 600)"/>';
+  s+='<rect x="140" y="604" width="52" height="4" fill="'+P.or+'" transform="rotate(-13 166 600)"/>';
+  return sk(s,'#3d2a1c');
+};
+SCENES.jeu=function(){
+  return sk('<rect width="360" height="640" fill="#050403"/>'
+   +'<text x="180" y="298" text-anchor="middle" fill="'+P.or+'" font-family="ui-monospace,monospace" font-size="13" letter-spacing="4">LE JEU</text>'
+   +'<text x="180" y="330" text-anchor="middle" fill="#6b6058" font-family="ui-monospace,monospace" font-size="10.5" letter-spacing="2">6 A 8 MINUTES · 5 SALLES</text>'
+   +'<text x="180" y="356" text-anchor="middle" fill="#4a423c" font-family="ui-monospace,monospace" font-size="9.5" letter-spacing="1.5">HORS DU DECOUPAGE — TICKET #8</text>','#050403');
+};
+SCENES.recompense=function(){
+  var s='<rect width="360" height="640" fill="#0B0908"/>';
+  s+='<ellipse cx="180" cy="300" rx="200" ry="220" fill="url(#glow)" opacity=".22"/>';
+  s+='<rect x="86" y="150" width="188" height="240" fill="none" stroke="'+P.or+'" stroke-width="10"/>';
+  s+='<rect x="94" y="158" width="172" height="224" fill="#1a120c"/>';
+  s+='<text x="180" y="452" text-anchor="middle" fill="'+P.orp+'" font-family="Georgia,serif" font-size="18">La Récompense</text>';
+  s+='<text x="180" y="480" text-anchor="middle" fill="#6b6058" font-family="ui-monospace,monospace" font-size="9.5" letter-spacing="1.6">MESSAGE · LIEN DE VIREMENT · MONTANT</text>';
+  s+='<text x="180" y="508" text-anchor="middle" fill="#4a423c" font-family="ui-monospace,monospace" font-size="9" letter-spacing="1.4">CALQUE DOM — JAMAIS GRAVE DANS LE MP4</text>';
+  return sk(s);
+};
+
+/* ═══════════════════════════════════════════════════════════════════
+   3. LES PLANS
+   ═══════════════════════════════════════════════════════════════════ */
+var CAST={
+  S:["Partagé — toutes variantes","tag or"],
+  V:["Re-casté — visage","tag fv"],
+  L:["Re-casté — silhouette","tag"],
+  A:["Partagé — fiche unique de L'Aile","tag or"]
+};
+
+var CATALOGUE={
+ /* ── OUVERTURE ─────────────────────────────────────────────── */
+ O1:{id:'O1',sc:'journal',t:4,nom:'La une',cadre:'Insert, plongée verticale, lente descente sur la table',
+   cast:'S',film:'ouverture',
+   txt:"Une table de café, deux tasses vidées, un journal ouvert. En pleine page : l'œuvre à vingt millions, encadrée d'or, et le nom du musée de la ville. La caméra descend jusqu'à ce que la photo occupe la bande centrale. Personne au cadre.",
+   mv:[[1.22,0,-26],[1.0,0,10]],
+   prompt:"IMAGE-TO-VIDEO · 4 s · 720p 9:16 · image clé = capture HTML composée\n+ CADRAGE + STYLE + NEGATIF\nACTION: slow vertical descent onto a newspaper lying open on a cafe table,\ntwo emptied cups at the edges of frame. The camera settles when the framed\nartwork photograph fills the central band. No people. The paper breathes\nslightly in the warm air; the light flickers once.",
+   note:"La une est du HTML capturé en headless, jamais générée — <code>newspaper text</code> est au bloc négatif de #23 et aucun modèle ne sait écrire. La capture composée devient l'image clé."},
+ O2:{id:'O2',sc:'regard',t:6,nom:'Le regard',cadre:"Amorce d'épaule sur La Main, L'Œil de face en bande centrale",
+   cast:'V',film:'ouverture',pic:true,
+   txt:"L'Œil lève les yeux du journal, vers la caméra — c'est-à-dire vers La Main, c'est-à-dire vers le Destinataire. Bandeau relevé sur le front. Une réplique, lip-syncée : « Vingt millions. » Elle tient le regard une seconde de trop. Coupe.",
+   mv:[[1.0,0,0],[1.10,-8,4]],
+   prompt:"IMAGE-TO-VIDEO · 6 s · 720p 9:16 · generate_audio: true\n+ CADRAGE + QUI_OEIL + TENUE_CIVILE + STYLE + NEGATIF\nACTION: over-the-shoulder from LA MAIN, his shoulder a black silhouette\nfilling the lower left. L'OEIL lifts her eyes from the newspaper straight to\ncamera and holds. The honey-gold band is pushed up on her forehead. She says,\nin French, exactly: \"Vingt millions.\" Nothing else is spoken. Warm cafe\nbokeh in the top band. Slow push in.",
+   note:"<b>Le pic émotionnel.</b> Le seul plan lip-syncé du film, et le seul qui ne se dérisque pas en lite (lite est muet). La réplique est optionnelle par construction : la coupe suivante dit la décision sans le son."},
+ O3:{id:'O3',sc:'habillage',t:4,nom:'La fermeture',cadre:'Insert, mains gantées, torse cadré serré',
+   cast:'S',film:'ouverture',
+   txt:"Les mains gantées tirent la fermeture asymétrique de la hanche gauche à l'épaule droite. Les deux sangles du harnais, boucles or. Le bandeau est tiré sur le front. Aucun visage. C'est la seule image de la transformation, et elle suffit.",
+   mv:[[1.05,0,14],[1.0,0,-8]],
+   prompt:"IMAGE-TO-VIDEO · 4 s · 720p 9:16\n+ CADRAGE + TENUE + STYLE + NEGATIF\nACTION: tight insert. Two gloved hands pull the asymmetric zip of the matte\nblack coverall from the left hip up to the right shoulder in one movement.\nThe two harness straps and their honey-gold buckles come into frame. At the\nend of the movement a hand pushes the honey-gold band up onto the forehead —\nthe forehead only, no face visible. Warm key light from below.",
+   note:"Plan de mains, donc <b>partagé par toutes les variantes de casting</b> : il se tire une fois pour <code>couple</code> et <code>amis</code>. Il réemploie <code>main-gants.png</code>, l'actif le plus critique du film selon #23."},
+ O4:{id:'O4',sc:'toit',t:5,nom:'Le toit',cadre:'Plan large, trois bandes — ciel / verrière / les deux accroupis',
+   cast:'L',film:'ouverture',
+   txt:"Haut : ciel noir, la ville en points d'or. Milieu : la verrière du musée, éclairée par en dessous. Bas : les deux, accroupis au bord, de dos, bandeaux sur les yeux. Ils ne sont plus deux personnes, ils sont deux rôles.",
+   mv:[[1.0,0,-16],[1.06,0,10]],
+   prompt:"IMAGE-TO-VIDEO · 5 s · 720p 9:16\n+ CADRAGE + DECOR_TOIT + QUI_OEIL + QUI_MAIN + TAILLES + TENUE + STYLE + NEGATIF\nACTION: wide vertical shot in three stacked bands. TOP: warm black sky, the\ncity a scatter of honey points. MIDDLE: the museum glass roof glowing from\nbeneath. BOTTOM: the two figures crouched at the parapet edge, seen from\nbehind, both wearing the narrow domino mask OVER the eyes. Slow crane down.\nNo horizon across the middle of the frame.",
+   note:"Le second plan postable de l'ouverture — l'infiltration par le toit. Il perd contre O2 sur une seule raison : de dos, il ne porte aucun visage, donc rien à quoi s'attacher en trois secondes de défilement."},
+ O5:{id:'O5',sc:'verriere',t:4,nom:'Le panneau',cadre:'Vue subjective, mains gantées sur un panneau de verre',
+   cast:'S',film:'ouverture',
+   txt:"Vue subjective. Les mains gantées écartent un panneau de la verrière. La lumière de la galerie monte dans le cadre et éclaire les gants par en dessous. Aucun visage, aucune corde.",
+   mv:[[1.0,0,0],[1.12,0,-14]],
+   prompt:"IMAGE-TO-VIDEO · 4 s · 720p 9:16\n+ CADRAGE + TENUE + STYLE + NEGATIF\nACTION: point of view. Two gloved hands lift and slide one pane out of the\nmuseum glass roof. Warm honey light from the gallery below rises into the\nframe and lights the gloves from underneath. No rope, no tool, no face.",
+   note:"<b>Aucune corde à l'ouverture.</b> La corde est l'actif du plan de fuite F5 ; s'en servir deux fois la dépenserait."},
+ O6:{id:'O6',sc:'bascule',t:6,nom:'La bascule',cadre:'Vue subjective, mains sur le rebord — composition figée du jeu',
+   cast:'S',film:'ouverture',pilote:true,
+   txt:"Vue subjective. Les mains gantées se posent sur le rebord de l'ouverture ; en contrebas, la galerie — cadres dorés au mur, vitrines au sol, un cône turquoise qui balaie. Le film s'immobilise une demi-seconde sur exactement la première image du jeu, puis coupe. Le joueur descend.",
+   mv:[[1.0,0,-10],[1.04,0,4]],
+   prompt:"IMAGE-TO-VIDEO · 6 s · 720p 9:16 · PLAN PILOTE\n+ CADRAGE + DECOR_GALERIE + TENUE + STYLE + NEGATIF\nACTION: point of view over the opened roof. Two gloved hands settle on the\nglass rim in the lower third. Below: the gallery, gilded frames on the walls,\nlit cases on plinths, ONE turquoise camera cone sweeping. The camera tilts\ndown ten degrees and STOPS DEAD, holding the final composition perfectly\nstill for the last half second. Nothing else moves at the end.",
+   note:"<b>Plan pilote nº1.</b> Le raccord C de #23 : ce plan et la première image du jeu sont la même composition, lissée puis facettée. Tiré en <code>image-to-video</code> sans exception — écart au raccord mesuré à 4,2/255 contre 48,6/255 en <code>reference-to-video</code>."},
+ /* plans propres à A */
+ A1:{id:'A1',sc:'rue',t:5,nom:'La balade',cadre:'Plan large, rue de nuit, les deux de dos',
+   cast:'L',film:'ouverture',only:'A',
+   txt:"Le couple marche dans une rue de nuit, de dos, la ville en points. Établit qu'ils sont deux et qu'ils sont ensemble.",
+   mv:[[1.0,0,0],[1.08,0,0]],
+   prompt:"IMAGE-TO-VIDEO · 5 s · 720p 9:16\n+ CADRAGE + QUI_OEIL + QUI_MAIN + TAILLES + TENUE_CIVILE + STYLE + NEGATIF\nACTION: wide vertical shot, a night street. The two walk away from camera,\nshoulder to shoulder. Warm windows above them, wet asphalt below.",
+   note:"Coupé de B. Cinq secondes et un plan re-casté pour dire ce que deux tasses sur la table de O1 disent gratuitement."},
+ A2:{id:'A2',sc:'habillageLong',t:5,nom:"L'habillage en pied",cadre:'Plan large, les deux enfilent la combinaison',
+   cast:'L',film:'ouverture',only:'A',
+   txt:"Les deux, en pied, enfilent la combinaison dans un couloir sombre.",
+   mv:[[1.0,0,0],[1.06,0,-8]],
+   prompt:"IMAGE-TO-VIDEO · 5 s · 720p 9:16\n+ CADRAGE + QUI_OEIL + QUI_MAIN + TAILLES + TENUE + STYLE + NEGATIF\nACTION: wide vertical shot, both figures standing, pulling the black coverall\nover the shoulders in a dark corridor.",
+   note:"Coupé de B. L'insert de mains O3 dit la même chose en 4 s, sans casting, donc sans re-tirage par variante."},
+ A3:{id:'A3',sc:'facade',t:4,nom:'La façade',cadre:'Contre-plongée sur le musée depuis la rue',
+   cast:'L',film:'ouverture',only:'A',
+   txt:"Le musée vu d'en bas, colonnes et fenêtres éteintes, une silhouette au pied des marches.",
+   mv:[[1.0,0,20],[1.1,0,-14]],
+   prompt:"IMAGE-TO-VIDEO · 4 s · 720p 9:16\n+ CADRAGE + STYLE + NEGATIF\nACTION: low angle on a city museum facade at night, dark windows, warm stone.\nA single small silhouette at the foot of the steps.",
+   note:"Coupé de B. La une de O1 porte déjà le nom du musée, et O4 le montre par le toit."},
+ A4:{id:'A4',sc:'descente',t:4,nom:'La descente',cadre:'Plongée, descente en rappel dans la galerie',
+   cast:'L',film:'ouverture',only:'A',
+   txt:"La Main descend en rappel dans la galerie, vu de dessus.",
+   mv:[[1.0,0,-20],[1.08,0,18]],
+   prompt:"IMAGE-TO-VIDEO · 4 s · 720p 9:16\n+ CADRAGE + DECOR_GALERIE + QUI_MAIN + TENUE + STYLE + NEGATIF\nACTION: high angle, LA MAIN descends on a line into the gallery.",
+   note:"Coupé de B, et pour une raison de fond : la descente <b>est</b> la bascule. Si le film descend, le joueur n'a plus rien à faire de son premier geste."},
+ /* ── FUITE ─────────────────────────────────────────────────── */
+ F1:{id:'F1',sc:'oeuvre',t:4,nom:'La prise',cadre:'Vue subjective, mains gantées sur le cadre doré',
+   cast:'S',film:'fuite',
+   txt:"Vue subjective, raccord exact sur la dernière image du jeu. Les mains gantées se referment sur le cadre doré et le décrochent. Au moment où il quitte le mur, le stroboscope blanc part. Aucun rouge.",
+   mv:[[1.0,0,0],[1.06,0,10]],
+   prompt:"IMAGE-TO-VIDEO · 4 s · 720p 9:16 · première image = dernière image du jeu\n+ CADRAGE + DECOR_GALERIE + TENUE + STYLE + NEGATIF\nACTION: point of view. Two gloved hands close on a large gilded frame and\nlift it off the wall. The instant it leaves the wall a WHITE strobe starts,\nflashing on honey stone. Never red. The frame tips towards camera.",
+   note:"<b>La bascule de sortie</b>, en miroir de O6 : le moteur rend la prise, le film reprend sur la même composition. L'alarme est blanche — le rouge est déjà le voile de vie basse du jeu (#6), et une alarme rouge dirait au destinataire qu'il meurt à l'instant où il vient de gagner."},
+ F2:{id:'F2',sc:'salle',t:4,nom:'La salle',cadre:'Plan large, salle principale, les deux de dos',
+   cast:'L',film:'fuite',
+   txt:"Les deux de dos, l'œuvre sous le bras de La Main, le cadre vide au mur derrière eux. Les grilles tombent. La sécurité n'est que des ombres qui traversent le cadre et des faisceaux qui balaient — jamais un visage, jamais une arme.",
+   mv:[[1.06,0,0],[1.0,0,-10]],
+   prompt:"IMAGE-TO-VIDEO · 4 s · 720p 9:16\n+ CADRAGE + DECOR_GALERIE + QUI_OEIL + QUI_MAIN + TAILLES + TENUE + STYLE + NEGATIF\nACTION: wide vertical shot of the main hall. The two seen from behind, LA\nMAIN carrying the gilded frame under one arm, the empty wall hook behind\nthem. Security shutters drop across the top band. Guards exist only as\nshadows crossing frame and torch beams sweeping — never a face, never a\nweapon of any kind. White strobe on honey stone.",
+   note:"« Une tonne de sécurité » de la trame, rendue en ombres. Deux bénéfices : la palette tient (aucune source froide n'entre), et le bloc négatif reste honnête sans qu'on ait à cadrer un garde."},
+ F3:{id:'F3',sc:'egout',t:4,nom:"L'égout",cadre:'Plan large, trois bandes — grille / tunnel / eau',
+   cast:'L',film:'fuite',
+   txt:"Haut : les grilles de la rue et leurs barres de lumière. Milieu : le tunnel noir, les deux qui courent vers la caméra en contre-jour. Bas : l'eau qui réfléchit les barres. Aucun vert.",
+   mv:[[1.14,0,0],[1.0,0,0]],
+   prompt:"IMAGE-TO-VIDEO · 4 s · 720p 9:16\n+ CADRAGE + DECOR_EGOUT + QUI_OEIL + QUI_MAIN + TAILLES + TENUE + STYLE + NEGATIF\nACTION: wide vertical shot down a brick tunnel. Vertical honey-gold bars of\nlight fall from street gratings overhead, one after another, reflected in\nstanding water. The two run TOWARDS camera in full backlight, silhouettes\nonly. Camera pulls back with them. No green, no cyan.",
+   note:"Contre-jour intégral : les corps ne sont que des silhouettes, donc le re-tirage par variante ne porte aucun risque de ressemblance. C'est aussi, selon #23, la meilleure composition 9:16 disponible du film."},
+ F4:{id:'F4',sc:'cour',t:4,nom:'La cour',cadre:'Plan large, trois bandes — hélico / corde / plaque ouverte',
+   cast:'L',film:'fuite',
+   txt:"Une cour fermée, murs des deux côtés — le cadre vertical est le lieu. Haut : l'hélicoptère et son phare chaud. Milieu : la corde qui tombe sur toute la hauteur. Bas : la plaque d'égout ouverte, les deux qui sortent.",
+   mv:[[1.0,0,20],[1.06,0,-16]],
+   prompt:"IMAGE-TO-VIDEO · 4 s · 720p 9:16\n+ CADRAGE + DECOR_EXTRACTION + QUI_OEIL + QUI_MAIN + TAILLES + TENUE + STYLE + NEGATIF\nACTION: wide vertical shot of a narrow closed courtyard, walls on both sides\nof frame. TOP: a helicopter hovering, its landing light warm. MIDDLE: one\nrope dropping the full height of the frame. BOTTOM: an open manhole cover and\nthe two climbing out of it. Dust lifted by the rotor wash.",
+   note:"La sortie d'égout et l'arrivée de l'hélicoptère sont <b>un seul plan</b>. Une cour étroite est le seul décor du film où le 9:16 est un cadeau et pas une contrainte — d'où la correction du « rooftop courtyard » du bloc <code>DECOR_EXTRACTION</code> en cour fermée, que la trame impose de toute façon puisqu'ils sortent d'une bouche d'égout."},
+ F5:{id:'F5',sc:'corde',t:6,nom:"L'extraction",cadre:'Plan large, la corde traverse toute la hauteur du cadre',
+   cast:'L',film:'fuite',pilote:true,tiktok:true,
+   txt:"Les deux accrochés à la corde qui monte, les murs de la cour qui défilent vers le bas, l'œuvre serrée contre le corps de La Main, l'hélicoptère au-dessus. La caméra monte avec eux. Un objet vertical dans un cadre vertical.",
+   mv:[[1.08,0,30],[1.0,0,-30]],
+   prompt:"IMAGE-TO-VIDEO · 6 s · 720p 9:16 · PLAN PILOTE\n+ CADRAGE + DECOR_EXTRACTION + QUI_OEIL + QUI_MAIN + TAILLES + TENUE + STYLE + NEGATIF\nACTION: the rope runs the FULL HEIGHT of the vertical frame. The two hang\nfrom it and rise; the courtyard walls stream downward past them. LA MAIN\nholds the gilded frame against his chest. The helicopter is in the top third,\nlanding light warm. Camera rises with them, holding the rope dead centre.",
+   note:"<b>Plan pilote nº2, et le plan qui part sur TikTok pour la fuite.</b> Désigné par #23 : c'est le seul plan du film où le portrait est un avantage plutôt qu'une amputation. Il ne se démontre pas sur une planche — il faut le voir bouger."},
+ F6:{id:'F6',sc:'cockpit',t:4,nom:"L'Aile",cadre:'Amorce cockpit, trois-quarts, porte ouverte',
+   cast:'A',film:'fuite',
+   txt:"L'Aile, casque, barbe dense, blouson fauve, le bandeau miel noué au poignet gauche sur le manche. Par la porte ouverte, le musée s'éloigne en contrebas avec son stroboscope blanc. Le seul personnage en couleur du film.",
+   mv:[[1.0,10,0],[1.08,-8,-6]],
+   prompt:"IMAGE-TO-VIDEO · 4 s · 720p 9:16\n+ CADRAGE + QUI_AILE + STYLE + NEGATIF\nACTION: three-quarter on L'AILE at the controls, helmet and boom microphone,\ntan flight jacket, the honey-gold band knotted around his left wrist on the\ncollective. Through the open door behind him the museum recedes below, its\nwhite strobe pulsing. He glances back once. He is the only warm-coloured\nperson in the frame.",
+   note:"<b>Partagé par toutes les variantes de casting</b>, et c'est la correction que #23 a apportée à la carte : la fiche de L'Aile se génère une fois pour <code>couple</code> comme pour <code>amis</code>. Un plan de personnage qui ne coûte rien à une variante."},
+ F7:{id:'F7',sc:'plage',t:6,nom:'La plage',cadre:'Plan large, trois bandes — mer / visages / verres',
+   cast:'V',film:'fuite',
+   txt:"Bas : les deux verres qui trinquent au premier plan. Milieu : les deux visages, flou léger, bandeaux disparus. Haut : une bande étroite de mer turquoise. Le cadre doré, dos au spectateur, contre le transat. Le bandeau miel noué au poignet de la main qui tient le verre.",
+   mv:[[1.10,0,-14],[1.0,0,8]],
+   prompt:"IMAGE-TO-VIDEO · 6 s · 720p 9:16\n+ CADRAGE + DECOR_PLAGE + QUI_OEIL + QUI_MAIN + TAILLES + STYLE + NEGATIF\nACTION: hold the three-band composition exactly. BOTTOM: two cocktail glasses\ntouch in the near foreground. MIDDLE: the two faces just behind, soft focus,\nno mask, they look at each other and laugh once. TOP: a narrow band of\nturquoise sea. A gilded picture frame rests face-away against a deck chair at\nthe frame edge. The honey-gold band is knotted around the wrist of the hand\nholding a glass. Warm low sun. No horizon across the middle.",
+   note:"<b>La seule apparition non hostile du turquoise de tout le film</b> — jusqu'ici c'était la couleur des cônes de caméras. C'est ce qui fait de la plage une résolution plutôt qu'une carte postale (#23). Un plan large de plage en 9:16 est le pire plan qu'on puisse commander : d'où la composition imposée, verres au premier plan, mer en bande étroite."},
+ /* plans propres à A */
+ A5:{id:'A5',sc:'securite',t:4,nom:'La sécurité',cadre:'Plan large, faisceaux, silhouettes qui convergent',
+   cast:'L',film:'fuite',only:'A',
+   txt:"Trois gardes traversent le cadre, faisceaux qui balaient, le stroboscope blanc.",
+   mv:[[1.0,0,0],[1.1,0,0]],
+   prompt:"IMAGE-TO-VIDEO · 4 s · 720p 9:16\n+ CADRAGE + DECOR_GALERIE + STYLE + NEGATIF\nACTION: three guard silhouettes cross frame, torch beams sweeping, white\nstrobe. No faces, no weapons of any kind.",
+   note:"Coupé de B : F2 porte déjà les ombres et les faisceaux dans son fond. Un plan entier de sécurité ajoute 4 s pour répéter une information."},
+ A6:{id:'A6',sc:'plaqueEntree',t:4,nom:'La descente en égout',cadre:'Insert, la plaque qui se soulève par en dessous',
+   cast:'S',film:'fuite',only:'A',
+   txt:"Les mains gantées soulèvent une plaque d'égout de l'intérieur du musée.",
+   mv:[[1.0,0,0],[1.1,0,10]],
+   prompt:"IMAGE-TO-VIDEO · 4 s · 720p 9:16\n+ CADRAGE + TENUE + STYLE + NEGATIF\nACTION: insert, gloved hands push a manhole cover aside from below.",
+   note:"Coupé de B : la coupe entre F2 et F3 dit la même chose. C'est la troisième ellipse assumée du montage tendu."},
+ A7:{id:'A7',sc:'plaque',t:4,nom:'La sortie',cadre:'Insert, la plaque qui se soulève vers la rue',
+   cast:'S',film:'fuite',only:'A',
+   txt:"La plaque se soulève vers la rue, la lumière entre.",
+   mv:[[1.06,0,0],[1.0,0,-14]],
+   prompt:"IMAGE-TO-VIDEO · 4 s · 720p 9:16\n+ CADRAGE + TENUE + STYLE + NEGATIF\nACTION: insert, a manhole cover lifts towards a lit street, gloved hands.",
+   note:"Coupé de B : F4 montre la plaque ouverte dans sa bande basse, donc le plan est redondant avec le plan qui suit."}
+};
+
+var MONTAGES={
+ A:{nom:'A — Le montage fidèle',ouv:['A1','O1','O2','A2','O3','A3','O4','O5','A4','O6'],
+    fui:['F1','F2','A5','A6','F3','A7','F4','F5','F6','F7']},
+ B:{nom:'B — Le montage tendu',ouv:['O1','O2','O3','O4','O5','O6'],
+    fui:['F1','F2','F3','F4','F5','F6','F7']},
+ C:{nom:'C — Le montage minimal',ouv:['O1','O2','O4','O6'],
+    fui:['F1','F3','F5','F7']}
+};
+
+/* ═══════════════════════════════════════════════════════════════════
+   4. LE LECTEUR
+   ═══════════════════════════════════════════════════════════════════ */
+var RAC_T=1.6, JEU_T=3.0;
+var variant='B', seq=[], total=0, t=0, playing=false, last=0;
+
+function buildSeq(v){
+  var m=MONTAGES[v], s=[];
+  m.ouv.forEach(function(id){s.push({kind:'plan',p:CATALOGUE[id]});});
+  s.push({kind:'rac',label:'Première image du jeu',sc:'basculeJeu',t:RAC_T,
+    txt:"La même composition, facettée. La coupe est franche, jamais un fondu : un fondu montrerait les deux textures superposées, ce qui est exactement l'échec de la variante A de #23."});
+  s.push({kind:'jeu',label:'Le jeu',sc:'jeu',t:JEU_T,
+    txt:"Six à huit minutes, cinq salles, dix emplacements de Souvenirs (#8). Hors du découpage. La cinématique de fuite se précharge ici — c'est ce qui rend gratuite la contrainte de préchargement séquentiel de #3."});
+  s.push({kind:'rac',label:'Dernière image du jeu',sc:'oeuvreJeu',t:RAC_T,
+    txt:"Le moteur rend la prise de l'œuvre. Le contact déclenche l'alarme : la sortie du jeu est narrative, pas une fin de niveau (#20)."});
+  m.fui.forEach(function(id){s.push({kind:'plan',p:CATALOGUE[id]});});
+  s.push({kind:'fin',label:'La Récompense',sc:'recompense',t:3.4,
+    txt:"Message, lien de virement, montant optionnel. Calque DOM, jamais gravé dans le MP4 — un texte gravé obligerait à réencoder le maître par commande et l'invariant économique tomberait."});
+  var acc=0; s.forEach(function(x){x.t0=acc; x.dur=(x.kind==='plan')?x.p.t:x.t; acc+=x.dur;});
+  return {s:s,total:acc};
+}
+function filmDur(v,which){
+  return MONTAGES[v][which].reduce(function(a,id){return a+CATALOGUE[id].t;},0);
+}
+var box=document.getElementById('canvasbox'), phone=document.getElementById('phone'),
+  badge=document.getElementById('badge'), chrono=document.getElementById('chrono'),
+  fiche=document.getElementById('fiche'), frise=document.getElementById('frise'),
+  btnPlay=document.getElementById('play'), btnRe=document.getElementById('restart'),
+  tapstart=document.getElementById('tapstart');
+var curIdx=-1;
+
+function render(){
+  var S=seq, i=0;
+  while(i<S.length-1 && t>=S[i].t0+S[i].dur) i++;
+  var cur=S[i], p=Math.min(1,Math.max(0,(t-cur.t0)/cur.dur));
+  if(i!==curIdx){
+    curIdx=i;
+    var scn=(cur.kind==='plan')?cur.p.sc:cur.sc;
+    box.innerHTML=SCENES[scn]();
+    paintFiche(cur);
+    badge.textContent=(cur.kind==='plan')?(cur.p.id+' · '+cur.p.t+' s'):cur.label;
+    Array.prototype.forEach.call(frise.children,function(el,k){
+      el.classList.toggle('cur',k===i); el.classList.toggle('done',k<i);
+      var f=el.querySelector('.fill'); if(f) f.style.transform=(k<i)?'scaleX(1)':'scaleX(0)';
+    });
+  }
+  var fs=frise.children[i];
+  if(fs){var fl=fs.querySelector('.fill'); if(fl)fl.style.transform='scaleX('+p+')';}
+  var mv=(cur.kind==='plan'&&cur.p.mv)?cur.p.mv:[[1.0,0,0],[1.04,0,0]];
+  var e=(p<.5)?2*p*p:1-Math.pow(-2*p+2,2)/2;
+  var scv=mv[0][0]+(mv[1][0]-mv[0][0])*e, xv=mv[0][1]+(mv[1][1]-mv[0][1])*e,
+      yv=mv[0][2]+(mv[1][2]-mv[0][2])*e;
+  var svg=box.querySelector('svg');
+  if(svg) svg.style.transform='scale('+scv.toFixed(4)+') translate('+(xv/3.6).toFixed(2)+'%,'+(yv/6.4).toFixed(2)+'%)';
+  phone.classList.toggle('open', t>2.0);
+  chrono.textContent=t.toFixed(1)+' s';
+}
+function paintFiche(cur){
+  if(cur.kind!=='plan'){
+    fiche.innerHTML='<div class="id">'+(cur.kind==='jeu'?'Interstice':(cur.kind==='fin'?'Après le film':'Raccord'))+'</div>'
+     +'<h4>'+cur.label+'</h4><p class="cadre">'+cur.dur.toFixed(1)+' s · hors du film · ne coûte aucun rendu</p>'
+     +'<p class="txt">'+cur.txt+'</p>';
+    return;
+  }
+  var p=cur.p, c=CAST[p.cast];
+  var tags='<span class="'+c[1]+'">'+c[0]+'</span>';
+  tags+='<span class="tag">'+p.t+' s</span>';
+  tags+='<span class="tag">'+(p.t*0.4622).toFixed(2)+' $ nu</span>';
+  if(p.pic)tags+='<span class="tag or">Pic émotionnel</span>';
+  if(p.tiktok)tags+='<span class="tag or">Plan TikTok</span>';
+  if(p.pilote)tags+='<span class="tag tq">Plan pilote</span>';
+  if(p.only)tags+='<span class="tag fv">Propre au montage '+p.only+'</span>';
+  fiche.innerHTML='<div class="id">'+(p.film==='ouverture'?"Cinématique d'ouverture":'Cinématique de fuite')+' · plan '+p.id+'</div>'
+   +'<h4>'+p.nom+'</h4><p class="cadre">'+p.cadre+'</p>'
+   +'<div class="kv">'+tags+'</div>'
+   +'<p class="txt">'+p.txt+'</p>'
+   +(p.note?'<p class="txt" style="color:#B5A695">'+p.note+'</p>':'')
+   +'<pre>'+p.prompt.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</pre>';
+}
+function buildFrise(){
+  frise.innerHTML='';
+  seq.forEach(function(x){
+    var d=document.createElement('div');
+    d.className='seg'+(x.kind==='jeu'?' jeu':'')+((x.kind==='rac')?' rac':'');
+    d.style.flexGrow=x.dur;
+    d.innerHTML='<div class="fill"></div><div class="lab">'+((x.kind==='plan')?x.p.id:'')+'</div>';
+    d.onclick=function(){t=x.t0+0.001;curIdx=-1;render();};
+    frise.appendChild(d);
+  });
+}
+function setVariant(v){
+  variant=v;
+  var b=buildSeq(v); seq=b.s; total=b.total; t=0; curIdx=-1;
+  Array.prototype.forEach.call(document.querySelectorAll('.sw'),function(el){
+    el.classList.toggle('on',el.getAttribute('data-v')===v);});
+  buildFrise(); render(); paintTables();
+  history.replaceState(null,'','?variant='+v);
+}
+function loop(ts){
+  if(playing){
+    if(!last)last=ts;
+    t+=(ts-last)/1000; last=ts;
+    if(t>=total){t=total-0.001;playing=false;btnPlay.textContent='Lecture';}
+    render();
+  } else last=0;
+  requestAnimationFrame(loop);
+}
+btnPlay.onclick=function(){playing=!playing;last=0;btnPlay.textContent=playing?'Pause':'Lecture';};
+btnRe.onclick=function(){t=0;curIdx=-1;playing=true;last=0;btnPlay.textContent='Pause';render();};
+tapstart.onclick=function(){tapstart.classList.add('hide');playing=true;last=0;btnPlay.textContent='Pause';};
+document.addEventListener('keydown',function(e){
+  if(e.key===' '){e.preventDefault();btnPlay.onclick();}
+  if(e.key==='ArrowRight'||e.key==='ArrowLeft'){
+    var o=['A','B','C'],i=o.indexOf(variant);
+    setVariant(o[(i+((e.key==='ArrowRight')?1:2))%3]);
+  }
+});
+Array.prototype.forEach.call(document.querySelectorAll('.sw'),function(el){
+  el.onclick=function(){setVariant(el.getAttribute('data-v'));};});
+
+/* ═══════════════════════════════════════════════════════════════════
+   5. TABLEAUX
+   ═══════════════════════════════════════════════════════════════════ */
+function paintTables(){
+  var m=MONTAGES[variant];
+  var h='<table><thead><tr><th>Plan</th><th>Durée</th><th>Cadre</th><th>Ce qu\'il montre</th><th>Variante de casting</th></tr></thead><tbody>';
+  function row(id){
+    var p=CATALOGUE[id];
+    return '<tr><td><b>'+p.id+'</b> '+p.nom+'</td><td>'+p.t+' s</td><td class="wrap2" style="min-width:220px">'+p.cadre+'</td>'
+      +'<td class="wrap2">'+p.txt+'</td><td>'+CAST[p.cast][0]+'</td></tr>';
+  }
+  h+='<tr><td colspan="5" style="color:'+P.or+';font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;padding-top:14px">Cinématique d\'ouverture — '+filmDur(variant,'ouv')+' s</td></tr>';
+  m.ouv.forEach(function(id){h+=row(id);});
+  h+='<tr><td colspan="5" style="color:#6b6058;font-family:var(--mono);font-size:11px;padding:10px 0">— LE JEU — 6 à 8 min —</td></tr>';
+  h+='<tr><td colspan="5" style="color:'+P.or+';font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;padding-top:14px">Cinématique de fuite — '+filmDur(variant,'fui')+' s</td></tr>';
+  m.fui.forEach(function(id){h+=row(id);});
+  var tot=filmDur(variant,'ouv')+filmDur(variant,'fui');
+  h+='<tr class="tot"><td>Total</td><td>'+tot+' s</td><td colspan="3">'+(m.ouv.length+m.fui.length)+' plans · '+(tot*0.4622).toFixed(2)+' $ nu en Seedance 2.5</td></tr>';
+  h+='</tbody></table>';
+  document.getElementById('tabplans').innerHTML=h;
+
+  var all=m.ouv.concat(m.fui).map(function(id){return CATALOGUE[id];});
+  var n=all.length;
+  var sTot=all.reduce(function(a,p){return a+p.t;},0);
+  var partages=all.filter(function(p){return p.cast==='S'||p.cast==='A';});
+  var recast=all.filter(function(p){return p.cast==='V'||p.cast==='L';});
+  var sRe=recast.reduce(function(a,p){return a+p.t;},0);
+  var sVis=recast.filter(function(p){return p.cast==='V';}).reduce(function(a,p){return a+p.t;},0);
+  var sSil=sRe-sVis;
+  var nu=sTot*0.4622, ess=nu*1.5, lite=sTot*0.0371*2, keys=n*0.15, fiches=4.50;
+  var maitre=ess+lite+keys+fiches;
+  var vNu=sVis*0.4622*1.5+sSil*0.4622*1.2, vLite=sRe*0.0371, vKeys=recast.length*0.15, vFiches=0.90;
+  var vTot=vNu+vLite+vKeys+vFiches;
+  var c='<table><thead><tr><th>Poste</th><th>Détail</th><th>Coût</th></tr></thead><tbody>';
+  c+='<tr><td>Les sept planches de fiches</td><td class="wrap2">nano-banana-pro, une fois pour le film entier (#23)</td><td>'+fiches.toFixed(2)+' $</td></tr>';
+  c+='<tr><td>Images clés</td><td class="wrap2">'+n+' plans × 0,15 $ — nano-banana-pro/edit</td><td>'+keys.toFixed(2)+' $</td></tr>';
+  c+='<tr><td>Deux passes de dérisquage en lite</td><td class="wrap2">'+sTot+' s × 0,0371 $/s × 2 — muet, 12,5× moins cher</td><td>'+lite.toFixed(2)+' $</td></tr>';
+  c+='<tr><td>Le film en Seedance 2.5</td><td class="wrap2">'+sTot+' s × 0,4622 $/s × 1,5 essai (taux mesuré avec repérage préalable)</td><td>'+ess.toFixed(2)+' $</td></tr>';
+  c+='<tr class="tot"><td>Maître complet</td><td class="wrap2">'+n+' plans · '+sTot+' s · les deux cinématiques</td><td>'+maitre.toFixed(2)+' $</td></tr>';
+  c+='<tr><td colspan="3" style="padding-top:18px;color:'+P.or+';font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase">Une variante de casting — ce qu\'il faut re-tirer</td></tr>';
+  c+='<tr><td>Plans partagés</td><td class="wrap2">'+partages.length+' plans, '+(sTot-sRe)+' s — mains gantées, journal, L\'Aile : rien à re-tirer</td><td>0,00 $</td></tr>';
+  c+='<tr><td>Plans à visage</td><td class="wrap2">'+sVis+' s × 0,4622 $/s × 1,5 — les seuls visages lisibles du film</td><td>'+(sVis*0.4622*1.5).toFixed(2)+' $</td></tr>';
+  c+='<tr><td>Plans à silhouette</td><td class="wrap2">'+sSil+' s × 0,4622 $/s × 1,2 — dos et contre-jour, aucun risque de ressemblance</td><td>'+(sSil*0.4622*1.2).toFixed(2)+' $</td></tr>';
+  c+='<tr><td>Images clés + lite + deux fiches</td><td class="wrap2">le style est verrouillé, seules deux fiches sur trois se refont</td><td>'+(vKeys+vLite+vFiches).toFixed(2)+' $</td></tr>';
+  c+='<tr class="tot"><td>Variante de casting <code>amis</code></td><td class="wrap2">'+recast.length+' plans re-tirés sur '+n+' · '+sRe+' s sur '+sTot+'</td><td>'+vTot.toFixed(2)+' $</td></tr>';
+  c+='</tbody></table>';
+  document.getElementById('tabcout').innerHTML=c;
+}
+
+/* démarrage */
+var q=new URLSearchParams(location.search).get('variant');
+setVariant((['A','B','C'].indexOf(q)>=0)?q:'B');
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
