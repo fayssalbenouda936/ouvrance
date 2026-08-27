@@ -1,0 +1,5 @@
+# Configuration locale de l'agent
+.claude/
+
+# Bloc-notes de session, propre au poste
+notes
