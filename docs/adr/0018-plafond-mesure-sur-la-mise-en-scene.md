@@ -1,5 +1,12 @@
 # Le plafond d'une formule est ce que sa mise en scène supporte
 
+> ⚠️ **La mesure de cet ADR est remplacée par l'ADR-0025.** Les six places étaient comptées sur les
+> bandes de décor qu'une feuille au rapport 1,16 laissait libres ; la feuille livrée est à 0,89 et il n'y
+> a pas de bande (ADR-0024). Les Souvenirs de la carte vivent sur la page de droite, en quinconce, et le
+> plafond de la Carte Animée est à re-mesurer. **Le mécanisme ci-dessous — le plafond est le minimum des
+> capacités mesurées, la capacité est déclarée par l'expérience, la porte de publication la vérifie —
+> reste en vigueur.**
+
 Le quota vit toujours sur la formule — c'est une promesse commerciale et elle n'a qu'un endroit. Mais sa valeur ne se choisit plus au tableau puis s'impose aux expériences : elle est **mesurée sur la mise en scène**, et deux formules n'ont aucune raison de porter le même plafond. La Carte Animée plafonne à **six** Souvenirs, le Jeu Premium à **dix**.
 
 ## Pourquoi

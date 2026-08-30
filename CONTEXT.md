@@ -25,7 +25,7 @@ La déclinaison d'une cinématique maître selon la relation représentée. Le s
 _Avoid_ : version, déclinaison, variante (employé seul)
 
 **Emplacement** :
-Une place, prévue par la mise en scène d'une expérience, où un Souvenir de l'offrant peut apparaître — un mur du musée, un polaroïd sur la table. Là où la mise en scène est fixe, un emplacement est toujours occupé : il porte un contenu par défaut qu'un Souvenir vient remplacer. Là où elle s'adapte, un emplacement sans Souvenir n'apparaît pas. Jamais de trou dans les deux cas. C'est une capacité de mise en scène, à ne pas confondre avec le quota.
+Une place, prévue par la mise en scène d'une expérience, où un Souvenir de l'offrant peut apparaître — un mur du musée, un polaroïd sur la page de droite de la lettre. Là où la mise en scène est fixe, un emplacement est toujours occupé : il porte un contenu par défaut qu'un Souvenir vient remplacer. Là où elle s'adapte, un emplacement sans Souvenir n'apparaît pas. Jamais de trou dans les deux cas. C'est une capacité de mise en scène, à ne pas confondre avec le quota.
 _Avoid_ : slot, champ, zone
 
 **Contenu par défaut** :
