@@ -84,6 +84,10 @@ _Avoid_ : annotation, légende (comme terme générique), vocal (comme terme gé
 L'achat d'une commande par l'offrant à ouvrance. Rien d'autre ne s'appelle un paiement.
 _Avoid_ : virement, transaction
 
+**Date promise** :
+La date à laquelle un cadeau sera livré, calculée avant le paiement sur les jours d'ouverture de l'atelier et figée au paiement. C'est une date et jamais une durée, un engagement et jamais une estimation. Rien de ce qu'ouvrance ne contrôle pas ne la repousse : un souvenir refusé ne la décale pas, il sort du cadeau.
+_Avoid_ : délai, ETA, estimation, date de production
+
 **Validation** :
 L'examen humain d'une commande payée avant qu'elle ne devienne un cadeau. Obligatoire, sans exception.
 _Avoid_ : contrôle, review
