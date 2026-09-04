@@ -92,6 +92,10 @@ _Avoid_ : délai, ETA, estimation, date de production
 L'examen humain d'une commande payée avant qu'elle ne devienne un cadeau. Obligatoire, sans exception.
 _Avoid_ : contrôle, review
 
+**Livraison** :
+Le nom que le contrat donne à la validation, vue depuis l'offrant : l'instant où le lien lui est remis. Validation et livraison sont le même instant — le premier mot est celui de l'atelier, le second celui des conditions de vente — et rien ne s'intercale entre eux.
+_Avoid_ : envoi, expédition, délivrance, mise à disposition
+
 **Cadeau** :
 L'expérience personnalisée, validée et publiée, prête à être vécue. Un cadeau naît de la validation, pas du paiement.
 _Avoid_ : commande, livraison, instance
@@ -99,6 +103,10 @@ _Avoid_ : commande, livraison, instance
 **Lien** :
 L'adresse par laquelle un destinataire atteint un cadeau. Révocable ; un même cadeau peut en porter plusieurs au fil du temps.
 _Avoid_ : URL, jeton, token
+
+**Rétractation** :
+L'annulation d'une commande par l'offrant, sans motif et remboursée intégralement, ouverte jusqu'à la livraison. Elle porte sur une commande et ne détruit rien, là où l'extinction détruit un cadeau déjà vécu et ne rembourse qu'au prorata.
+_Avoid_ : annulation, remboursement, résiliation, rétraction
 
 **Extinction** :
 La destruction des dérivés d'un cadeau et de tout ce qui le décrit — ses phrases, son message, son lien de virement. Elle révoque tous ses liens et ne se défait pas. À distinguer de la révocation d'un lien, qui ne détruit rien et laisse le cadeau vivant.
