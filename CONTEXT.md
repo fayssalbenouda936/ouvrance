@@ -104,6 +104,10 @@ _Avoid_ : commande, livraison, instance
 L'adresse par laquelle un destinataire atteint un cadeau. Révocable ; un même cadeau peut en porter plusieurs au fil du temps.
 _Avoid_ : URL, jeton, token
 
+**Jeton de suivi** :
+L'adresse par laquelle l'offrant retrouve son cadeau après la livraison : il y lit l'état, il y retrouve le lien, il y demande à changer son lien de virement. Ce n'est pas le lien — il ne mène pas à l'expérience et il survit à la révocation. Il se lit, il ne s'écrit pas : toute écriture passe par la boîte email de l'offrant. Il se remplace, il n'expire pas.
+_Avoid_ : compte, tableau de bord, espace client
+
 **Rétractation** :
 L'annulation d'une commande par l'offrant, sans motif et remboursée intégralement, ouverte jusqu'à la livraison. Elle porte sur une commande et ne détruit rien, là où l'extinction détruit un cadeau déjà vécu et ne rembourse qu'au prorata.
 _Avoid_ : annulation, remboursement, résiliation, rétraction
