@@ -255,7 +255,7 @@ Calculé aux deux prix d'entrée d'ouvrance, hors Suppléments. Le nombre indiqu
 | Seuil majoré **proratisé 2025** (15 j) | 1 695,21 € | 114 | **25** |
 | *Pour mémoire* : seuil unique de 25 000 € — **abrogé, ne s'applique pas** | ~~25 000 €~~ | ~~1 668~~ | ~~358~~ |
 
-**Avec les Suppléments**, les plafonds par Commande sont de **28,99 €** (carte animée) et **84,99 €** (jeu premium). Au panier maximal, le seuil majoré de 41 250 € est franchi à **1 423 Commandes** à 28,99 € ou **486 Commandes** à 84,99 €.
+**Avec les Suppléments**, les plafonds par Commande sont de **20,99 €** (carte animée — six Souvenirs au plafond, donc trois Suppléments à 2 €, grille arrêtée par l'[arbitrage croisé](https://github.com/fayssalbenouda936/ouvrance/issues/1#issuecomment-5442542605)) et **84,99 €** (jeu premium). Au panier maximal, le seuil majoré de 41 250 € est franchi à **1 966 Commandes** à 20,99 € ou **486 Commandes** à 84,99 €.
 
 > **Lecture pratique.** Le seuil qui compte pour 2026 est **41 250 €**. Un mix réaliste se situe entre **536 et 2 752 Commandes** dans l'année. Le franchissement n'est donc pas un événement lointain : c'est un palier atteignable dès la première année de commercialisation sérieuse, et il faut un compteur, pas une revue annuelle.
 
@@ -470,7 +470,7 @@ Référence citée par la fiche : **arrêté n° 83-50/A du 3 octobre 1983 relat
 | Montant de la Commande | Pièce obligatoire ? |
 | --- | --- |
 | **69,99 €** et **84,99 €** (jeu premium) | **Oui** — au-dessus de 25 € TTC |
-| **28,99 €** (carte + Suppléments au plafond) | **Oui** — au-dessus de 25 € TTC |
+| **20,99 €** (carte + Suppléments au plafond) | **Non** — la carte animée reste sous 25 € en toute configuration |
 | **14,99 €** (carte seule) | **Non** — facultative, sauf demande de l'Offrant |
 
 **Mais le BOFiP referme la porte.** [BOI-TVA-DECLA-30-20-10](https://bofip.impots.gouv.fr/bofip/1525-PGP.html), version en vigueur depuis le 13 août 2021 :

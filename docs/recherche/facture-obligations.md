@@ -11,7 +11,7 @@ Ce document traite une seule question : **que le droit français impose-t-il ré
 
 **Vocabulaire.** Les termes du domaine sont ceux de [`CONTEXT.md`](../../CONTEXT.md) : l'**Offrant** passe la **Commande** et paie, le **Destinataire** ouvre le lien, la **Formule** fixe le prix et le quota, le **Supplément** est un **Souvenir** au-delà du quota, la **Validation** est la porte humaine et la **Livraison** l'envoi du lien. **Une Commande existe dès le formulaire, avant tout paiement** — ce point est décisif pour la section 4.
 
-**Chiffres du dossier**, tenus pour acquis et non vérifiés ici : EI Fayssal BENOUDA, SIREN **980207898**, SIRET siège 98020789800050, APE 63.11Z, créée le 17/12/2025. Micro-entreprise en **franchise en base de TVA** (art. 293 B du CGI). Formule carte animée **14,99 €**, Supplément **2 €**, plafond **28,99 €**. Formule jeu premium **69,99 €**, Supplément **3 €**, plafond **84,99 €**. Aucune facture émise à ce jour ; seul le reçu automatique Stripe.
+**Chiffres du dossier**, tenus pour acquis et non vérifiés ici : EI Fayssal BENOUDA, SIREN **980207898**, SIRET siège 98020789800050, APE 63.11Z, créée le 17/12/2025. Micro-entreprise en **franchise en base de TVA** (art. 293 B du CGI). Formule carte animée **14,99 €**, Supplément **2 €**, **6 Souvenirs au plafond** donc **3 Suppléments au maximum**, plafond **20,99 €** (grille arrêtée par l'[arbitrage croisé de la carte](https://github.com/fayssalbenouda936/ouvrance/issues/1#issuecomment-5442542605), qui corrige le plafond de 28,99 € écrit par #14). Formule jeu premium **69,99 €**, Supplément **3 €**, plafond **84,99 €**. Aucune facture émise à ce jour ; seul le reçu automatique Stripe.
 
 ---
 
@@ -106,13 +106,13 @@ Le seuil se lit sur le **prix TTC de la prestation**. En franchise en base, aucu
 | Panier | Prix payé | Note (arrêté 83-50/A) |
 | --- | --- | --- |
 | Carte animée seule | 14,99 € | **Facultative** — mais obligatoire **si l'Offrant la demande** |
-| Carte animée + 1 à 5 Suppléments | 16,99 € → 24,99 € | **Facultative** — sur demande |
-| Carte animée + 6 Suppléments | **26,99 €** | **Obligatoire** |
-| Carte animée + 7 Suppléments (plafond) | **28,99 €** | **Obligatoire** |
+| Carte animée + 1 à 3 Suppléments (plafond) | 16,99 € → **20,99 €** | **Facultative** — sur demande |
 | Jeu premium seul | **69,99 €** | **Obligatoire** |
 | Jeu premium + Suppléments | 72,99 € → 84,99 € | **Obligatoire** |
 
-Le basculement se fait donc **au 6ᵉ Supplément** sur la Formule carte animée. Sur la Formule jeu premium, la note est obligatoire dans tous les cas.
+**La Formule carte animée ne franchit jamais le seuil.** Son panier maximal est de 20,99 € — trois Suppléments à 2 € sur un plafond de six Souvenirs — soit **4,01 € sous les 25 €**. La note n'y est donc jamais obligatoire de plein droit, seulement sur demande de l'Offrant. Sur la Formule jeu premium, elle l'est dans tous les cas.
+
+> **Note de correction.** Une version antérieure de ce tableau faisait basculer la carte animée au 6ᵉ Supplément (26,99 €), sur la foi du plafond de 28,99 € écrit par [La grille tarifaire et les suppléments](https://github.com/fayssalbenouda936/ouvrance/issues/14). Ce plafond a été corrigé depuis par l'[arbitrage croisé](https://github.com/fayssalbenouda936/ouvrance/issues/1#issuecomment-5442542605) : [Les emplacements de la carte animée](https://github.com/fayssalbenouda936/ouvrance/issues/30) n'a mesuré que **six Emplacements** sur la feuille, et le plafond commercial est descendu avec la mise en scène. **C'est la mesure qui a tranché, pas la grille.**
 
 ### 1.6 [ZONE GRISE] Trois angles morts de l'arrêté de 1983 en vente à distance
 
@@ -129,7 +129,7 @@ L'arrêté a été écrit pour le coiffeur et le garagiste. Trois de ses termes 
 > **L'idée reçue est fausse à moitié, et la moitié fausse est la plus coûteuse.**
 >
 > - **Vrai** : l'article 289 du CGI **n'impose pas** de facture pour une vente à un consommateur personne physique, et le BOFiP le confirme mot pour mot (§ 20). L'article L441-9 du Code de commerce **ne s'applique pas** non plus : son champ est l'achat « pour une activité professionnelle ».
-> - **Faux** : « une note suffit » sous-entend que la note serait un pis-aller optionnel. Ce n'est pas le cas. **Au-dessus de 25 € TTC, la note est obligatoire** — de plein droit, sans demande du client — et l'arrêté fixe ses mentions, sa remise en double exemplaire et sa conservation deux ans. **Le jeu premium à 69,99 € y est toujours ; la carte animée y bascule au 6ᵉ Supplément.**
+> - **Faux** : « une note suffit » sous-entend que la note serait un pis-aller optionnel. Ce n'est pas le cas. **Au-dessus de 25 € TTC, la note est obligatoire** — de plein droit, sans demande du client — et l'arrêté fixe ses mentions, sa remise en double exemplaire et sa conservation deux ans. **Le jeu premium à 69,99 € y est toujours ; la carte animée n'y est jamais**, son panier maximal étant de 20,99 €.
 > - **Sous 25 €, la note reste obligatoire dès que l'Offrant la demande.** « Facultatif » ne veut pas dire « refusable ».
 > - Le reçu automatique Stripe ne satisfait aucune de ces exigences telles qu'elles sont écrites : voir la grille du § 2.4.
 
@@ -616,7 +616,7 @@ Ce paragraphe **rapproche** des exigences sourcées ci-dessus. Il ne prescrit au
 
 ### Obligatoire aujourd'hui, et non fait
 
-1. **Délivrer une note pour toute prestation ≥ 25 € TTC** — donc **toute vente de jeu premium (69,99 €)** et **toute carte animée à partir du 6ᵉ Supplément (26,99 €)**. Sans demande du client, avant paiement du prix. Mentions de l'[art. 3 de l'arrêté 83-50/A](https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000032459003). Double exemplaire, conservation deux ans.
+1. **Délivrer une note pour toute prestation ≥ 25 € TTC** — donc **toute vente de jeu premium (69,99 €), et elle seule** — la carte animée plafonne à 20,99 € et reste sous le seuil en toute configuration. Sans demande du client, avant paiement du prix. Mentions de l'[art. 3 de l'arrêté 83-50/A](https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000032459003). Double exemplaire, conservation deux ans.
 2. **Délivrer une note sur simple demande** pour toute prestation < 25 € TTC ([art. 1er](https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000032459194)).
 3. **Fournir la confirmation du contrat sur support durable**, avec **toutes les informations de L221-5 et le formulaire type de rétractation**, au plus tard **avant le début de l'exécution** ([L221-13](https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000044563210)). Aucun seuil. **Le reçu Stripe ne le fait pas.**
 4. **Recueillir la demande expresse d'exécution anticipée** et la **reconnaissance de la perte du droit de rétractation**, et en fournir confirmation ([L221-25](https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000044563179), [L221-26](https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000044563174)). À défaut, **le consommateur ne doit aucune somme**.
