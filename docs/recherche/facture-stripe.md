@@ -563,8 +563,8 @@ Sept points qu'aucune source primaire consultée ne tranche, rassemblés pour ne
 2. **La règle de formation de `receipt_number`** — nulle part documentée (§ 1.4).
 3. **La confirmation empirique** que la suppression d'un brouillon ne troue pas la séquence (§ 2.2).
 4. **La durée de vie d'un `invoice_pdf`** et la profondeur d'historique de Sigma (§ 2.5, § 6.2).
-5. **L'entité Stripe contractante** d'ouvrance, qui commande l'exigence d'un mandat écrit (§ 4.2).
+5. ~~**L'entité Stripe contractante** d'ouvrance, qui commande l'exigence d'un mandat écrit (§ 4.2).~~ **Refermé le 7 septembre 2026.** Le [Stripe Services Agreement](https://stripe.com/legal/ssa), section 12, tableau « Europe, Middle East and Africa », désigne **`Stripe Payments Europe, Limited`** (Irlande) pour un marchand français. Le mandataire est donc **dans l'Union** : le § 260 du BOFiP, qui impose un contrat écrit hors UE, **ne s'applique pas**. Le mandat peut rester tacite, mais il doit rester démontrable (§ 120).
 6. **Le périmètre e-reporting** applicable à une micro-entreprise B2C en franchise (§ 7.1).
-7. **Le statut de Plateforme Agréée France de Billit**, à vérifier sur la liste officielle DGFiP (§ 7.2).
+7. ~~**Le statut de Plateforme Agréée France de Billit**, à vérifier sur la liste officielle DGFiP (§ 7.2).~~ **Refermé le 7 septembre 2026.** La liste officielle DGFiP a été téléchargée et dépouillée : **BILLIT y est immatriculée depuis le 19/12/2025**, parmi 149 opérateurs ayant réussi les tests (16 autres en attente de test d'interopérabilité). **Stripe est absent des deux listes**, ce qui confirme le § 7.2. Y figurent aussi Tiime (18/12/2025), Indy (09/01/2026), Abby (29/01/2026), Qonto (18/12/2025) et Pennylane (11/12/2025). [Liste officielle](https://www.impots.gouv.fr/liste-des-plateformes-de-dematerialisation-partenaires-pdp-immatriculees-sous-reserve).
 
 Les points 1, 5, 6 et 7 relèvent d'un expert-comptable ou d'un avocat fiscaliste. Les points 2, 3 et 4 se règlent par une manipulation en mode test.
