@@ -64,6 +64,10 @@ _Avoid_ : tiers, sujet, figurant
 
 ### De l'achat à la livraison
 
+**Campagne** :
+La publication d'où vient une visite — un TikTok, un post. Elle désigne un contenu, jamais une personne ; une visite qui ne vient d'aucune publication est directe.
+_Avoid_ : source, canal, trafic, UTM, provenance
+
 **Commande** :
 L'achat, côté offrant : une formule, une expérience, une personnalisation, un paiement. Elle existe dès le formulaire, avant tout paiement.
 _Avoid_ : achat, panier, instance, gift
