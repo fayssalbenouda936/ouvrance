@@ -1,0 +1,4 @@
+# Le banc est jetable : ses octets se refabriquent, ses chiffres non.
+# `node outils/recolter.mjs` reconstitue tout ce qui est ignoré ici.
+sources/
+vendor/

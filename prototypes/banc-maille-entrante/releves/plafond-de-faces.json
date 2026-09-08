@@ -1,0 +1,100 @@
+{
+ "le": "2026-09-08T17:16:10.868Z",
+ "seuilMasque": 2,
+ "reculs": {
+  "2": [
+   {
+    "triangles": 15000,
+    "surface": 1612,
+    "inter": 1612,
+    "union": 1612,
+    "seulA": 0,
+    "seulB": 0,
+    "iou": 1
+   },
+   {
+    "triangles": 4000,
+    "surface": 1598,
+    "inter": 1580,
+    "union": 1630,
+    "seulA": 32,
+    "seulB": 18,
+    "iou": 0.9693
+   },
+   {
+    "triangles": 2000,
+    "surface": 1597,
+    "inter": 1569,
+    "union": 1640,
+    "seulA": 43,
+    "seulB": 28,
+    "iou": 0.9567
+   },
+   {
+    "triangles": 1000,
+    "surface": 1600,
+    "inter": 1564,
+    "union": 1648,
+    "seulA": 48,
+    "seulB": 36,
+    "iou": 0.949
+   },
+   {
+    "triangles": 500,
+    "surface": 1596,
+    "inter": 1554,
+    "union": 1654,
+    "seulA": 58,
+    "seulB": 42,
+    "iou": 0.9395
+   }
+  ],
+  "4": [
+   {
+    "triangles": 15000,
+    "surface": 433,
+    "inter": 433,
+    "union": 433,
+    "seulA": 0,
+    "seulB": 0,
+    "iou": 1
+   },
+   {
+    "triangles": 4000,
+    "surface": 436,
+    "inter": 429,
+    "union": 440,
+    "seulA": 4,
+    "seulB": 7,
+    "iou": 0.975
+   },
+   {
+    "triangles": 2000,
+    "surface": 435,
+    "inter": 428,
+    "union": 440,
+    "seulA": 5,
+    "seulB": 7,
+    "iou": 0.9727
+   },
+   {
+    "triangles": 1000,
+    "surface": 430,
+    "inter": 420,
+    "union": 443,
+    "seulA": 13,
+    "seulB": 10,
+    "iou": 0.9481
+   },
+   {
+    "triangles": 500,
+    "surface": 427,
+    "inter": 418,
+    "union": 442,
+    "seulA": 15,
+    "seulB": 9,
+    "iou": 0.9457
+   }
+  ]
+ }
+}

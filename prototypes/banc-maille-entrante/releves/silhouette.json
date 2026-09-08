@@ -1,0 +1,478 @@
+{
+ "url": "http://localhost:5199/salle-temoin.html",
+ "le": "2026-09-08T17:15:18.192Z",
+ "seuils": {
+  "partNette": 0.25,
+  "p90": 30,
+  "ecartNet": 12
+ },
+ "mesures": [
+  {
+   "nom": "garde albédo 0.02",
+   "params": {
+    "sujet": "garde",
+    "matiere": "palette",
+    "albedo": 0.02
+   },
+   "triangles": 14318,
+   "pixels": 3636,
+   "partDeLImage": 0.0108,
+   "ecartMoyen": 16.5,
+   "p50": 18.1,
+   "p90": 22.4,
+   "partNette": 0.792,
+   "luminanceSujet": 6.5,
+   "luminanceFond": 22.7,
+   "tenu": false
+  },
+  {
+   "nom": "garde albédo 0.04",
+   "params": {
+    "sujet": "garde",
+    "matiere": "palette",
+    "albedo": 0.04
+   },
+   "triangles": 14318,
+   "pixels": 3627,
+   "partDeLImage": 0.0108,
+   "ecartMoyen": 13.1,
+   "p50": 14.1,
+   "p90": 19.3,
+   "partNette": 0.636,
+   "luminanceSujet": 10.4,
+   "luminanceFond": 22.6,
+   "tenu": false
+  },
+  {
+   "nom": "garde albédo 0.06",
+   "params": {
+    "sujet": "garde",
+    "matiere": "palette",
+    "albedo": 0.06
+   },
+   "triangles": 14318,
+   "pixels": 3616,
+   "partDeLImage": 0.0108,
+   "ecartMoyen": 9.9,
+   "p50": 10,
+   "p90": 15.8,
+   "partNette": 0.338,
+   "luminanceSujet": 14.6,
+   "luminanceFond": 22.6,
+   "tenu": false
+  },
+  {
+   "nom": "garde albédo 0.08",
+   "params": {
+    "sujet": "garde",
+    "matiere": "palette",
+    "albedo": 0.08
+   },
+   "triangles": 14318,
+   "pixels": 3591,
+   "partDeLImage": 0.0107,
+   "ecartMoyen": 7.6,
+   "p50": 7,
+   "p90": 13.6,
+   "partNette": 0.135,
+   "luminanceSujet": 18.7,
+   "luminanceFond": 22.5,
+   "tenu": false
+  },
+  {
+   "nom": "garde albédo 0.1",
+   "params": {
+    "sujet": "garde",
+    "matiere": "palette",
+    "albedo": 0.1
+   },
+   "triangles": 14318,
+   "pixels": 3512,
+   "partDeLImage": 0.0104,
+   "ecartMoyen": 6.6,
+   "p50": 5.1,
+   "p90": 14.3,
+   "partNette": 0.149,
+   "luminanceSujet": 22.6,
+   "luminanceFond": 22.6,
+   "tenu": false
+  },
+  {
+   "nom": "garde albédo 0.13",
+   "params": {
+    "sujet": "garde",
+    "matiere": "palette",
+    "albedo": 0.13
+   },
+   "triangles": 14318,
+   "pixels": 3501,
+   "partDeLImage": 0.0104,
+   "ecartMoyen": 8,
+   "p50": 5.8,
+   "p90": 18.5,
+   "partNette": 0.23,
+   "luminanceSujet": 28.2,
+   "luminanceFond": 22.4,
+   "tenu": false
+  },
+  {
+   "nom": "garde albédo 0.16",
+   "params": {
+    "sujet": "garde",
+    "matiere": "palette",
+    "albedo": 0.16
+   },
+   "triangles": 14318,
+   "pixels": 3657,
+   "partDeLImage": 0.0109,
+   "ecartMoyen": 11.7,
+   "p50": 9.6,
+   "p90": 23.2,
+   "partNette": 0.369,
+   "luminanceSujet": 33.2,
+   "luminanceFond": 22.5,
+   "tenu": false
+  },
+  {
+   "nom": "garde albédo 0.22",
+   "params": {
+    "sujet": "garde",
+    "matiere": "palette",
+    "albedo": 0.22
+   },
+   "triangles": 14318,
+   "pixels": 3669,
+   "partDeLImage": 0.0109,
+   "ecartMoyen": 20.6,
+   "p50": 19,
+   "p90": 33.9,
+   "partNette": 0.856,
+   "luminanceSujet": 42.7,
+   "luminanceFond": 22.5,
+   "tenu": true
+  },
+  {
+   "nom": "garde albédo 0.3",
+   "params": {
+    "sujet": "garde",
+    "matiere": "palette",
+    "albedo": 0.3
+   },
+   "triangles": 14318,
+   "pixels": 3690,
+   "partDeLImage": 0.011,
+   "ecartMoyen": 31.8,
+   "p50": 30.6,
+   "p90": 47.1,
+   "partNette": 0.955,
+   "luminanceSujet": 54,
+   "luminanceFond": 22.5,
+   "tenu": true
+  },
+  {
+   "nom": "garde albédo 0.45",
+   "params": {
+    "sujet": "garde",
+    "matiere": "palette",
+    "albedo": 0.45
+   },
+   "triangles": 14318,
+   "pixels": 3690,
+   "partDeLImage": 0.011,
+   "ecartMoyen": 50.2,
+   "p50": 50.2,
+   "p90": 68.5,
+   "partNette": 0.985,
+   "luminanceSujet": 72.6,
+   "luminanceFond": 22.5,
+   "tenu": true
+  },
+  {
+   "nom": "garde à 3 m",
+   "params": {
+    "sujet": "garde",
+    "matiere": "palette",
+    "albedo": 0.16,
+    "recul": 3
+   },
+   "triangles": 14318,
+   "pixels": 13625,
+   "partDeLImage": 0.0405,
+   "ecartMoyen": 16.2,
+   "p50": 15.5,
+   "p90": 27.9,
+   "partNette": 0.606,
+   "luminanceSujet": 25.3,
+   "luminanceFond": 25.2,
+   "tenu": false
+  },
+  {
+   "nom": "garde à 6 m",
+   "params": {
+    "sujet": "garde",
+    "matiere": "palette",
+    "albedo": 0.16,
+    "recul": 6
+   },
+   "triangles": 14318,
+   "pixels": 3657,
+   "partDeLImage": 0.0109,
+   "ecartMoyen": 11.7,
+   "p50": 9.6,
+   "p90": 23.2,
+   "partNette": 0.369,
+   "luminanceSujet": 33.2,
+   "luminanceFond": 22.5,
+   "tenu": false
+  },
+  {
+   "nom": "garde à 9 m",
+   "params": {
+    "sujet": "garde",
+    "matiere": "palette",
+    "albedo": 0.16,
+    "recul": 9
+   },
+   "triangles": 14318,
+   "pixels": 1702,
+   "partDeLImage": 0.0051,
+   "ecartMoyen": 18.6,
+   "p50": 19.9,
+   "p90": 26.2,
+   "partNette": 0.808,
+   "luminanceSujet": 41.1,
+   "luminanceFond": 22.7,
+   "tenu": false
+  },
+  {
+   "nom": "garde à 12 m",
+   "params": {
+    "sujet": "garde",
+    "matiere": "palette",
+    "albedo": 0.16,
+    "recul": 12
+   },
+   "triangles": 14318,
+   "pixels": 975,
+   "partDeLImage": 0.0029,
+   "ecartMoyen": 21.8,
+   "p50": 24.1,
+   "p90": 31.4,
+   "partNette": 0.839,
+   "luminanceSujet": 45,
+   "luminanceFond": 23.7,
+   "tenu": true
+  },
+  {
+   "nom": "garde / origine",
+   "params": {
+    "sujet": "garde-texture",
+    "matiere": "origine",
+    "albedo": 0.16
+   },
+   "triangles": 14318,
+   "pixels": 3673,
+   "partDeLImage": 0.0109,
+   "ecartMoyen": 20.9,
+   "p50": 20.7,
+   "p90": 33.7,
+   "partNette": 0.819,
+   "luminanceSujet": 40.8,
+   "luminanceFond": 22.6,
+   "tenu": true
+  },
+  {
+   "nom": "banc / origine",
+   "params": {
+    "sujet": "banc",
+    "matiere": "origine",
+    "albedo": 0.16
+   },
+   "triangles": 170,
+   "pixels": 704,
+   "partDeLImage": 0.0021,
+   "ecartMoyen": 59.7,
+   "p50": 56.6,
+   "p90": 107.1,
+   "partNette": 1,
+   "luminanceSujet": 88,
+   "luminanceFond": 28.3,
+   "tenu": true
+  },
+  {
+   "nom": "sculpture / origine",
+   "params": {
+    "sujet": "sculpture",
+    "matiere": "origine",
+    "albedo": 0.16,
+    "socle": 1
+   },
+   "triangles": 14998,
+   "pixels": 199,
+   "partDeLImage": 0.0006,
+   "ecartMoyen": 12.9,
+   "p50": 12.4,
+   "p90": 20.5,
+   "partNette": 0.543,
+   "luminanceSujet": 22.9,
+   "luminanceFond": 23.9,
+   "tenu": false
+  },
+  {
+   "nom": "garde / palette",
+   "params": {
+    "sujet": "garde",
+    "matiere": "palette",
+    "albedo": 0.16
+   },
+   "triangles": 14318,
+   "pixels": 3657,
+   "partDeLImage": 0.0109,
+   "ecartMoyen": 11.7,
+   "p50": 9.6,
+   "p90": 23.2,
+   "partNette": 0.369,
+   "luminanceSujet": 33.2,
+   "luminanceFond": 22.5,
+   "tenu": false
+  },
+  {
+   "nom": "banc / palette",
+   "params": {
+    "sujet": "banc",
+    "matiere": "palette",
+    "albedo": 0.16
+   },
+   "triangles": 170,
+   "pixels": 563,
+   "partDeLImage": 0.0017,
+   "ecartMoyen": 8.7,
+   "p50": 5.1,
+   "p90": 29.9,
+   "partNette": 0.206,
+   "luminanceSujet": 34.8,
+   "luminanceFond": 28.5,
+   "tenu": false
+  },
+  {
+   "nom": "sculpture / palette",
+   "params": {
+    "sujet": "sculpture",
+    "matiere": "palette",
+    "albedo": 0.16,
+    "socle": 1
+   },
+   "triangles": 14998,
+   "pixels": 201,
+   "partDeLImage": 0.0006,
+   "ecartMoyen": 8.5,
+   "p50": 9.7,
+   "p90": 12.1,
+   "partNette": 0.184,
+   "luminanceSujet": 32.3,
+   "luminanceFond": 23.9,
+   "tenu": false
+  },
+  {
+   "nom": "bronze 15000 tris à 2 m",
+   "params": {
+    "sujet": "sculpture",
+    "modele": "./sources/tripo/tripo-15000-palette.glb",
+    "matiere": "origine",
+    "socle": 1,
+    "recul": 2
+   },
+   "triangles": 14998,
+   "pixels": 1627,
+   "partDeLImage": 0.0048,
+   "ecartMoyen": 20.4,
+   "p50": 20.9,
+   "p90": 28.1,
+   "partNette": 0.736,
+   "luminanceSujet": 7.6,
+   "luminanceFond": 21.4,
+   "tenu": false
+  },
+  {
+   "nom": "bronze 4000 tris à 2 m",
+   "params": {
+    "sujet": "sculpture",
+    "modele": "./sources/tripo/tripo-4000-palette.glb",
+    "matiere": "origine",
+    "socle": 1,
+    "recul": 2
+   },
+   "triangles": 4000,
+   "pixels": 1620,
+   "partDeLImage": 0.0048,
+   "ecartMoyen": 20,
+   "p50": 20.9,
+   "p90": 28.1,
+   "partNette": 0.704,
+   "luminanceSujet": 8.1,
+   "luminanceFond": 21.4,
+   "tenu": false
+  },
+  {
+   "nom": "bronze 2000 tris à 2 m",
+   "params": {
+    "sujet": "sculpture",
+    "modele": "./sources/tripo/tripo-2000-palette.glb",
+    "matiere": "origine",
+    "socle": 1,
+    "recul": 2
+   },
+   "triangles": 2000,
+   "pixels": 1623,
+   "partDeLImage": 0.0048,
+   "ecartMoyen": 22.2,
+   "p50": 20.9,
+   "p90": 29.3,
+   "partNette": 0.695,
+   "luminanceSujet": 15.4,
+   "luminanceFond": 21.3,
+   "tenu": false
+  },
+  {
+   "nom": "bronze 1000 tris à 2 m",
+   "params": {
+    "sujet": "sculpture",
+    "modele": "./sources/tripo/tripo-1000-palette.glb",
+    "matiere": "origine",
+    "socle": 1,
+    "recul": 2
+   },
+   "triangles": 1000,
+   "pixels": 1630,
+   "partDeLImage": 0.0048,
+   "ecartMoyen": 23,
+   "p50": 21.1,
+   "p90": 38,
+   "partNette": 0.696,
+   "luminanceSujet": 17.2,
+   "luminanceFond": 21.3,
+   "tenu": true
+  },
+  {
+   "nom": "bronze 500 tris à 2 m",
+   "params": {
+    "sujet": "sculpture",
+    "modele": "./sources/tripo/tripo-500-palette.glb",
+    "matiere": "origine",
+    "socle": 1,
+    "recul": 2
+   },
+   "triangles": 500,
+   "pixels": 1627,
+   "partDeLImage": 0.0048,
+   "ecartMoyen": 23.6,
+   "p50": 21.1,
+   "p90": 40.7,
+   "partNette": 0.703,
+   "luminanceSujet": 19.7,
+   "luminanceFond": 21.3,
+   "tenu": true
+  }
+ ],
+ "luminanceMaxDuFond": 181
+}

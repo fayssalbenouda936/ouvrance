@@ -1,0 +1,203 @@
+<!-- LA SALLE TÉMOIN — jetable. Ce qui survit d'elle, ce sont les chiffres. -->
+<title>Banc d'essai d'une maille entrante</title>
+<style>
+  html,body { margin:0; background:#000; overflow:hidden; }
+  canvas { display:block; }
+  #etiquette { position:fixed; left:8px; top:8px; font:11px/1.4 ui-monospace,monospace;
+               color:#8fa; background:#0008; padding:4px 6px; white-space:pre; }
+  body.mesure #etiquette { display:none; }
+</style>
+<div id="etiquette"></div>
+<script type="importmap">
+{ "imports": {
+  "three": "./vendor/three/build/three.module.js",
+  "three/addons/": "./vendor/three/examples/jsm/"
+} }
+</script>
+<script type="module">
+import * as THREE from 'three'
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
+import { MeshoptDecoder } from './vendor/meshopt/meshopt_decoder.module.js'
+
+const q = new URLSearchParams(location.search)
+const sujet   = q.get('sujet')   ?? 'garde'      // garde | banc | sculpture | aucun
+const matiere = q.get('matiere') ?? 'palette'    // palette | origine
+const albedo  = parseFloat(q.get('albedo') ?? '0.16')
+const clip    = q.get('clip')    ?? 'Walk_Loop'
+const temps   = parseFloat(q.get('temps') ?? '0.40')
+const recul   = parseFloat(q.get('recul')  ?? '6')   // mètres entre l'œil et le sujet
+if (q.get('mesure')) document.body.classList.add('mesure')
+
+/* ── LA FENÊTRE. Mesurée sur iPhone 17 Pro Max par la sonde (#17) : il n'y a pas
+   de plein écran sur iPhone, donc le jeu vit dans 440 × 764 CSS, barre d'adresse
+   comprise. On rend à ce format et à ratio de pixels 1 : une mesure doit être
+   reproductible, pas jolie. ── */
+const L = 440, H = 764
+
+/* ── LA PALETTE DU MUSÉE (DA #6 : pierre chaude, plafond noir, lumière venant
+   des vitrines). C'est elle que toute maille entrante vient porter. ── */
+const PALETTE = {
+  pierre:   0x6b5a45,
+  sol:      0x4a4038,
+  plafond:  0x08080a,
+  vitrine:  0xffd9a0,
+  socle:    0x2a2622,
+}
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true })
+renderer.setPixelRatio(1)
+renderer.setSize(L, H)
+renderer.toneMapping = THREE.ACESFilmicToneMapping
+renderer.toneMappingExposure = 1.0
+renderer.outputColorSpace = THREE.SRGBColorSpace
+document.body.appendChild(renderer.domElement)
+
+const scene = new THREE.Scene()
+scene.background = new THREE.Color(0x000000)
+
+/* FOV vertical 78° — le chiffre de #29, d'où sort le champ instantané de 49°. */
+const camera = new THREE.PerspectiveCamera(78, L / H, 0.05, 60)
+camera.position.set(0, 1.6, 0)          // œil du destinataire debout
+camera.lookAt(0, 1.1, -recul)
+
+// ── La coque : sol, deux murs, plafond noir ────────────────────────────────
+const mat = (couleur, rugosite = 0.9) =>
+  new THREE.MeshStandardMaterial({ color: couleur, roughness: rugosite, metalness: 0 })
+
+const salle = new THREE.Group(); scene.add(salle)
+const sol = new THREE.Mesh(new THREE.PlaneGeometry(12, 30), mat(PALETTE.sol, 0.55))
+sol.rotation.x = -Math.PI / 2; salle.add(sol)
+const plafond = new THREE.Mesh(new THREE.PlaneGeometry(12, 30), mat(PALETTE.plafond, 1))
+plafond.rotation.x = Math.PI / 2; plafond.position.y = 4.2; salle.add(plafond)
+for (const x of [-3.2, 3.2]) {
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(30, 4.2), mat(PALETTE.pierre))
+  m.rotation.y = x < 0 ? Math.PI / 2 : -Math.PI / 2
+  m.position.set(x, 2.1, -10); salle.add(m)
+}
+const fond = new THREE.Mesh(new THREE.PlaneGeometry(6.4, 4.2), mat(PALETTE.pierre))
+fond.position.set(0, 2.1, -14); salle.add(fond)
+
+/* ── LA LUMIÈRE VIENT DES VITRINES, jamais du plafond. Quatre caissons bas le
+   long des murs : c'est ce qui rend la furtivité lisible sans tutoriel, et
+   c'est aussi ce qui rend un garde sombre invisible. ── */
+for (const z of [-3, -7, -11]) {
+  for (const x of [-2.6, 2.6]) {
+    const caisson = new THREE.Mesh(new THREE.BoxGeometry(0.9, 1.05, 0.5), mat(PALETTE.socle))
+    caisson.position.set(x, 0.52, z); salle.add(caisson)
+    const verre = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.9, 0.44),
+      new THREE.MeshStandardMaterial({ color: PALETTE.vitrine, emissive: PALETTE.vitrine,
+        emissiveIntensity: 0.55, roughness: 0.2, transparent: true, opacity: 0.35 }))
+    verre.position.set(x, 1.5, z); salle.add(verre)
+    const l = new THREE.PointLight(PALETTE.vitrine, 6.5, 9, 2)
+    l.position.set(x * 0.8, 1.5, z); salle.add(l)
+  }
+}
+// Le halo résiduel d'une salle nocturne, pas une lumière d'appoint.
+scene.add(new THREE.AmbientLight(0x223044, 0.35))
+
+/* ⚠️ LE SOCLE EST DU DÉCOR, PAS UN SUJET. Posé avec la sculpture, il entrait
+   dans la différence entre les deux rendus : on mesurait alors une caisse noire
+   de 0,7 m et on lisait 5,4/255 de « luminance de la sculpture ». Il vit donc
+   dans la salle, présent des deux côtés, et s'annule. */
+const socle = new THREE.Mesh(new THREE.BoxGeometry(0.7, 1.0, 0.7), mat(PALETTE.socle))
+salle.add(socle)
+
+// ── Le sujet ───────────────────────────────────────────────────────────────
+const materiauPalette = new THREE.MeshStandardMaterial({
+  color: new THREE.Color(albedo, albedo, albedo * 1.12), roughness: 0.75, metalness: 0,
+})
+
+function depouiller(racine) {
+  racine.traverse((o) => { if (o.isMesh) o.material = materiauPalette })
+}
+
+const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder)
+const charger = (url) => new Promise((ok, ko) => loader.load(url, ok, undefined, ko))
+
+const modele = q.get('modele')   // chemin libre, pour balayer des variantes
+const surSocle = q.get('socle') === '1'
+
+/* ⚠️ Le socle est du décor : il est posé (ou remisé hors champ) AVANT tout
+   chargement, donc identiquement dans le rendu avec sujet et dans la
+   référence. La référence doit être demandée avec le même `socle=`. */
+socle.position.set(0, surSocle ? 0.5 : -5, -recul)
+
+const SUJETS = {
+  /* `garde` sort de la chaîne DÉJÀ dépouillé — c'est ce que le dépôt servira.
+     `garde-texture` est le MÊME corps avec les matières PBR du fournisseur :
+     sans lui, comparer « origine » et « palette » compare deux fois la même
+     chose, ce que la première passe de ce banc a fait sans le voir. */
+  garde:          { url: './sources/garde.glb',         y: 0, echelle: 1 },
+  'garde-texture': { url: './sources/garde-texture.glb', y: 0, echelle: 1 },
+  banc:      { url: './sources/kenney-bench.glb', y: 0, echelle: 1 },
+  /* ⚠️ Une sculpture se demande AVEC `socle=1`. Le décor ne se déduit jamais du
+     sujet : la référence, elle, est rendue sans sujet, et ne pourrait pas le
+     déduire. Deux décors différents, et on mesure le piédestal. */
+  sculpture: { url: './sources/tripo-oeuvre.glb', y: 1.05, echelle: 1, cadrer: 0.55 },
+}
+
+let mixer = null
+const etiquette = document.getElementById('etiquette')
+
+async function poser() {
+  if (sujet === 'aucun') return
+  const spec = modele
+    ? { url: modele, y: surSocle ? 1.05 : 0, echelle: 1, cadrer: 0.55 }
+    : SUJETS[sujet]
+  if (!spec) throw new Error('sujet inconnu : ' + sujet)
+  const gltf = await charger(spec.url)
+  const racine = gltf.scene
+  racine.scale.setScalar(spec.echelle)
+
+  // Mise à l'échelle réelle : un sujet se juge à sa taille, pas à celle du fichier.
+  const boite = new THREE.Box3().setFromObject(racine)
+  const taille = boite.getSize(new THREE.Vector3())
+  const cadrer = spec.cadrer ?? (sujet === 'sculpture' ? 0.55 : 0)
+  if (cadrer) racine.scale.setScalar(cadrer / Math.max(taille.x, taille.y, taille.z))
+  const b2 = new THREE.Box3().setFromObject(racine)
+  racine.position.set(0, spec.y - b2.min.y, -recul)
+  if (matiere === 'palette') depouiller(racine)
+  scene.add(racine)
+
+  if (gltf.animations.length) {
+    const a = gltf.animations.find((x) => x.name === clip) ?? gltf.animations[0]
+    mixer = new THREE.AnimationMixer(racine)
+    mixer.clipAction(a).play()
+    mixer.setTime(temps)          // ⚠️ instant FIXE : une mesure doit se rejouer
+  }
+  return { triangles: comptTriangles(racine), clips: gltf.animations.map((a) => a.name) }
+}
+
+function comptTriangles(racine) {
+  let n = 0
+  racine.traverse((o) => {
+    if (o.isMesh) {
+      const g = o.geometry
+      n += (g.index ? g.index.count : g.attributes.position.count) / 3
+    }
+  })
+  return Math.round(n)
+}
+
+/* ⚠️⚠️ NE PAS SIGNALER « prêt » AVANT LA PREMIÈRE COMPOSITION. La capture de
+   Puppeteer photographie la PAGE, pas le tampon WebGL : si on lève le drapeau
+   dans la foulée du rendu, on photographie un écran encore noir. Le cas sans
+   sujet est le seul assez rapide pour tomber dedans — il a donné une référence
+   entièrement noire, et donc une silhouette « visible » qui n'était que la
+   salle. Deux trames d'attente, et un second rendu, referment le trou. */
+const trame = () => new Promise((r) => requestAnimationFrame(() => r()))
+
+poser().then(async (infos) => {
+  renderer.render(scene, camera)
+  await trame(); await trame()
+  renderer.render(scene, camera)
+  await trame()
+  etiquette.textContent =
+    `sujet=${sujet} matiere=${matiere} albedo=${albedo}\n` +
+    (infos ? `triangles=${infos.triangles}\nclips=${infos.clips.length}` : 'aucun sujet')
+  window.__banc = { pret: true, ...(infos ?? {}) }
+}).catch((e) => {
+  etiquette.textContent = '✗ ' + e.message
+  window.__banc = { pret: true, erreur: e.message }
+})
+</script>

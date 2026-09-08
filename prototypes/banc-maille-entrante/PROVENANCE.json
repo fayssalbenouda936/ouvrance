@@ -1,0 +1,62 @@
+{
+  "_pourquoi_ce_fichier": [
+    "⚠️⚠️ LA RÈGLE DU DÉPÔT, reprise du legacy : ON CONSIGNE LA PROVENANCE À LA",
+    "RÉCOLTE, avant que la chaîne de préparation ne l'efface. La dette",
+    "`parking.glb` de `combat-3d` est née de son absence — un décor servi en HTTP",
+    "sur un cadeau VENDU dont plus personne ne peut nommer la licence.",
+    "La clause de licence est CITÉE, jamais résumée."
+  ],
+
+  "banc": "prototypes/banc-maille-entrante — salle témoin JETABLE. Rien d'ici n'est destiné à la production ; ce qui survit, ce sont les chiffres de `releves/` et les outils de `outils/`.",
+  "recolte_le": "2026-09-08",
+
+  "sources": [
+    {
+      "nom": "Quaternius — Universal Animation Library (Standard)",
+      "fichiers": ["UAL1_Standard.fbx", "UAL2_Standard.glb", "AnimationLibrary_Godot_Standard.glb"],
+      "page": "https://quaternius.com/packs/universalanimationlibrary.html",
+      "licence": "CC0 1.0 Universal — la page du pack porte « License CC0 » et « Free to use in personal, educational and commercial projects. (CC0 License) », avec lien vers https://creativecommons.org/publicdomain/zero/1.0/",
+      "⚠️_chemin_de_telechargement": "itch.io oppose un défi Cloudflare à toute requête non navigateur : les fichiers ont été pris sur des MIROIRS GitHub publics, pas sur le site de l'auteur. CC0 autorise cette redistribution, mais un miroir n'est pas la source : avant d'en faire un asset de production, retélécharger depuis quaternius.com et comparer les empreintes.",
+      "miroirs": [
+        "IAFahim/quaternius.universalAnimationLibrary.standard — UAL1_Standard.fbx (24 908 124 o, md5 c6e41ec6cdc96f27ceb392b71e24d9be)",
+        "Ladoladola/characteractionconcepttest — UAL2_Standard.glb (8 091 444 o)",
+        "asgaardlab/Cogito_Buggy — AnimationLibrary_Godot_Standard.glb (6 671 104 o, md5 2a83ecd94065785e4d1f2ccbf4b61ef6)"
+      ],
+      "note": "Le mannequin livré avec la bibliothèque fait 13 744 triangles et 65 os, SANS AUCUNE TEXTURE. C'est un mannequin, pas un personnage."
+    },
+    {
+      "nom": "Quaternius — Universal Base Characters (Standard)",
+      "fichiers": ["Superhero_Male_FullBody.gltf", "Superhero_Male_FullBody.bin", "T_Superhero_Male_Dark.png", "T_Superhero_Male_Normal.png", "T_Superhero_Male_Roughness.png", "T_Eye_Brown.png", "T_Eye_Normal.png", "T_Hair_1_BaseColor.png", "T_Hair_1_Normal.png"],
+      "page": "https://quaternius.com/packs/universalbasecharacters.html",
+      "licence": "CC0 1.0 Universal — même mention que ci-dessus sur la page du pack.",
+      "miroir": "kirbycope/godot-3d-player-controller-v2, assets/universal_base_characters/",
+      "note": "⚠️ Le pack annonce « 6 game-ready character models in Superhero, Regular, and Teen proportions ». Ce sont des CORPS, pas des personnages habillés. La garde-robe CC0 associée est médiévale (Knight, Noble, Peasant, Ranger) : AUCUN uniforme moderne, aucune tenue d'agent de sécurité."
+    },
+    {
+      "nom": "Kenney — Furniture Kit 2.0",
+      "fichiers": ["bench.glb"],
+      "page": "https://kenney.nl/assets/furniture-kit",
+      "licence": "« License: (Creative Commons Zero, CC0) http://creativecommons.org/publicdomain/zero/1.0/ — This content is free to use in personal, educational and commercial projects. Support us by crediting Kenney or www.kenney.nl (this is not mandatory) » (License.txt du paquet, cité verbatim)",
+      "⚠️_telechargement": "kenney.nl renvoie 403 à curl sans en-tête `User-Agent` de navigateur.",
+      "url_directe": "https://kenney.nl/media/pages/assets/furniture-kit/440e0608a4-1677580847/kenney_furniture-kit.zip"
+    },
+    {
+      "nom": "Tripo (fal.ai) — sculpture générée",
+      "fichiers": ["tripo-oeuvre.glb"],
+      "origine": "REPRIS DU LEGACY : /home/fayssal/projetCadeau/apps/gifts/_templates/infiltration/essais-assets/oeuvre-3d.glb, tiré le 12/08/2026 avec face_limit 15000, texture standard, pbr true (voir oeuvre-3d.json).",
+      "pourquoi_pas_un_nouveau_tirage": "La question posée était le PLAFOND DE FACES. Décimer le tirage qu'on a déjà isole exactement cette variable — même forme, même texture, même lumière — là où un nouveau tirage à 0,30 $ ferait bouger tout à la fois. Aucun appel fal.ai n'a été passé.",
+      "licence": "à établir séparément — hors périmètre de ce banc."
+    },
+    {
+      "nom": "three.js r185",
+      "origine": "copié depuis le legacy, apps/gifts/_templates/infiltration/vendor/three",
+      "licence": "MIT"
+    },
+    {
+      "nom": "meshoptimizer 0.25.0 — meshopt_decoder.module.js",
+      "origine": "npm",
+      "licence": "MIT",
+      "mesure": "32 483 octets, 8 071 octets gzip — confirme le chiffre de 8,2 ko avancé par l'issue #25."
+    }
+  ]
+}
